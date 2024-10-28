@@ -32,4 +32,8 @@ namespace PurchasingSystemDeveloper.Areas.Order.Models
         [ForeignKey("UserApproveId")]
         public UserActive? UserApprove { get; set; }
     }
+    public class Selected
+    {
+        public string FirstName { set; get; }
+    }
 }

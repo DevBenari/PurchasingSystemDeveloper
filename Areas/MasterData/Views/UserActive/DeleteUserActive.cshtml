@@ -1,0 +1,54 @@
+﻿@{
+    ViewBag.Title = "Delete User";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+    var photoPath = "~/UserPhoto/" + (Model.UserPhotoPath ?? "user.jpg");
+}
+
+@using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
+
+
+@model UserActiveViewModel
+
+<div class="card card-cyan">
+    <div class="card-header">
+        <h3 class="card-title" style="color:#ffffff">@ViewBag.Title</h3>
+    </div>
+
+
+    <form enctype="multipart/form-data" asp-controller="UserActive" asp-action="DeleteUserActive" method="post" class="form-horizontal">
+        <div class="card-body">
+            <h4>Yakin hapus data ini?</h4>
+            <hr />
+            <input hidden asp-for="UserActiveId" />
+            <input hidden asp-for="UserPhotoPath" />
+            <input hidden asp-for="UserActiveCode" />
+            <input hidden asp-for="FullName" />
+            <div class="post">
+                <div class="user-block">
+                    <img class="img-circle img-bordered-sm" src="@photoPath" asp-append-version="true" alt="user image">
+                    <span class="username">
+                        <a href="#">@Html.DisplayFor(model => model.FullName)</a>
+                    </span>
+                    <span class="description">@Html.DisplayFor(model => model.UserActiveCode)</span>
+                </div>
+                <!-- /.user-block -->
+            </div>
+        </div>
+
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Failed", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+
+        <div class="card-footer">
+            @*<form asp-action="DeletePengguna" method="post">*@
+            <a class="btn btn-default" asp-action="Index" asp-controller="UserActive" asp-area="MasterData">Batal</a>
+            <button type="submit" class="btn btn-danger float-left fw-bold"><div style="color:#ffffff">Hapus</div></button>
+            @*</form>*@
+        </div>
+    </form>
+</div>

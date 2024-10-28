@@ -1,0 +1,225 @@
+﻿@{
+    ViewData["Title"] = "Detail Supplier";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+@using Microsoft.AspNetCore.Identity;
+@using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model SupplierViewModel
+
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">            
+            <form enctype="multipart/form-data" asp-controller="Supplier" asp-action="DetailSupplier" method="post" class="form-horizontal">
+                <div class="card-header bg-cyan">
+                    <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+
+                    <div class="card-tools">
+                        <div class="icheck-primary d-inline">
+                            <input asp-for="IsPKS" type="checkbox" id="IsPKS" disabled>
+                            <label asp-for="IsPKS">Is PKS? &nbsp;</label>
+                        </div>
+                        <div class="icheck-success d-inline">
+                            <input asp-for="IsActive" type="checkbox" id="IsActive" disabled>
+                            <label asp-for="IsActive">Is Active?</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-0"></div>
+                            <div class="col-md-12">
+                                <input hidden asp-for="SupplierId" />
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="SupplierCode"></label>
+                                        <input type="text" asp-for="SupplierCode" class="form-control form-control-border border-width-2" id="SupplierCode" placeholder="Supplier Code" readonly disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="SupplierName"></label>
+                                        <input type="text" asp-for="SupplierName" class="form-control form-control-border border-width-2" autofocus maxlength="250" autocomplete="off" id="SupplierName" placeholder="Supplier Name" disabled>
+                                        <span asp-validation-for="SupplierName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="LeadTimeId"></label>
+                                        <select asp-for="LeadTimeId" asp-items="@ViewBag.LeadTime" class="form-control select2bs4" style="width: 100%;" id="LeadTime" disabled>
+                                            <option value="" hidden disabled selected>--Choose Lead Time--</option>
+                                        </select>
+                                        <span asp-validation-for="LeadTimeId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="Address"></label>
+                                        <input type="text" asp-for="Address" class="form-control form-control-border border-width-2" maxlength="250" autocomplete="off" id="Address" placeholder="Address" disabled>
+                                        <span asp-validation-for="Address" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12 input-group">
+                                        <label class="input-group" asp-for="Handphone"></label>
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                        </div>
+                                        <input asp-for="Handphone" autocomplete="off" type="text" class="form-control form-control-border border-width-2" data-inputmask='"mask": "(9999) - 9999-9999-9"' data-mask-hp placeholder="Handphone" id="Handphone" disabled>
+                                        <span asp-validation-for="Handphone" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12 input-group">
+                                        <label class="input-group" asp-for="Email"></label>
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                        </div>
+                                        <input maxlength="100" autocomplete="off" asp-for="Email" type="email" class="form-control form-control-border border-width-2" placeholder="Email" id="Email" disabled>
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="Note"></label>
+                                        <input asp-for="Note" autocomplete="off" type="text" class="form-control form-control-border border-width-2" maxlength="250" autocomplete="off" id="Note" placeholder="Note" disabled>
+                                        <span asp-validation-for="Note" class="text-danger"></span>
+                                    </div>
+                                </div>                                
+                            </div>
+                            <div class="col-md-0"></div>
+                        </div>
+                    </div>
+                </div>
+
+                @*<div class="form-group row">
+                <div class="col-sm-6 input-group">
+                <div class="form-group clearfix">
+                <div class="icheck-primary d-inline">
+                <input asp-for="IsPKS" type="checkbox" id="IsPKS" disabled>
+                <label asp-for="IsPKS">Is PKS?</label>
+                </div>
+                </div>
+                </div>
+                </div>
+                <div class="form-group row">
+                <div class="col-sm-6 input-group">
+                <div class="form-group clearfix">
+                <div class="icheck-danger d-inline">
+                <input asp-for="IsActive" type="checkbox" id="IsActive" disabled>
+                <label asp-for="IsActive">Is Active?</label>
+                </div>
+                </div>
+                </div>
+                </div>*@
+                
+                <!-- start button footer -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-0"></div>
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold" id="btnsimpan"><div style="color:#ffffff">Save</div></button>
+                                    <a class="btn bg-indigo" id="btnubah">Change</a>
+                                    <a class="btn btn-default" id="btnbatalubah">Cancel Change</a>
+                                    <a class="btn btn-danger" asp-action="DeleteSupplier" asp-controller="Supplier" asp-area="MasterData" asp-route-id="@Model.SupplierId" id="btnhapus">Delete</a>
+                                    <a class="btn btn-default" asp-action="Index" asp-controller="Supplier" asp-area="MasterData" id="btnbatal">Cancel</a>
+                                </div>
+                            </div>
+                            <div class="col-md-0"></div>
+                        </div>                        
+                    </div>
+                </div>
+                
+                <!-- /.end button footer -->
+                @section Scripts {
+                    <script>
+                        $(function () {
+                            //Initialize Select2 Elements
+                            $('.select2bs4').select2({
+                                theme: 'bootstrap4'
+                            })
+                        })
+                    </script>
+
+                    <script>
+                        $(function () {
+                            $("#btnsimpan").hide();
+                            $("#btnbatalubah").hide();
+
+                            $("#btnubah").click(function () {
+                                $("#btnubah").hide();
+                                $("#btnhapus").hide();
+                                $("#btnbatal").hide();
+                                $("#btnsimpan").show();
+                                $("#btnbatalubah").show();
+
+                                document.getElementById("SupplierCode").disabled = false;
+                                document.getElementById("SupplierName").disabled = false;
+                                document.getElementById("LeadTime").disabled = false;
+                                document.getElementById("Address").disabled = false;
+                                document.getElementById("Handphone").disabled = false;
+                                document.getElementById("Email").disabled = false;
+                                document.getElementById("Note").disabled = false;
+                                document.getElementById("IsPKS").disabled = false;
+                                document.getElementById("IsActive").disabled = false;
+                            })
+
+                            $("#btnbatalubah").click(function () {
+                                $("#btnubah").show();
+                                $("#btnhapus").show();
+                                $("#btnbatal").show();
+                                $("#btnsimpan").hide();
+                                $("#btnbatalubah").hide();
+
+                                document.getElementById("SupplierCode").disabled = true;
+                                document.getElementById("SupplierName").disabled = true;
+                                document.getElementById("LeadTime").disabled = true;
+                                document.getElementById("Address").disabled = true;
+                                document.getElementById("Handphone").disabled = true;
+                                document.getElementById("Email").disabled = true;
+                                document.getElementById("Note").disabled = true;
+                                document.getElementById("IsPKS").disabled = true;
+                                document.getElementById("IsActive").disabled = true;
+                            })
+                        })
+                    </script>
+
+                    <script>
+                        $(function () {
+                            //Data-Mask-Identitas
+                            $('[data-mask-identitas]').inputmask()
+
+                            //Data-Mask-Hp
+                            $('[data-mask-hp]').inputmask()
+
+                            //Tanggal Lahir
+                            $('#tanggallahir').datetimepicker({
+                                format: 'DD/MM/yyyy'
+                            })
+                        })
+                    </script>
+                }
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Failed", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->

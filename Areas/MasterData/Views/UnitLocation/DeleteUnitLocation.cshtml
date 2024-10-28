@@ -1,0 +1,48 @@
+﻿@{
+    ViewBag.Title = "Delete Unit Location";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+@using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
+@model UnitLocationViewModel
+
+<div class="card card-cyan">
+    <div class="card-header">
+        <h3 class="card-title" style="color:#ffffff">@ViewBag.Title</h3>
+    </div>
+
+    <form enctype="multipart/form-data" asp-controller="UnitLocation" asp-action="DeleteUnitLocation" method="post" class="form-horizontal">
+        <div class="card-body">
+            <h4>Yakin hapus data ini?</h4>
+            <hr />
+            <input hidden asp-for="UnitLocationId" />
+            <input hidden asp-for="UnitLocationCode" />
+            <input hidden asp-for="UnitLocationName" />
+            <div class="post">
+                <div class="user-block">
+                    <span class="username">
+                        <a href="#">@Html.DisplayFor(model => model.UnitLocationName)</a>
+                    </span>
+                    <span class="description">@Html.DisplayFor(model => model.UnitLocationCode)</span>
+                </div>
+                <!-- /.user-block -->
+            </div>
+        </div>
+
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Failed", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+
+        <div class="card-footer">
+            @*<form asp-action="DeletePengguna" method="post">*@
+            <a class="btn btn-default" asp-action="Index" asp-controller="UnitLocation" asp-area="MasterData">Batal</a>
+            <button type="submit" class="btn btn-danger float-left fw-bold"><div style="color:#ffffff">Hapus</div></button>
+            @*</form>*@
+        </div>
+    </form>
+</div>

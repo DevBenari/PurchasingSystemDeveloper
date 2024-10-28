@@ -1,0 +1,648 @@
+﻿﻿@using Microsoft.AspNetCore.Identity;
+@using PurchasingSystemDeveloper.Models;
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <link rel="icon" type="image" href="~/favicon.ico">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    <!-- Google Font: Source Sans Pro -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="~/admin/plugins/fontawesome-free/css/all.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="~/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="~/admin/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+    <!-- JQVMap -->
+    <link rel="stylesheet" href="~/admin/plugins/jqvmap/jqvmap.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="~/admin/dist/css/adminlte.min.css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="~/admin/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+    <!-- Daterange picker -->
+    <link rel="stylesheet" href="~/admin/plugins/daterangepicker/daterangepicker.css">
+    <!-- summernote -->
+    <link rel="stylesheet" href="~/admin/plugins/summernote/summernote-bs4.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="~/admin/plugins/select2/css/select2.min.css" rel="stylesheet" />
+    <link href="~/admin/plugins/select2/css/select2.css" rel="stylesheet" />
+    <link href="~/admin/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css" rel="stylesheet" />
+    <link href="~/admin/plugins/select2-bootstrap4-theme/select2-bootstrap4.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/2.0.1/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    @*Sweet Alert*@
+    @*<link href="~/admin/plugins/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <link href="~/admin/plugins/sweetalert2/sweetalert2.css" rel="stylesheet" />
+    <script src="~/admin/plugins/sweetalert2/sweetalert2.all.min.js"></script>
+    <script src="~/admin/plugins/sweetalert2/sweetalert2.all.js"></script>
+    <script src="~/admin/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <script src="~/admin/plugins/sweetalert2/sweetalert2.js"></script>*@
+    @*<link href="~/admin/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css" rel="stylesheet" />
+    <link href="~/admin/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.css" rel="stylesheet" />*@
+
+    <link media="screen" rel="stylesheet" href="https://cdn.jsdelivr.net/sweetalert2/6.3.8/sweetalert2.min.css" />
+    <link media="screen" rel="stylesheet" href='https://cdn.jsdelivr.net/sweetalert2/6.3.8/sweetalert2.css' />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/sweetalert2/6.3.8/sweetalert2.min.js"></script>
+
+    @*Fontawesome Jquery*@
+    <script src="https://kit.fontawesome.com/c3423d6308.js" crossorigin="anonymous"></script>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed layout-navbar-fixed layout-footer-fixed">
+    <div class="wrapper">
+
+        <!-- Preloader -->
+        <div class="preloader flex-column justify-content-center align-items-center">
+            <img class="animation__wobble" src="~/admin/dist/img/logo-loader-mmc.png" alt="PurchasingApps" height="60" width="60">
+        </div>
+
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+                </li>
+                @if (signInManager.IsSignedIn(User))
+                {
+                    var user = await signInManager.UserManager.FindByNameAsync(User.Identity.Name);
+
+                    <li class="nav-item">
+                        <a class="nav-link" role="button">
+                            <p>Halo, @(User.FindFirst("UserNamaDepan").Value)</p>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" role="button">
+                            @if (user.IsOnline == true)
+                            {
+                                <p><i class='fas fa-circle' style='color:greenyellow'></i> Online</p>
+                            }
+                        </a>
+                    </li>
+                }                
+            </ul>
+
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+
+                <!-- Messages Dropdown Menu -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link" data-toggle="dropdown" href="#">
+                        <i class="far fa-bell"></i>
+                        <span class="badge badge-danger navbar-badge" id="notifikasiCount"></span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="max-height: 400px; max-width: 400px; overflow-x:auto; overflow-y: auto;" id="loggerContainer">
+                        @* <a href="#" class="dropdown-item">
+                            <!-- Message Start -->
+                            <div class="media">
+                                <img src="dist/img/user1-128x128.jpg" alt="User Avatar" class="img-size-50 mr-3 img-circle"> 
+                                <div class="media-body">
+                                    <h3 class="dropdown-item-title">
+                                        Brad Diesel
+                                        <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
+                                    </h3>
+                                    <p class="text-sm">Call me whenever you can...</p>
+                                    <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+                                </div>
+                            </div>
+                        </a> *@
+                        <div class="dropdown-divider"></div>
+                        <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
+                    </div>
+                </li>
+
+                <!-- Navbar Search -->
+                @if (signInManager.IsSignedIn(User))
+                {
+                    var user = await signInManager.UserManager.FindByNameAsync(User.Identity.Name);
+                    
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Setting
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" asp-action="MyProfile" asp-controller="Home">My Profile</a>
+                            @*<a class="dropdown-item" asp-action="ChangePassword" asp-controller="Setting">Ganti Kata Sandi</a>*@
+                            @*<a class="dropdown-item" asp-action="Tutorial" asp-controller="Setting">Panduan Aplikasi</a>*@
+                            <form method="post" asp-action="Logout" asp-controller="Home" class="form-inline">
+                                <button type="submit" class="nav-link btn btn-link">
+                                    <p><i class="fas fa-power-off mr-2"></i> Sign Out</p>
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </nav>
+        <!-- /.navbar -->
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color:#347FC4">
+            <!-- Brand Logo -->
+            <a href="#" class="brand-link">
+                @*<img src="~/admin/dist/img/logo-mmc-dashboard.jpg" class="brand-image" style="opacity: .8" />*@
+                <span class="logo-mini"><b>RS</b></span>
+                <span class="brand-text fw-bold" style="color:#FFFFFF">MMC</span>
+            </a>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        <!-- Add icons to the links using the .nav-icon class
+                             with font-awesome or any other icon font library -->
+                        <li class="@(ViewBag.Active == "Dashboard" ? "nav-item menu-open active":"")">
+                            <a asp-action="Index" is-active-route asp-controller="Home" class="nav-link">
+                                <i class="nav-icon fas fa-home" style="color:#FFFFFF"></i>
+                                <p style="color:#FFFFFF">
+                                    Dashboard
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-header">Administrator</li>
+                        <li class="@(ViewBag.Active == "MasterData" ? "nav-item menu-open active":"")">
+                            <a asp-action="Index" is-active-route asp-controller="Dashboard" asp-area="MasterData" class="nav-link">
+                                <i class="nav-icon fas fa-table" style="color:#FFFFFF"></i>
+                                <p style="color:#FFFFFF">
+                                    Master Data
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-header">Purchasing</li>
+                        <li class="@(ViewBag.Active == "PurchaseRequest" ? "nav-item menu-open active":"")">
+                            <a asp-action="Index" is-active-route asp-controller="PurchaseRequest" asp-area="Order" class="nav-link">
+                                <i class="nav-icon fas fa-cart-plus" style="color:#FFFFFF"></i>
+                                <p style="color:#FFFFFF">
+                                    Purchase Request @*<span class="float-right badge bg-info">@ViewBag.CountPurchaseRequestStatus</span>*@
+                                </p>
+                            </a>
+                        </li>
+                        <li class="@(ViewBag.Active == "Approval" ? "nav-item menu-open active":"")">
+                            <a asp-action="Index" is-active-route asp-controller="Approval" asp-area="Order" class="nav-link">
+                                <i class="nav-icon fas fa-calendar-check" style="color:#FFFFFF"></i>
+                                <p style="color:#FFFFFF">
+                                    Approval Purchase Req @*<span class="float-right badge bg-info">@ViewBag.CountPurchaseRequestStatus</span>*@
+                                </p>
+                            </a>
+                        </li>
+                        <li class="@(ViewBag.Active == "PurchaseOrder" ? "nav-item menu-open active":"")">
+                            <a asp-action="Index" is-active-route asp-controller="PurchaseOrder" asp-area="Order" class="nav-link">
+                                <i class="nav-icon fas fa-shopping-bag" style="color:#FFFFFF"></i>
+                                <p style="color:#FFFFFF">
+                                    Purchase Order @*<span class="float-right badge bg-info">@ViewBag.CountPurchaseRequestStatus</span>*@
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-header">Pharmacy</li>
+                        <li class="@(ViewBag.Active == "UnitRequest" ? "nav-item menu-open active":"")">
+                            <a asp-action="Index" is-active-route asp-controller="UnitRequest" asp-area="Transaction" class="nav-link">
+                                <i class="nav-icon fas fa-first-aid" style="color:#FFFFFF"></i>
+                                <p style="color:#FFFFFF">
+                                    Unit Request
+                                </p>
+                            </a>
+                        </li>
+                        <li class="@(ViewBag.Active == "ApprovalRequest" ? "nav-item menu-open active":"")">
+                            <a asp-action="Index" is-active-route asp-controller="ApprovalRequest" asp-area="Warehouse" class="nav-link">
+                                <i class="nav-icon fas fa-calendar-check" style="color:#FFFFFF"></i>
+                                <p style="color:#FFFFFF">
+                                    Approval Unit Request
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-header">Warehouse Management</li>
+                        <li class="@(ViewBag.Active == "ReceiveOrder" ? "nav-item menu-open active":"")">
+                            <a asp-action="Index" is-active-route asp-controller="ReceiveOrder" asp-area="Warehouse" class="nav-link">
+                                <i class="nav-icon fas fa-box-open" style="color:#FFFFFF"></i>
+                                <p style="color:#FFFFFF">
+                                    Receive Order
+                                </p>
+                            </a>
+                        </li>
+                        <li class="@(ViewBag.Active == "QtyDifference" ? "nav-item menu-open active":"")">
+                            <a asp-action="Index" is-active-route asp-controller="QtyDifference" asp-area="Warehouse" class="nav-link">
+                                <i class="nav-icon fas fa-truck-loading" style="color:#FFFFFF"></i>
+                                <p style="color:#FFFFFF">
+                                    Qty Difference
+                                </p>
+                            </a>
+                        </li>
+                        <li class="@(ViewBag.Active == "ApprovalQtyDifference" ? "nav-item menu-open active":"")">
+                            <a asp-action="Index" is-active-route asp-controller="ApprovalQtyDifference" asp-area="Order" class="nav-link">
+                                <i class="nav-icon fas fa-calendar-check" style="color:#FFFFFF"></i>
+                                <p style="color:#FFFFFF">
+                                    Approval Qty Difference
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-header">General</li>
+                        <li class="@(ViewBag.Active == "Stock Monitoring" ? "nav-item menu-open active":"")">
+                            <a asp-action="Index" is-active-route asp-controller="StockMonitoring" asp-area="General" class="nav-link">
+                                <i class="nav-icon fas fa-clipboard-list" style="color:#FFFFFF"></i>
+                                <p style="color:#FFFFFF">
+                                    Stock Monitoring
+                                </p>
+                            </a>
+                        </li>
+                        <li class="@(ViewBag.Active == "KPI" ? "nav-item menu-open active":"")">
+                            <a asp-action="Index" is-active-route asp-controller="KeyPerformanceIndicator" asp-area="Transaction" class="nav-link">
+                                <i class="nav-icon fa-solid fa-key" style="color:#FFFFFF"></i>
+                                <p style="color:#FFFFFF">
+                                    KPI
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-header">Reporting</li>
+                        <li class="@(ViewBag.Active == "Report" ? "nav-item menu-open active":"")">
+                            <a asp-action="Index" is-active-route asp-controller="Dashboard" asp-area="Report" class="nav-link">
+                                <i class="nav-icon fas fa-file-alt" style="color:#FFFFFF"></i>
+                                <p style="color:#FFFFFF">
+                                    Report
+                                </p>
+                            </a>
+                        </li>
+                        @*<li class="nav-item">
+                            <a asp-action="Index" is-active-route asp-controller="Home" class="nav-link">
+                                <i class="nav-icon fas fa-receipt" style="color:#FFFFFF"></i>
+                                <p style="color:#FFFFFF">
+                                    Surat Jalan
+                                </p>
+                            </a>
+                        </li>                        
+                        <li class="nav-item">
+                            <a asp-action="Index" is-active-route asp-controller="Home" class="nav-link">
+                                <i class="nav-icon fas fa-truck-moving" style="color:#FFFFFF"></i>
+                                <p style="color:#FFFFFF">
+                                    Pengiriman Barang
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-action="Index" is-active-route asp-controller="Home" class="nav-link">
+                                <i class="nav-icon fas fa-file-invoice" style="color:#FFFFFF"></i>
+                                <p style="color:#FFFFFF">
+                                    Invoice
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-action="Index" is-active-route asp-controller="Home" class="nav-link">
+                                <i class="nav-icon fas fa-cash-register" style="color:#FFFFFF"></i>
+                                <p style="color:#FFFFFF">
+                                    Pembayaran
+                                </p>
+                            </a>
+                        </li>                        
+                        <li class="nav-item">
+                            <a asp-action="Index" is-active-route asp-controller="Home" class="nav-link">
+                                <i class="nav-icon fas fa-file-invoice" style="color:#FFFFFF"></i>
+                                <p style="color:#FFFFFF">
+                                    Laporan
+                                </p>
+                            </a>
+                        </li>*@
+                    </ul>
+                </nav>
+                <!-- /.sidebar-menu -->
+            </div>
+            <!-- /.sidebar -->
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <div id="myModalSuccess" class="modal fade text-width:30%;" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2>Informasi</h2>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div id="MyModalSuccessAlertBody" class="modal-body alert alert-success">
+                            This Content
+                        </div>
+                        <div class="modal-footer">
+                            &nbsp;
+                            <button type="button" class="btn btn-info bg-indigo" data-dismiss="modal">Kembali</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @RenderBody()
+        </div>
+        @if (IsSectionDefined("Scripts"))
+        {
+            @RenderSection("Scripts", required: true)
+        }
+
+        <!-- Control Sidebar -->
+        <aside class="control-sidebar control-sidebar-dark">
+            <!-- Control sidebar content goes here -->
+        </aside>
+        <!-- /.control-sidebar -->
+        <!-- Main Footer -->
+        <footer class="main-footer">
+            <strong>Copyright &copy; 2024 <a href="~/admin/dashboard/">BLM Pharmacy E-Purchasing System</a>.</strong>
+            All rights reserved.
+            <div class="float-right d-none d-sm-inline-block">
+                <b>Version</b> 5.1.1
+            </div>
+        </footer>
+    </div>
+
+    <!-- REQUIRED SCRIPTS -->
+    <!-- jQuery -->
+    @*<script src="~/admin/plugins/jquery/jquery.min.js"></script>*@
+    <!-- Select2 -->
+    <script src="~/admin/plugins/select2/js/select2.full.min.js"></script>
+    <script src="~/admin/plugins/select2/js/select2.full.js"></script>
+    <script src="~/admin/plugins/select2/js/select2.min.js"></script>
+    <script src="~/admin/plugins/select2/js/select2.js"></script>
+
+    <!-- jQuery -->
+    @*<script src="~/lib/jquery/jquery.js"></script>
+    <script src="~/lib/jquery-validate/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>*@
+    <!-- jQuery UI 1.11.4 -->
+    <script src="~/admin/plugins/jquery-ui/jquery-ui.min.js"></script>
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    <script>
+        $.widget.bridge('uibutton', $.ui.button)
+    </script>
+    <!-- InputMask -->
+    <script src="~/admin/plugins/inputmask/jquery.inputmask.min.js"></script>   
+    <!-- Bootstrap 4 -->
+    <script src="~/admin/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <!-- ChartJS -->
+    <script src="~/admin/plugins/chart.js/Chart.min.js"></script>
+    <!-- Sparkline -->
+    <script src="~/admin/plugins/sparklines/sparkline.js"></script>
+    <!-- JQVMap -->
+    <script src="~/admin/plugins/jqvmap/jquery.vmap.min.js"></script>
+    <script src="~/admin/plugins/jqvmap/maps/jquery.vmap.usa.js"></script>
+    <!-- jQuery Knob Chart -->
+    <script src="~/admin/plugins/jquery-knob/jquery.knob.min.js"></script>
+    <!-- daterangepicker -->
+    <script src="~/admin/plugins/moment/moment.min.js"></script>
+    <script src="~/admin/plugins/daterangepicker/daterangepicker.js"></script>
+    <!-- Tempusdominus Bootstrap 4 -->
+    <script src="~/admin/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
+    <!-- Summernote -->
+    <script src="~/admin/plugins/summernote/summernote-bs4.min.js"></script>
+    <!-- overlayScrollbars -->
+    <script src="~/admin/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>
+    <!-- AdminLTE App -->
+    <script src="~/admin/dist/js/adminlte.js"></script>
+    <script src="~/admin/dist/js/signalr.min.js"></script>
+
+    @*UI Normal*@
+    <script src="https://cdn.datatables.net/2.0.1/js/dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/2.0.1/js/dataTables.bootstrap4.min.js"></script>    
+
+    <!-- script JS membuat session message  -->
+    <script>
+        //let warningTime = 10 * 1000; // 10 detik
+        //let sessionExpireTime = 15 * 1000; // 15 detik
+
+        let warningTime = 1500 * 1000; // 25 Menit
+        let sessionExpireTime = 1800 * 1000; // 30 menit
+        let warningTimeout, expireTimeout;
+
+        function extendSession() {
+            fetch("/accountController/ExtendSession", {
+                method: 'POST'
+            }).then(response => {
+                if (response.ok) {
+                    swal({
+                        title: "Extend Session",
+                        text: "Your session time has been extended",
+                        type: "success",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    resetTimer();
+                } else {
+                    swal({
+                        title: "Your Session Has Ended",
+                        text: "You failed to extend the session !",
+                        type: "error",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                }
+            });
+        }
+
+        function showSessionExpireWarning() {
+            console.log("Showing session warning");  // Log ketika peringatan ditampilkan
+            swal({
+                title: "Your Session Will End !",
+                text: "Do you want to extend the session?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Yes, Extend Session",
+                cancelButtonText: "No, End Session",
+                confirmButtonClass: "btn btn-success",
+                cancelButtonClass: "btn btn-danger",
+                buttonsStyling: false,
+                reverseButtons: true
+            }).then(function () {
+                return extendSession();
+            }, function (dismiss) {
+                if (dismiss === "cancel") {
+                    fetch("/accountController/EndSession", {
+                        method: 'POST'
+                    }).then(response => {
+                        if (response.ok) {
+                            swal({
+                                title: "Session Berakhir",
+                                text: "Session Anda telah berakhir",
+                                type: "error",
+                                timer: 1500,
+                                showConfirmButton: false
+                            });
+
+                            // Redirect user ke halaman login
+                            setTimeout(function () {
+                                window.location.href = '/Account/Login?ReturnUrl=%2F';
+                            }, 1500);
+                        }
+                    });  // Akhiri sesi jika pengguna memilih untuk melakukannya
+                }
+            });
+        }
+
+        function resetTimer() {
+            clearTimeout(warningTimeout);
+            clearTimeout(expireTimeout);
+
+            console.log("Timer reset");  // Log ketika timer direset
+
+            warningTimeout = setTimeout(showSessionExpireWarning, sessionExpireTime - warningTime);
+            expireTimeout = setTimeout(sessionExpireTime);
+        }       
+
+        // Tambahkan event listener untuk mereset timer saat ada aktivitas
+        document.addEventListener('click', resetTimer);
+        document.addEventListener('keypress', resetTimer);
+        document.addEventListener('mousemove', resetTimer);
+
+        resetTimer();
+    </script>
+
+    <!-- end message Session-->
+
+    <script>
+        // Inisialisasi koneksi SignalR
+        var connection = new signalR.HubConnectionBuilder().withUrl("/chathub").build();
+
+        // Event saat koneksi mulai
+        connection.start().then(function () {
+            console.log("SignalR connected.");
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        // Fungsi untuk mengambil data
+        function refreshData() {
+            $.ajax({
+                url: '@Url.Action("CountNotifikasi", "Home")', // Sesuaikan URL dengan controller Anda
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        // Menampilkan total Approval PR
+                        $("#notifikasiCount").text(response.totalJsonAllNotification);
+                        // Menyembunyikan atau menampilkan notifikasiCount
+                        if (response.totalJsonAllNotification === 0) {
+                            $("#notifikasiCount").hide(); // Sembunyikan jika 0
+                        } else {
+                            $("#notifikasiCount").show(); // Tampilkan jika tidak 0
+                        }
+
+                        // Mengambil data logger dari response
+                        var loggerDataPR = response.loggerDataJsonPR;
+                        var loggerDataQtyDiff = response.loggerDataJsonQtyDiff;
+
+                        // Bersihkan konten sebelumnya, kecuali footer
+                        $("#loggerContainer").empty();
+
+                        const combineData = loggerDataPR.concat(loggerDataQtyDiff);
+
+                        combineData.forEach(item => {
+                            item.dateObj = new Date(item.createdDate);  // tambahkan properti dateObj untuk pengurutan
+                        });
+
+                        // combineData.sort();
+                        combineData.sort((a, b) => b.dateObj - a.dateObj);
+
+                        combineData.forEach(item => {
+                            const day = String(item.dateObj.getDate()).padStart(2, '0');
+                            const month = String(item.dateObj.getMonth() + 1).padStart(2, '0'); // Month is 0-indexed
+                            const year = item.dateObj.getFullYear();
+                            const hours = String(item.dateObj.getHours()).padStart(2, '0');
+                            const minutes = String(item.dateObj.getMinutes()).padStart(2, '0');
+                            item.formattedDate = `${day}/${month}/${year} ${hours}:${minutes}`; // Simpan dalam format dd-mm-yyyy
+                        });
+
+                        combineData.forEach(item => {
+                            if (item.purchaseRequestNumber != undefined) {
+                                var urlPR = '@Url.Action("DetailApproval", "Approval", new { area = "Order", id = "__id__" })'.replace("__id__", item.approvalId);
+                                var content =
+                                    `<a href="${urlPR}" class="dropdown-item">
+                                                                <div class="media">
+                                                                    <div class="info-box">
+                                                                        <span class="info-box-icon shadow-sm" style="background-color: #E53D00">
+                                                                            <i class="fas fa-file-alt" style="color: white"></i>
+                                                                        </span>
+                                                                        <div class="media-body">
+                                                                            <div class="info-box-content">
+                                                                                <p class="text-sm text-muted">Approval Purchase Request</p>
+                                                                                <h3 class="dropdown-item-title"><b>${item.purchaseRequestNumber} Has Been Created</b></h3>
+                                                                                <p class="text-sm text-muted">By ${item.createdBy} || ${item.formattedDate}</p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="dropdown-divider"></div>
+                                                            </a>`;
+
+                                // Append ke loggerContainer
+                                $("#loggerContainer").append(content);
+                            }
+                            else if (item.qtyDifferenceNumber != undefined) {
+                                var urlQtyDiff = '@Url.Action("DetailApprovalQtyDifference", "ApprovalQtyDifference", new { area = "Order", id = "__id__" })'.replace("__id__", item.approvalId);
+                                var content =
+                                    `<a href="${urlQtyDiff}" class="dropdown-item">
+                                                              <div class="media">
+                                                                    <div class="info-box">
+                                                                        <span class="info-box-icon shadow-sm" style="background-color: #F7C1BB">
+                                                                            <i class="fas fa-file-archive" style="color: white"></i>
+                                                                        </span>
+                                                                        <div class="media-body">
+                                                                            <div class="info-box-content">
+                                                                                <p class="text-sm text-muted">Approval Qty Difference</p>
+                                                                                <h3 class="dropdown-item-title"><b>${item.qtyDifferenceNumber} Has Been Created</b></h3>
+                                                                                <p class="text-sm text-muted">By ${item.createdBy} || ${item.formattedDate}</p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                              </div>
+                                                             <div class="dropdown-divider"></div>
+                                                        </a>`;
+
+                                // Append ke loggerContainer
+                                $("#loggerContainer").append(content);
+                            }
+
+                        });                        
+                        
+                        // Menambahkan tautan "See All Messages" setelah loop
+                        if (loggerDataPR.length > 0 && loggerDataQtyDiff.length == 0) {
+                            var footerLink =
+                                `<a href="${'@Url.Action("Index", "Approval", new { area = "Order" })'}" class="dropdown-item dropdown-footer">See All Messages</a>`;
+                        } else if (loggerDataQtyDiff.length > 0 && loggerDataPR.length == 0) {
+                            var footerLink =
+                                `<a href="${'@Url.Action("Index", "ApprovalQtyDifference", new { area = "Order" })'}" class="dropdown-item dropdown-footer">See All Messages</a>`;
+                        } else if (loggerDataPR.length > 0 && loggerDataQtyDiff.length > 0) {
+                            var footerLink =
+                                `<a href="#" class="dropdown-item dropdown-footer">Select data to your needs</a>`;
+                        } else {
+                            var footerLink =
+                                `<a href="#" class="dropdown-item dropdown-footer"><strong> No Messages</strong></a>`;
+                        }
+                        $("#loggerContainer").append(footerLink);
+                    } else {
+                        console.log(response.message); // Jika ada pesan error
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error: " + error); // Menangani error
+                }
+            });
+        }
+
+        // Ketika menerima update dari SignalR
+        connection.on("UpdateDataCount", function () {
+            // Panggil fungsi refreshData untuk mendapatkan data terbaru
+            refreshData();
+        });
+
+        $(document).ready(function () {
+            // Panggil refreshData saat halaman dimuat pertama kali
+            refreshData();
+        });
+    </script>
+</body>
+</html>

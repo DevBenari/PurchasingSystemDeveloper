@@ -1,0 +1,185 @@
+﻿@{
+    ViewData["Title"] = "Detail Warehouse Request";
+    Layout = "~/Views/Shared/_TopNavbarWarehouse.cshtml";
+}
+
+@using Microsoft.AspNetCore.Identity;
+
+@inject SignInManager<ApplicationUser> signInManager
+@model PurchasingSystemDeveloper.Areas.Warehouse.Models.WarehouseRequest
+
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <div class="card-header bg-cyan">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+            </div>
+
+            <form enctype="multipart/form-data" asp-controller="WarehouseRequest" asp-action="DetailWarehouseRequest" method="post" class="form-horizontal">
+                <div class="card-body">
+                    <input asp-for="WarehouseRequestId" type="hidden" />
+                    <input asp-for="UserAccessId" id="UserAccessId" type="hidden">
+
+                    @if (signInManager.IsSignedIn(User))
+                    {
+                        <input asp-for="@User.Identity.Name" class="form-control" type="hidden">
+                    }
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="WarehouseRequestNumber">Warehouse Number</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="WarehouseRequestNumber" class="form-control form-control-border border-width-2" id="WarehouseRequestNumber" placeholder="Warehouse Number" readonly disabled>
+                        </div>
+                    </div>                   
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="UnitRequestNumber">Request Number</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="UnitRequestNumber" class="form-control form-control-border border-width-2" id="UnitRequestNumber" placeholder="Unit Request Number" readonly disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="UserAccessId">
+                            Create By
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="UserAccessId" asp-items="@ViewBag.User" class="form-control select2bs4" id="UserAccessId" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Choose User--</option>
+                            </select>
+                            <span asp-validation-for="UserAccessId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="UnitLocationId">
+                            Unit Location
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="UnitLocationId" asp-items="@ViewBag.UnitLocation" class="form-control select2bs4" id="UnitLocation" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Choose Unit--</option>
+                            </select>
+                            <span asp-validation-for="UnitLocationId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="UnitRequestManagerId">
+                            Request By
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="UnitRequestManagerId" asp-items="@ViewBag.RequestBy" class="form-control select2bs4" id="RequestBy" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Choose User--</option>
+                            </select>
+                            <span asp-validation-for="UnitRequestManagerId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="WarehouseLocationId">
+                            Warehouse Location
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="WarehouseLocationId" asp-items="@ViewBag.WarehouseLocation" class="form-control select2bs4" id="WarehouseLocation" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Choose Location--</option>
+                            </select>
+                            <span asp-validation-for="WarehouseLocationId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="WarehouseApprovalId">
+                            Warehouse Approval
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="WarehouseApprovalId" asp-items="@ViewBag.Approval" class="form-control select2bs4" id="WarehouseApproval" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Choose User--</option>
+                            </select>
+                            <span asp-validation-for="WarehouseApprovalId" class="error"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-default">
+                    <div class="card-header bg-cyan">
+                        <h3 class="card-title fw-bold" style="color:#ffffff">Item</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="card-body table-responsive p-0">
+                            <table id="tbldetailpr" class="table table-head-fixed text-nowrap table-bordered table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">No</div></th>
+                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Number</div></th>
+                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Name</div></th>
+                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Supplier</div></th>
+                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Measure</div></th>
+                                        <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff">Qty</div></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.WarehouseRequestDetails.Count; i++)
+                                    {
+                                        var no = (Model.WarehouseRequestDetails.Count - Model.WarehouseRequestDetails.Count) + i + 1;
+
+                                        <tr id="R$@no" class="detailProduct">
+                                            <td class="row-index text-center"><p>@no</p></td>
+                                            <td class="text-left row-productNumber"><input class="detProductNumber" asp-for="@Model.WarehouseRequestDetails[i].ProductNumber" type="hidden" value="@Model.WarehouseRequestDetails[i].ProductNumber">@Model.WarehouseRequestDetails[i].ProductNumber</td>
+                                            <td class="text-left row-productName"><input class="detProductName" asp-for="@Model.WarehouseRequestDetails[i].ProductName" type="hidden" value="@Model.WarehouseRequestDetails[i].ProductName">@Model.WarehouseRequestDetails[i].ProductName</td>
+                                            <td class="text-left"><input class="detSupplier" asp-for="@Model.WarehouseRequestDetails[i].Supplier" type="hidden" value="@Model.WarehouseRequestDetails[i].Supplier">@Model.WarehouseRequestDetails[i].Supplier</td>
+                                            <td class="text-left"><input class="detMeasurement" asp-for="@Model.WarehouseRequestDetails[i].Measurement" type="hidden" value="@Model.WarehouseRequestDetails[i].Measurement">@Model.WarehouseRequestDetails[i].Measurement</td>
+                                            <td class="text-center row-qty"><input class="detqty" asp-for="@Model.WarehouseRequestDetails[i].Qty" type="hidden" value="@Model.WarehouseRequestDetails[i].Qty">@Model.WarehouseRequestDetails[i].Qty</td>                                            
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <th colspan="5" class="text-right">Total Qty</th>
+                                        <td id="producttotalqty" class="text-center productTotalQty">@Model.QtyTotal</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- start button footer -->
+                <div class="card card-orange">
+                    <div class="card-body">
+                        @if (Model.Status == "Process")
+                        {
+                            <a class="btn btn-success" asp-action="TransferUnit" asp-controller="WarehouseRequest" asp-area="Warehouse" asp-route-id="@Model.WarehouseRequestId">Process Transfer</a>
+                            @*<a class="btn bg-indigo" asp-action="PrintWarehouseRequest" asp-controller="WarehouseRequest" asp-area="Warehouse" asp-route-id="@Model.WarehouseRequestId"><i class="fas fa-print" style="color:white"></i></a>*@
+                            <a class="btn btn-default" asp-action="Index" asp-controller="WarehouseRequest">Batal</a>
+                        }
+                        else
+                        {
+                            @*<a class="btn bg-indigo" asp-action="PrintWarehouseRequest" asp-controller="WarehouseRequest" asp-area="Warehouse" asp-route-id="@Model.WarehouseRequestId"><i class="fas fa-print" style="color:white"></i></a>*@
+                            <a class="btn btn-default" asp-action="Index" asp-controller="WarehouseRequest">Batal</a>
+                        }
+                    </div>
+                </div>
+                <!-- /.end button footer -->
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Gagal Simpan", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->
+@section Scripts {   
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+        })
+    </script>
+}

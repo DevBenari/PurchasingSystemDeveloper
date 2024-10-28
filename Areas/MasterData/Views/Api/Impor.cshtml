@@ -1,0 +1,83 @@
+﻿@{
+    ViewData["Title"] = "Impor Data";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+@using Microsoft.AspNetCore.Identity;
+@using PurchasingSystemDeveloper.Areas.MasterData.Models;
+@using PurchasingSystemDeveloper.Models;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model IEnumerable<Product>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <div class="card-header bg-cyan">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewData["Title"]</h3>
+            </div>
+            <div class="card-body table-responsive p-0">
+                <form enctype="multipart/form-data" asp-controller="Api" asp-action="CreateProduct" method="post">
+                    <table class="table table-hover table-head-fixed text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Create DateTime</th>
+                                <th>Created By</th>
+                                <th>Product ID</th>
+                                <th>Product Code</th>
+                                <th>Product Name</th>
+                                <th>Principal ID</th>
+                                <th>Category ID</th>
+                                <th>Measurement ID</th>
+                                <th>Discount ID</th>
+                                <th>Min Stock</th>
+                                <th>Max Stock</th>
+                                <th>Buffer Stock</th>
+                                <th>Stock</th>
+                                <th>COGS</th>
+                                <th>Buy Price</th>
+                                <th>Retail Price</th>
+                                <th>Storage Location</th>
+                                <th>Rack Number</th>
+                                <th>Note</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int i = 1;
+                            }
+                            @foreach (var product in Model)
+                            {
+                                <tr>
+                                    <td>@(i)</td> <!-- Untuk menampilkan nomor urut -->
+                                    <td>@product.CreateDateTime.ToString("g")</td>
+                                    <td>@product.CreateBy</td>
+                                    <td>@product.ProductId</td>
+                                    <td>@product.ProductCode</td>
+                                    <td>@product.ProductName</td>
+                                    <td>@product.SupplierId</td>
+                                    <td>@product.CategoryId</td>
+                                    <td>@product.MeasurementId</td>
+                                    <td>@product.DiscountId</td>
+                                    <td>@product.MinStock</td>
+                                    <td>@product.MaxStock</td>
+                                    <td>@product.BufferStock</td>
+                                    <td>@product.Stock</td>
+                                    <td>@product.Cogs</td>
+                                    <td>@product.BuyPrice</td>
+                                    <td>@product.RetailPrice</td>
+                                    <td>@product.StorageLocation</td>
+                                    <td>@product.RackNumber</td>
+                                    <td>@product.Note</td>
+                                    <td>@Math.Truncate(@product.RetailPrice)</td>
+                                </tr>
+                                i++;
+                            }
+                        </tbody>
+                    </table>
+                    <button type="submit" class="btn btn-primary">Kirim</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>

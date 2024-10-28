@@ -1,0 +1,923 @@
+﻿@{
+    ViewData["Title"] = "Detail Purchase Request";
+    Layout = "~/Views/Shared/_TopNavbarPurchaseRequest.cshtml";
+}
+
+@using Microsoft.AspNetCore.Identity;
+@using PurchasingSystemDeveloper.Areas.Order.Models;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model PurchasingSystemDeveloper.Areas.Order.Models.PurchaseRequest
+
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <div class="card-header bg-cyan">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+            </div>
+
+            <form enctype="multipart/form-data" asp-controller="PurchaseRequest" asp-action="DetailPurchaseRequest" method="post" class="form-horizontal">
+                <div class="card-body">
+                    <input asp-for="PurchaseRequestId" type="hidden" />
+                    <input asp-for="Status" id="Status" type="hidden">
+                    <input asp-for="UserAccessId" id="UserAccessId" type="hidden">
+                    <input asp-for="ExpiredDate" id="ExpiredDate" type="hidden">
+
+                    @if (signInManager.IsSignedIn(User))
+                    {
+                        <input asp-for="@User.Identity.Name" class="form-control" type="hidden">
+                    }
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="PurchaseRequestNumber">PR Number</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="PurchaseRequestNumber" class="form-control form-control-border border-width-2" id="purchaserequestnumber" placeholder="Nomor PR" readonly disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="UserApprove1Id">
+                            Approve 1
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="UserApprove1Id" asp-items="@ViewBag.Approval" class="form-control select2bs4" id="UserApprove1List" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Choose User--</option>
+                            </select>                          
+                            <div class="col-sm-12">
+                                <label asp-for="MessageApprove1" class="col-form-label text-success">Note : @Html.DisplayFor(x => x.MessageApprove1)</label>
+                            </div>
+                            <span asp-validation-for="UserApprove1Id" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="UserApprove2Id">
+                            Approve 2
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="UserApprove2Id" asp-items="@ViewBag.Approval" class="form-control select2bs4" id="UserApprove2List" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Choose User--</option>
+                            </select>
+                            <div class="col-sm-12">
+                                <label asp-for="MessageApprove2" class="col-form-label text-success">Note : @Html.DisplayFor(x => x.MessageApprove2)</label>
+                            </div>
+                            <span asp-validation-for="UserApprove2Id" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="UserApprove3Id">
+                            Approve 3
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="UserApprove3Id" asp-items="@ViewBag.Approval" class="form-control select2bs4" id="UserApprove3List" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Choose User--</option>
+                            </select>
+                            <div class="col-sm-12">
+                                <label asp-for="MessageApprove3" class="col-form-label text-success">Note : @Html.DisplayFor(x => x.MessageApprove3)</label>
+                            </div>
+                            <span asp-validation-for="UserApprove3Id" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="TermOfPaymentId">
+                            Term Of Payment
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="TermOfPaymentId" asp-items="@ViewBag.TermOfPayment" class="form-control select2bs4" id="TermOfPaymentId" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Choose TOP--</option>
+                            </select>
+                            <span asp-validation-for="TermOfPaymentId" class="error"></span>
+                        </div>
+                    </div>                   
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="Note">Note</label>
+                        <div class="col-sm-10">
+                            <input type="text" autocomplete="off" asp-for="Note" class="form-control form-control-border border-width-2" id="Note" placeholder="Note" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-default">
+                    <div class="card-header bg-cyan">
+                        <h3 class="card-title fw-bold" style="color:#ffffff">Item</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        @if (Model.ApproveStatusUser1 == null)
+                        {
+                            <div class="form-group row" id="inputProduct">
+                                <div class="col-sm-5">
+                                    <span>Search Product</span>
+                                    <div class="form-group">
+                                        <select asp-items="@ViewBag.Product" class="form-control select2bs4" style="width: 100%;" id="produklist" data-placeholder="--Choose Product--">
+                                            <option value="" hidden disabled selected>--Choose Product--</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-1">
+                                    <span>Qty</span>
+                                    <input autocomplete="off" class="form-control" type="number" pattern="/^-?\d+\.?\d*$/" onKeyUp="qtyInput(this.value)" onKeyPress="if(this.value.length==4) return false;" min="1" max="1000" id="qty" placeholder="Qty">
+                                    <span class="error">Required !</span>
+                                </div>
+                                <div class="col-sm-2">
+                                    <span>&nbsp;</span>
+                                    <div class="form-group">
+                                        @if (signInManager.IsSignedIn(User))
+                                        {
+                                            <a class="btn bg-indigo" id="btnAdd">
+                                                <div style="color:#ffffff">Add to Table</div>
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-sm-1">
+                                    <span>Min Stock</span>
+                                    <input autocomplete="off" class="form-control" id="minstock" type="text" placeholder="Min Stock" readonly>
+                                </div>
+                                <div class="col-sm-1">
+                                    <span>Max Stock</span>
+                                    <input autocomplete="off" class="form-control" id="maxstock" type="text" placeholder="Max Stock" readonly>
+                                </div>
+                                <div class="col-sm-2">
+                                    <span>Buffer Stock</span>
+                                    <input autocomplete="off" class="form-control" id="bufferstock" type="text" placeholder="Buffer Stock" readonly>
+                                </div>
+                            </div>
+                            <div class="form-group row" id="descriptionProduct">
+                                <div class="col-sm-2">
+                                    <span>Product Number</span>
+                                    <input autocomplete="off" class="form-control" id="productnumber" placeholder="Product Number" readonly>
+                                    <span class="error">Required !</span>
+                                </div>
+                                <div class="col-sm-4">
+                                    <span>Product Name</span>
+                                    <input autocomplete="off" class="form-control" id="productname" placeholder="Product Name" readonly>
+                                    <span class="error">Required !</span>
+                                </div>
+                                <div class="col-sm-1">
+                                    <span>Stock</span>
+                                    <input autocomplete="off" class="form-control" id="stock" placeholder="Stock" readonly>
+                                    <span class="error">Required !</span>
+                                </div>
+                                <div class="col-sm-3">
+                                    <span>Supplier</span>
+                                    <input autocomplete="off" class="form-control" id="Supplier" placeholder="Supplier" readonly>
+                                    <span class="error">Required !</span>
+                                </div>
+                                <div class="col-sm-2" >
+                                    <span>Measure</span>
+                                    <input autocomplete="off" class="form-control" id="measure" placeholder="Measure" readonly>
+                                    <span class="error">Required !</span>
+                                </div>
+                                <div class="col-sm-1" hidden>
+                                    <span>Discount</span>
+                                    <input autocomplete="off" class="form-control" id="discount" placeholder="Discount" hidden readonly>
+                                    <span class="error">Required !</span>
+                                </div>
+                                <div class="col-sm-2" hidden>
+                                    <span>Price</span>
+                                    <input autocomplete="off" class="form-control" id="price" placeholder="Price" hidden readonly>
+                                    <span class="error">Required !</span>
+                                </div>
+                            </div>
+
+                            <div class="card-body table-responsive p-0">
+                                <table id="tbldetailpr" class="table table-head-fixed text-nowrap table-bordered table-hover table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">No</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Number</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Name</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Supplier</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Measure</div></th>
+                                            <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff">Qty</div></th>
+                                            <th class="text-right" style="background-color:#7FB9EE" hidden><div style="color:#ffffff">Price</div></th>
+                                            <th class="text-right" style="background-color:#7FB9EE" hidden><div style="color:#ffffff">Discount</div></th>
+                                            <th class="text-right" style="background-color:#7FB9EE" hidden><div style="color:#ffffff">Sub Total</div></th>
+                                            <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff"></div></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < Model.PurchaseRequestDetails.Count; i++)
+                                        {
+                                            var no = (Model.PurchaseRequestDetails.Count - Model.PurchaseRequestDetails.Count) + i + 1;
+
+                                            <tr id="R$@no" class="detailProduct">
+                                                <td class="row-index text-center"><p>@no</p></td>
+                                                <td class="text-left row-productNumber"><input class="detProductNumber" asp-for="@Model.PurchaseRequestDetails[i].ProductNumber" type="hidden" value="@Model.PurchaseRequestDetails[i].ProductNumber">@Model.PurchaseRequestDetails[i].ProductNumber</td>
+                                                <td class="text-left row-productName"><input class="detProductName" asp-for="@Model.PurchaseRequestDetails[i].ProductName" type="hidden" value="@Model.PurchaseRequestDetails[i].ProductName">@Model.PurchaseRequestDetails[i].ProductName</td>
+                                                <td class="text-left row-Supplier"><input class="detSupplier" asp-for="@Model.PurchaseRequestDetails[i].Supplier" type="hidden" value="@Model.PurchaseRequestDetails[i].Supplier">@Model.PurchaseRequestDetails[i].Supplier</td>
+                                                <td class="text-left"><input class="detMeasurement" asp-for="@Model.PurchaseRequestDetails[i].Measurement" type="hidden" value="@Model.PurchaseRequestDetails[i].Measurement">@Model.PurchaseRequestDetails[i].Measurement</td>
+                                                <td class="text-center row-qty"><input class="detQty" asp-for="@Model.PurchaseRequestDetails[i].Qty" type="hidden" value="@Model.PurchaseRequestDetails[i].Qty">@Model.PurchaseRequestDetails[i].Qty</td>
+                                                <td class="text-right" hidden><input class="detPrice" asp-for="@Model.PurchaseRequestDetails[i].Price" type="hidden" value="@Model.PurchaseRequestDetails[i].Price">@Model.PurchaseRequestDetails[i].Price</td>
+                                                <td class="text-right" hidden><input class="detDiscount" asp-for="@Model.PurchaseRequestDetails[i].Discount" type="hidden" value="@Model.PurchaseRequestDetails[i].Discount">@Model.PurchaseRequestDetails[i].Discount</td>
+                                                <td class="text-right row-total" hidden><input class="detSubTotal" asp-for="@Model.PurchaseRequestDetails[i].SubTotal" type="hidden" value="@Model.PurchaseRequestDetails[i].SubTotal">@Model.PurchaseRequestDetails[i].SubTotal</td>
+                                                <td class="text-center"><button class="btn btn-danger btn-sm">X</button></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="5" class="text-right">Total Qty</th>
+                                            <td id="producttotalqty" class="text-center productTotalQty">@Model.QtyTotal</td>
+                                            <th colspan="2" class="text-right" hidden>Grand Total</th>
+                                            <td id="productgrandtotal" class="text-right productGrandTotal" hidden>@Math.Truncate(@Model.GrandTotal)</td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        }                        
+                        else
+                        { 
+                            <div class="card-body table-responsive p-0">
+                                <table id="tbldetailpr" class="table table-head-fixed text-nowrap table-bordered table-hover table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">No</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Number</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Name</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Supplier</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Measure</div></th>
+                                            <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff">Qty</div></th>
+                                            <th class="text-right" style="background-color:#7FB9EE" hidden><div style="color:#ffffff">Price</div></th>
+                                            <th class="text-right" style="background-color:#7FB9EE" hidden><div style="color:#ffffff">Discount</div></th>
+                                            <th class="text-right" style="background-color:#7FB9EE" hidden><div style="color:#ffffff">Sub Total</div></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < Model.PurchaseRequestDetails.Count; i++)
+                                        {
+                                            var no = (Model.PurchaseRequestDetails.Count - Model.PurchaseRequestDetails.Count) + i + 1;
+
+                                            <tr id="R$@no" class="detailProduct">
+                                                <td class="row-index text-center"><p>@no</p></td>
+                                                <td class="text-left row-productNumber"><input class="detProductNumber" asp-for="@Model.PurchaseRequestDetails[i].ProductNumber" type="hidden" value="@Model.PurchaseRequestDetails[i].ProductNumber">@Model.PurchaseRequestDetails[i].ProductNumber</td>
+                                                <td class="text-left row-productName"><input class="detProductName" asp-for="@Model.PurchaseRequestDetails[i].ProductName" type="hidden" value="@Model.PurchaseRequestDetails[i].ProductName">@Model.PurchaseRequestDetails[i].ProductName</td>
+                                                <td class="text-left"><input class="detSupplier" asp-for="@Model.PurchaseRequestDetails[i].Supplier" type="hidden" value="@Model.PurchaseRequestDetails[i].Supplier">@Model.PurchaseRequestDetails[i].Supplier</td>
+                                                <td class="text-left"><input class="detMeasurement" asp-for="@Model.PurchaseRequestDetails[i].Measurement" type="hidden" value="@Model.PurchaseRequestDetails[i].Measurement">@Model.PurchaseRequestDetails[i].Measurement</td>
+                                                <td class="text-center row-qty"><input class="detQty" asp-for="@Model.PurchaseRequestDetails[i].Qty" type="hidden" value="@Model.PurchaseRequestDetails[i].Qty">@Model.PurchaseRequestDetails[i].Qty</td>
+                                                <td class="text-right" hidden><input class="detPrice" asp-for="@Model.PurchaseRequestDetails[i].Price" type="hidden" value="@Model.PurchaseRequestDetails[i].Price">@Model.PurchaseRequestDetails[i].Price</td>
+                                                <td class="text-right" hidden><input class="detDiscount" asp-for="@Model.PurchaseRequestDetails[i].Discount" type="hidden" value="@Model.PurchaseRequestDetails[i].Discount">@Model.PurchaseRequestDetails[i].Discount</td>
+                                                <td class="text-right row-total" hidden><input class="detSubTotal" asp-for="@Model.PurchaseRequestDetails[i].SubTotal" type="hidden" value="@Model.PurchaseRequestDetails[i].SubTotal">@Model.PurchaseRequestDetails[i].SubTotal</td>                                                
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="5" class="text-right">Total Qty</th>
+                                            <td id="producttotalqty" class="text-center productTotalQty">@Model.QtyTotal</td>
+                                            <th colspan="2" class="text-right" hidden>Grand Total</th>
+                                            <td id="productgrandtotal" class="text-right productGrandTotal" hidden>@Math.Truncate(@Model.GrandTotal)</td>                                            
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        }
+                        @* else
+                        {
+                            <div class="card-body table-responsive p-0">
+                                <table id="tbldetailpr" class="table table-head-fixed text-nowrap table-bordered table-hover table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">No</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Number</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Name</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Supplier</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Measure</div></th>
+                                            <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff">Qty</div></th>
+                                            <th class="text-right" style="background-color:#7FB9EE" hidden><div style="color:#ffffff">Price</div></th>
+                                            <th class="text-right" style="background-color:#7FB9EE" hidden><div style="color:#ffffff">Discount</div></th>
+                                            <th class="text-right" style="background-color:#7FB9EE" hidden><div style="color:#ffffff">Sub Total</div></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < Model.PurchaseRequestDetails.Count; i++)
+                                        {
+                                            var no = (Model.PurchaseRequestDetails.Count - Model.PurchaseRequestDetails.Count) + i + 1;
+
+                                            <tr id="R$@no" class="detailProduct">
+                                                <td class="row-index text-center"><p>@no</p></td>
+                                                <td class="text-left row-productNumber"><input class="detProductNumber" asp-for="@Model.PurchaseRequestDetails[i].ProductNumber" type="hidden" value="@Model.PurchaseRequestDetails[i].ProductNumber">@Model.PurchaseRequestDetails[i].ProductNumber</td>
+                                                <td class="text-left row-productName"><input class="detProductName" asp-for="@Model.PurchaseRequestDetails[i].ProductName" type="hidden" value="@Model.PurchaseRequestDetails[i].ProductName">@Model.PurchaseRequestDetails[i].ProductName</td>
+                                                <td class="text-left"><input class="detSupplier" asp-for="@Model.PurchaseRequestDetails[i].Supplier" type="hidden" value="@Model.PurchaseRequestDetails[i].Supplier">@Model.PurchaseRequestDetails[i].Supplier</td>
+                                                <td class="text-left"><input class="detMeasurement" asp-for="@Model.PurchaseRequestDetails[i].Measurement" type="hidden" value="@Model.PurchaseRequestDetails[i].Measurement">@Model.PurchaseRequestDetails[i].Measurement</td>
+                                                <td class="text-center row-qty"><input class="detQty" asp-for="@Model.PurchaseRequestDetails[i].Qty" type="hidden" value="@Model.PurchaseRequestDetails[i].Qty">@Model.PurchaseRequestDetails[i].Qty</td>
+                                                <td class="text-right" hidden><input class="detPrice" asp-for="@Model.PurchaseRequestDetails[i].Price" type="hidden" value="@Model.PurchaseRequestDetails[i].Price">@Model.PurchaseRequestDetails[i].Price</td>
+                                                <td class="text-right" hidden><input class="detDiscount" asp-for="@Model.PurchaseRequestDetails[i].Discount" type="hidden" value="@Model.PurchaseRequestDetails[i].Discount">@Model.PurchaseRequestDetails[i].Discount</td>
+                                                <td class="text-right row-total" hidden><input class="detSubTotal" asp-for="@Model.PurchaseRequestDetails[i].SubTotal" type="hidden" value="@Model.PurchaseRequestDetails[i].SubTotal">@Model.PurchaseRequestDetails[i].SubTotal</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="5" class="text-right">Total Qty</th>
+                                            <td id="producttotalqty" class="text-center productTotalQty">@Model.QtyTotal</td>
+                                            <th colspan="2" class="text-right" hidden>Grand Total</th>
+                                            <td id="productgrandtotal" class="text-right productGrandTotal" hidden>@Model.GrandTotal</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        } *@
+                    </div>
+                </div>
+
+                <!-- start button footer -->
+                <div class="card card-orange">
+                    <div class="card-body">
+                        @if (Model.ApproveStatusUser1 == null)
+                        {
+                            @****Perhatikan type nya jika submit akan berbeda hasil pada json, jadi pakai type button*@
+                            <input type="button" value="Save" id="submit" class="btn btn-primary bg-indigo float-left fw-bold">
+                            <a class="btn bg-indigo" id="btnubah">Change</a>
+                            <a class="btn bg-indigo" asp-action="PrintPurchaseRequest" asp-controller="PurchaseRequest" asp-area="Order" asp-route-id="@Model.PurchaseRequestId"><i class="fas fa-print" style="color:white"></i></a>
+                            <a class="btn btn-default" id="btnbatalubah">Cancel Change</a>
+                            <a class="btn btn-default" id="btnbatal" asp-action="Index" asp-controller="PurchaseRequest">Cancel</a>
+                        }
+                        @* else if (Model.Status == "Approve")
+                        {
+                            <a class="btn btn-success" asp-action="GeneratePurchaseOrder" asp-controller="PurchaseRequest" asp-area="Order" asp-route-id="@Model.PurchaseRequestId">Generate Purchase Order</a>
+                            <a class="btn bg-indigo" asp-action="PrintPurchaseRequest" asp-controller="PurchaseRequest" asp-area="Order" asp-route-id="@Model.PurchaseRequestId"><i class="fas fa-print" style="color:white"></i></a>
+                        <a class="btn btn-default" id="btnbatal" asp-action="Index" asp-controller="PurchaseRequest">Cancel</a>
+                        } *@
+                        else
+                        {
+                            <a class="btn bg-indigo" asp-action="PrintPurchaseRequest" asp-controller="PurchaseRequest" asp-area="Order" asp-route-id="@Model.PurchaseRequestId"><i class="fas fa-print" style="color:white"></i></a>
+                            <a class="btn btn-default" id="btnbatal" asp-action="Index" asp-controller="PurchaseRequest">Cancel</a>
+                        }
+                    </div>
+                </div>
+                <!-- /.end button footer -->
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Gagal Simpan", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->
+@section Scripts {
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+        })
+    </script>
+
+    <script>
+        $(function () {
+            $("#submit").hide();
+            $("#btnbatalubah").hide();
+            $("#inputProduct").hide();
+            $("#descriptionProduct").hide();
+            $(".btn-sm").hide();
+
+            $("#btnubah").click(function () {
+                $("#btnubah").hide();
+                $("#btnbatal").hide();
+                $("#submit").show();
+                $("#btnbatalubah").show();
+                $("#inputProduct").show();
+                $("#descriptionProduct").show();
+                $(".btn-sm").show();
+                $("#produklist").show();
+                $("#qty").show();
+
+                document.getElementById("purchaserequestnumber").disabled = false;
+                document.getElementById("UserApprove1List").disabled = true;
+                document.getElementById("UserApprove2List").disabled = true;
+                document.getElementById("UserApprove3List").disabled = true;
+                document.getElementById("TermOfPaymentId").disabled = true;
+                document.getElementById("Note").disabled = false;
+                document.getElementById("produklist").disabled = false;
+                document.getElementById("qty").disabled = false;
+            })
+
+            $("#btnbatalubah").click(function () {
+                $("#btnubah").show();
+                $("#btnbatal").show();
+                $("#submit").hide();
+                $("#btnbatalubah").hide();
+                $("#inputProduct").hide();
+                $("#descriptionProduct").hide();
+                $(".btn-sm").hide();
+
+                document.getElementById("purchaserequestnumber").disabled = true;
+                document.getElementById("UserApprove1List").disabled = true;
+                document.getElementById("UserApprove2List").disabled = true;
+                document.getElementById("UserApprove3List").disabled = true;
+                document.getElementById("TermOfPaymentId").disabled = true;
+                document.getElementById("Note").disabled = true;
+                document.getElementById("produklist").disabled = true;
+                document.getElementById("qty").disabled = true;
+            })
+        })
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $("#produklist").change(function () {
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("LoadProduk")',
+                    dataType: 'json',
+                    data: { id: $("#produklist").val() },
+                    success: function (item) {
+                        $.each(item, function () {
+                            //Hidden
+                            $("#minstock").val(item.minStock);
+                            $("#maxstock").val(item.maxStock);
+                            $("#bufferstock").val(item.bufferStock);
+
+                            $("#productnumber").val(item.productCode);
+                            $("#productname").val(item.productName);
+                            $("#stock").val(item.stock);
+                            $("#Supplier").val(item.supplier.supplierName);
+                            $("#measure").val(item.measurement.measurementName);
+                            $("#discount").val(item.discount.discountValue);
+                            $("#price").val(item.buyPrice);
+                        });
+                    },
+                    error: function (ex) {
+                        alert('Please wait until the data..., ' + ex);
+                    }
+                });
+                return false;
+            })
+        })
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $("#produklist").change(function () {
+                $("#qty").val('1').focus();
+            });
+        });
+    </script>
+
+    <script>
+        function qtyInput(qtySpecial) {
+            var qtySpecial = qtySpecial.replace(/[^0-9]+/g, "");
+            document.getElementById("qty").value = "";
+            document.getElementById("qty").value = qtySpecial;
+        };
+    </script>
+
+    <script>
+        var emptyRow = "<tr><td colspan='10' class='text-center'> No data available in table</td></tr>";
+
+        $(document).ready(function () {
+            var detailItem = []
+            var detail = {};
+
+            var detailName = document.getElementsByClassName("row-productNumber");
+            var detailSupplier = document.getElementsByClassName("row-Supplier");
+            var detailNameProduct = document.getElementsByClassName("row-productName");
+
+            $('#qty').keypress(function (e) {
+                if (e.keyCode == 13) {
+                    e.preventDefault();
+                    swal({
+                        title: "Warning",
+                        text: "Please, click the Add to Table",
+                        type: "warning"
+                    });
+                }
+            });
+
+            //Add button click function
+            $('#btnAdd').click(function () {
+                var qtyInputan = parseInt($('#qty').val());
+                var qtyTersedia = parseInt($('#stock').val());
+                var qtyBufferStock = parseInt($('#bufferstock').val());
+                var qtyMinStock = parseInt($('#minstock').val());
+                var qtyMaxStock = parseInt($('#maxstock').val());
+                var qtyOrder = qtyMaxStock - qtyMinStock;
+
+                if (qtyInputan <= qtyOrder) {
+                    if (detailItem.length >= 0) {
+                        var isValidItem = true;
+                        if ($('#productnumber').val().trim() == '') {
+                            isValidItem = false;
+                            $('#productnumber').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#productnumber').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        if ($('#productname').val().trim() == '') {
+                            isValidItem = false;
+                            $('#productname').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#productname').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        if ($('#measure').val().trim() == '') {
+                            isValidItem = false;
+                            $('#measure').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#measure').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        if ($('#Supplier').val().trim() == '') {
+                            isValidItem = false;
+                            $('#Supplier').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#Supplier').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        if (!($('#qty').val().trim() != '' && !isNaN($('#qty').val().trim()))) {
+                            isValidItem = false;
+                            $('#qty').siblings('span.error').css('visibility', 'visible');
+                            $("#qty").val('').focus();
+                        } else {
+                            $('#qty').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        if ($('#price').val().trim() == '') {
+                            isValidItem = false;
+                            $('#price').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#price').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        if ($('#discount').val().trim() == '') {
+                            isValidItem = false;
+                            $('#discount').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#discount').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        //Add Item to List if Valid
+                        if (isValidItem) {
+
+                            var productNumber = $('#productnumber').val().trim();
+                            var productName = $('#productname').val().trim();
+                            var supplier = $('#Supplier').val().trim();
+                            var measurement = $('#measure').val().trim();
+                            var qty = parseInt($('#qty').val().trim());
+                            var price = parseFloat($('#price').val().trim());
+                            var discount = (parseInt($('#qty').val().trim()) * parseFloat($('#price').val().trim())) * (parseInt($('#discount').val().trim()) / 100);
+                            var total = (parseInt($('#qty').val().trim()) * parseFloat($('#price').val().trim())) - (parseInt($('#qty').val().trim()) * parseFloat($('#price').val().trim())) * (parseInt($('#discount').val().trim()) / 100);
+
+                            if ($('#tbldetailpr tbody').children().children().length == 1) {
+                                $('#tbldetailpr tbody').html('');
+                            }
+                            var no = $('#tbldetailpr tbody').children().length + 1;
+                            //var no = 0;
+                            var dynamicName = '<tr><td>' + productName + '</td></tr>'
+
+                            //create dynamic html string
+                            //var checkDuplicate = detailName.find(dataName);
+                            let i;
+                            for (i = 0; i <= detailName.length; i++) {
+                                if (detailName.length == 0) {
+                                    checkDuplicate = undefined;
+                                }
+                                else if (detailName.length > 0 && detailName[i] != undefined) 
+                                {
+                                    if (detailName[i].innerText != productNumber && detailSupplier[i].innerText == supplier) {
+                                        checkDuplicate = undefined;
+                                    }
+                                    else if (detailName[i].innerText != productNumber && detailSupplier[i].innerText != supplier) {
+                                        swal({
+                                            title: "Warning",
+                                            text: "Sorry, supplier " + supplier + " different from previous supplier",
+                                            type: "warning"
+                                        });
+
+                                        $('#produklist').select2('val', 'selectedIndex', 0);
+                                        $("#produklist").data('placeholder');
+                                        $("#productnumber,#productname,#stock,#Supplier,#measure,#qty,#price,#discount,#minstock,#maxstock,#bufferstock").val('');
+                                        return;
+                                    }
+                                    else {
+                                        swal({
+                                            title: "Warning",
+                                            text: "Sorry, " + detailNameProduct[i].innerText + " Already exist",
+                                            type: "warning"
+                                        });
+
+                                        $('#produklist').select2('val', 'selectedIndex', 0);
+                                        $("#produklist").data('placeholder');
+                                        $("#productnumber,#productname,#stock,#Supplier,#measure,#qty,#price,#discount,#minstock,#maxstock,#bufferstock").val('');
+                                        return;
+                                    }
+                                }
+                            }
+
+                            function dataName(proName) {
+                                return proName == dynamicName;
+                            }
+
+                            if (checkDuplicate == undefined) {
+                                //var dynamicTr = `<tr id="R${no}"><td class="row-index text-center"><p>${no}</p></td><td class="text-center">${productNumber}</td><td class="text-left row-productName">${productName}</td><td class="text-left">${Supplier}</td><td class="text-center">${measurement}</td><td class="text-center row-qty">${qty}</td><td class="text-right">${price}</td><td class="text-right">${discount}</td><td class="text-right row-total">${total}</td><td class="text-center"> <button class="btn btn-danger btn-sm">-</button> </td></tr>`;
+                                var dynamicTr = `@for (int i = 0; i < 1; i++){
+                                            <tr id="R${no}" class="detailProduct">
+                                            <td class="row-index text-center"><p>${no}</p></td>
+                                            <td class="text-left row-productNumber"><input class="detProductNumber" asp-for="@Model.PurchaseRequestDetails[i].ProductNumber" type="hidden" value="${productNumber}">${productNumber}</td>
+                                            <td class="text-left row-productName"><input class="detProductName" asp-for="@Model.PurchaseRequestDetails[i].ProductName" type="hidden" value="${productName}">${productName}</td>
+                                            <td class="text-left row-Supplier"><input class="detSupplier" asp-for="@Model.PurchaseRequestDetails[i].Supplier" type="hidden" value="${supplier}">${supplier}</td>
+                                            <td class="text-left"><input class="detMeasurement" asp-for="@Model.PurchaseRequestDetails[i].Measurement" type="hidden" value="${measurement}">${measurement}</td>
+                                            <td class="text-center row-qty"><input class="detQty" asp-for="@Model.PurchaseRequestDetails[i].Qty" type="hidden" value="${qty}">${qty}</td>
+                                            <td class="text-right" hidden><input class="detPrice" asp-for="@Model.PurchaseRequestDetails[i].Price" type="hidden" value="${price}">${price}</td>
+                                            <td class="text-right" hidden><input class="detDiscount" asp-for="@Model.PurchaseRequestDetails[i].Discount" type="hidden" value="${discount}">${discount}</td>
+                                            <td class="text-right row-total" hidden><input class="detSubTotal" asp-for="@Model.PurchaseRequestDetails[i].SubTotal" type="hidden" value="${total}">${total}</td>
+                                            <td class="text-center"> <button class="btn btn-danger btn-sm">X</button> </td></tr>}`;
+
+                                $('#tbldetailpr tbody').append(dynamicTr);
+
+                                detailItem.push(dynamicTr);
+
+                                sumQty();
+                                sumGranTotal();
+
+                                $('#produklist').select2('val', 'selectedIndex', 0);
+                                $("#produklist").data('placeholder');
+                                $("#productnumber,#productname,#stock,#Supplier,#measure,#qty,#price,#discount,#minstock,#maxstock,#bufferstock").val('');
+
+                                $('.btn-sm').click(function () {
+                                    var child = $(this).closest('tr').nextAll();
+
+                                    child.each(function () {
+                                        var id = $(this).attr('id');
+                                        if (id.length > 2) {
+                                            var idx = $(this).children('.row-index').children('p');
+                                            var dig = parseInt(id.substring(2));
+                                            idx.html(`${dig - 1}`);
+                                            $(this).attr('id', `R${dig - 1}`);
+                                        } else {
+                                            var idx = $(this).children('.row-index').children('p');
+                                            var dig = parseInt(id.substring(1));
+                                            idx.html(`${dig - 1}`);
+                                            $(this).attr('id', `R${dig - 1}`);
+                                        }
+
+                                    });
+
+                                    $(this).closest('tr').remove();
+
+                                    swal({
+                                        title: "Item berhasil dihapus",
+                                        type: "success"
+                                    });
+
+                                    if ($('#tbldetailpr tbody').children().children().length == 0) {
+                                        $('#tbldetailpr tbody').append(emptyRow);
+                                        sumQty();
+                                        sumGranTotal();
+                                    } else {
+                                        sumQty();
+                                        sumGranTotal();
+                                    }
+
+                                });
+                            } else {
+                                $('#errorDisplay').siblings('span.error').css('visibility', 'visible');
+                                return;
+                            }
+
+                            function sumQty() {
+                                var sumQty = parseInt(0);
+                                var getTotalQty = document.getElementsByClassName("row-qty");
+                                for (var i = 0; i < getTotalQty.length; i++) {
+                                    var totalqty = getTotalQty[i].innerText;
+                                    //var totalqty = getTotalQty[i].lastElementChild.defaultValue;
+                                    sumQty = sumQty + parseInt(totalqty);
+                                }
+                                $('.productTotalQty').text(sumQty);
+                            }
+
+                            function sumGranTotal() {
+                                var sumGrandTotal = parseInt(0);
+                                var getTotal = document.getElementsByClassName("row-total");
+                                for (var i = 0; i < getTotal.length; i++) {
+                                    var subtotal = getTotal[i].innerText;
+                                    sumGrandTotal = sumGrandTotal + parseFloat(subtotal);
+                                }
+                                $('.productGrandTotal').text(sumGrandTotal);
+                            }
+                        }
+                    }
+                } else if ($('#qty').val() == 0) {
+                    swal({
+                        title: "Warning",
+                        text: "Qty cannot be 0 !!!",
+                        type: "warning"
+                    });
+                    $('#produklist').select2('val', 'selectedIndex', 0);
+                    $("#produklist").data('placeholder');
+                    $("#productnumber,#productname,#stock,#Supplier,#measure,#qty,#price,#discount,#minstock,#maxstock,#bufferstock").val('');
+                } else if ($('#minstock').val() == 0) {
+                    swal({
+                        title: "Warning",
+                        text: "Sorry, Min Max Stock has not been determined !!!",
+                        type: "warning"
+                    });
+                    $('#produklist').select2('val', 'selectedIndex', 0);
+                    $("#produklist").data('placeholder');
+                    $("#productnumber,#productname,#stock,#Supplier,#measure,#qty,#price,#discount,#minstock,#maxstock,#bufferstock").val('');
+                } else {
+                    swal({
+                        title: "Warning",
+                        text: "Please input correctly !",
+                        type: "warning"
+                    });
+                    $('#produklist').select2('val', 'selectedIndex', 0);
+                    $("#produklist").data('placeholder');
+                    $("#productnumber,#productname,#stock,#Supplier,#measure,#qty,#price,#discount,#minstock,#maxstock,#bufferstock").val('');
+                }
+            });
+
+
+            //Delete Item
+            $('.btn-sm').click(function () {
+                var child = $(this).closest('tr').nextAll();
+
+                child.each(function () {
+                    var id = $(this).attr('id');
+                    if (id.length > 2) {
+                        var idx = $(this).children('.row-index').children('p');
+                        var dig = parseInt(id.substring(2));
+                        idx.html(`${dig - 1}`);
+                        $(this).attr('id', `R${dig - 1}`);
+                    } else {
+                        var idx = $(this).children('.row-index').children('p');
+                        var dig = parseInt(id.substring(1));
+                        idx.html(`${dig - 1}`);
+                        $(this).attr('id', `R${dig - 1}`);
+                    }
+
+                });
+
+                $(this).closest('tr').remove();
+
+                swal({
+                    title: "Item successfully deleted",
+                    type: "success"
+                });               
+
+                if ($('#tbldetailpr tbody').children().children().length == 0) {
+                    $('#tbldetailpr tbody').append(emptyRow);
+                } else {
+                    sumQty();
+                    sumGranTotal();
+                }
+
+                function sumQty() {
+                    var sumQty = parseInt(0);
+                    var getTotalQty = document.getElementsByClassName("row-qty");
+                    for (var i = 0; i < getTotalQty.length; i++) {
+                        var totalqty = getTotalQty[i].innerText;
+                        //var totalqty = getTotalQty[i].lastElementChild.defaultValue;
+                        sumQty = sumQty + parseInt(totalqty);
+                    }
+                    $('.productTotalQty').text(sumQty);
+                }
+
+                function sumGranTotal() {
+                    var sumGrandTotal = parseInt(0);
+                    var getTotal = document.getElementsByClassName("row-total");
+                    for (var i = 0; i < getTotal.length; i++) {
+                        var subtotal = getTotal[i].innerText;
+                        sumGrandTotal = sumGrandTotal + parseFloat(subtotal);
+                    }
+                    $('.productGrandTotal').text(sumGrandTotal);
+                }
+            });
+
+            //Save button click function
+            $('#submit').click(function () {
+                var isAllValid = true;
+                var detailItemDone = [];
+                var detailDone = {};
+                var detailTable = $('#tbldetailpr tbody').children().children().length;
+                var UserApprove1Id = $('#UserApprove1List').find(":selected").val();
+                var UserApprove2Id = $('#UserApprove2List').find(":selected").val();
+                var UserApprove3Id = $('#UserApprove3List').find(":selected").val();                
+
+                if (detailTable == 1) {
+                    swal({
+                        title: "Warning",
+                        text: "Sorry, items in the table cannot be empty",
+                        type: "warning"
+                    });
+                    isAllValid = false;
+                } else {
+                    $("#tbldetailpr").find("tbody").children("tr").each(function (index, element) {
+                        //***Penggunaan nama detail harus sesuai dengan nama pada table. Misal kodeproduk,namaproduk,dst harus sama.
+                        detailDone.productnumber = $(element).find(".detProductNumber").val();
+                        detailDone.productname = $(element).find(".detProductName").val();
+                        detailDone.supplier = $(element).find(".detSupplier").val();
+                        detailDone.measurement = $(element).find(".detMeasurement").val();
+                        detailDone.qty = $(element).find(".detQty").val();
+                        detailDone.price = $(element).find(".detPrice").val();
+                        detailDone.discount = $(element).find(".detDiscount").val();
+                        detailDone.subtotal = $(element).find(".detSubTotal").val();
+                        detailItemDone.push(detailDone);
+                        detailDone = {};
+                    });
+
+                    var PurchaseRequestNumber = $('#purchaserequestnumber').val();
+                    var ExpiredDate = $('#ExpiredDate').val();
+                    var UserAccessId = $('#UserAccessId').val();
+                    // var Department1Id = $('#Department1List').val();
+                    // var Position1Id = $('#Position1List').val();
+                    var UserApprove1Id = $('#UserApprove1List').val();
+                    // var Department1Id = $('#Department2List').val();
+                    // var Position1Id = $('#Position2List').val();
+                    var UserApprove2Id = $('#UserApprove2List').val();
+                    // var Department1Id = $('#Department3List').val();
+                    // var Position1Id = $('#Position3List').val();
+                    var UserApprove3Id = $('#UserApprove3List').val();
+                    var TermOfPaymentId = $('#TermOfPaymentId').val();
+                    var Status = $('#Status').val();
+                    var QtyTotal = $('.productTotalQty').text();
+                    var GrandTotal = $('.productGrandTotal').text();
+                    var Note = $('#Note').val();
+                    var PurchaseRequestDetail = detailItemDone;
+                }
+
+                if (isAllValid) {
+                    var dataPost = {};
+                    dataPost.PurchaseRequestNumber = PurchaseRequestNumber;
+                    dataPost.ExpiredDate = ExpiredDate;
+                    dataPost.UserAccessId = UserAccessId;
+                    // dataPost.Department1Id = Department1Id;
+                    // dataPost.Position1Id = Position1Id;
+                    dataPost.UserApprove1Id = UserApprove1Id;
+                    // dataPost.Department2Id = Department2Id;
+                    // dataPost.Position2Id = Position2Id;
+                    dataPost.UserApprove2Id = UserApprove2Id;
+                    // dataPost.Department3Id = Department3Id;
+                    // dataPost.Position3Id = Position3Id;
+                    dataPost.UserApprove3Id = UserApprove3Id;
+                    dataPost.TermOfPaymentId = TermOfPaymentId;
+                    dataPost.Status = Status;
+                    dataPost.QtyTotal = QtyTotal;
+                    dataPost.GrandTotal = GrandTotal;
+                    dataPost.Note = Note;
+                    dataPost.PurchaseRequestDetails = PurchaseRequestDetail;
+
+                    $(this).val('In process...');
+
+                    $.post("@Url.Action("DetailPurchaseRequest", "PurchaseRequest")", { model: dataPost },
+                        function (data) {
+                            window.location.href = data.redirectToUrl;
+                        }
+                    );
+                }
+            });
+        });
+    </script>
+
+    <style>
+        span.error {
+            display: block;
+            visibility: hidden;
+            color: red;
+            font-size: 90%;
+        }
+
+        tr.error {
+            background-color: rgba(255,0,0,0.35);
+        }
+
+        /*css for table*/
+        .container td {
+            vertical-align: top;
+        }
+
+        .tablecontainer table {
+            width: 100%;
+            border-collapse: collapse;
+            border-top: 1px solid #BFAEAE;
+            border-right: 1px solid #BFAEAE;
+        }
+
+        .tablecontainer th {
+            border-bottom: 2px solid #BFAEAE;
+        }
+
+        .tablecontainer th, .tablecontainer td {
+            text-align: center;
+            border-left: 1px solid #BFAEAE;
+            padding: 5px;
+            border-bottom: 1px solid #BFAEAE;
+        }
+
+        .ui-widget {
+            font-size: 12px !important;
+        }
+    </style>
+}

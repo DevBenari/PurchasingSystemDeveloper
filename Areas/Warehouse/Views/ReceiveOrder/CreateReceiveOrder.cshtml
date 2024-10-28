@@ -1,0 +1,596 @@
+﻿@{
+    ViewData["Title"] = "Add Receive Order";
+    Layout = "~/Views/Shared/_TopNavbarWarehouse.cshtml";
+}
+
+@using Microsoft.AspNetCore.Identity;
+@using PurchasingSystemDeveloper.Areas.Warehouse.Models;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model PurchasingSystemDeveloper.Areas.Warehouse.Models.ReceiveOrder
+
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <div class="card-header bg-cyan">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+            </div>
+
+            <form enctype="multipart/form-data" asp-controller="ReceiveOrder" asp-action="CreateReceiveOrder" method="post" class="form-horizontal">
+                <div class="card-body">
+                    @if (signInManager.IsSignedIn(User))
+                    {
+                        <input asp-for="@User.Identity.Name" class="form-control" type="hidden">
+                    }
+                    <input asp-for="ReceiveById" id="receivebyid" type="hidden">
+                    @Html.Hidden("purchaseOrderNumber", (object)ViewBag.POFilter)
+                    <input type="hidden" value="@ViewBag.POFilter" class="form-control form-control-border border-width-2" />
+                    <input asp-for="Status" id="status" value="Complete" type="hidden">
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="ReceiveOrderNumber">RO Number</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="ReceiveOrderNumber" class="form-control form-control-border border-width-2" id="receiveordernumber" placeholder="Nomor PR" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="PurchaseOrderId">
+                            PO Number
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="PurchaseOrderId" asp-items="@ViewBag.POFilter" class="form-control select2bs4" id="poList" style="width: 100%;">
+                                <option value="" hidden disabled selected>--Choose Purchase Order--</option>
+                            </select>
+                            <span asp-validation-for="PurchaseOrderId" class="error"></span>
+                        </div>
+                    </div>                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="Note">Note</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="Note" class="form-control form-control-border border-width-2" id="note" placeholder="Note">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-default">
+                    <div class="card-header bg-cyan">
+                        <h3 class="card-title fw-bold" style="color:#ffffff">Item</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <div class="form-group">
+                                    <select class="form-control select2bs4" style="width: 100%;" id="produklist" data-placeholder="--Choose Product Receive--">
+                                        <option value="" hidden disabled selected>--Choose Product Receive--</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-2">
+                                <input autocomplete="off" class="form-control row-QtyReceive" type="number" pattern="/^-?\d+\.?\d*$/" onKeyUp="qtyInput(this.value)" onKeyPress="if(this.value.length==6) return false;" min="1" max="1000" id="qtyreceive" placeholder="Qty Receive" disabled>
+                                <span class="error">Required !</span>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    @if (signInManager.IsSignedIn(User))
+                                    {
+                                        <a class="btn bg-indigo" id="btnAdd">
+                                            <div style="color:#ffffff">Add to Table</div>
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <span>Product Number</span>
+                                <input autocomplete="off" class="form-control" id="productnumber" placeholder="Product Number" readonly>
+                                <span class="error">Required !</span>
+                            </div>
+                            <div class="col-sm-4">
+                                <span>Product Name</span>
+                                <input autocomplete="off" class="form-control" id="productname" placeholder="Product Name" readonly>
+                                <span class="error">Required !</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <span>Measure</span>
+                                <input autocomplete="off" class="form-control" id="measure" placeholder="Measure" readonly>
+                                <span class="error">Required !</span>
+                            </div>
+                            <div class="col-sm-2">
+                                <span>Qty Order</span>
+                                <input autocomplete="off" class="form-control row-qtyorder" id="qtyorder" placeholder="Qty Order" readonly>
+                                <span class="error">Required !</span>
+                            </div>
+                        </div>
+
+                        <div class="card-body table-responsive p-0">
+                            <table id="tbldetailrcv" class="table table-head-fixed text-nowrap table-bordered table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">No</div></th>
+                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Number</div></th>
+                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Name</div></th>
+                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Measure</div></th>
+                                        <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff">Qty Order</div></th>
+                                        <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff">Qty Receive</div></th>
+                                        <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff"></th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- start button footer -->
+                <div class="card card-orange">
+                    <div class="card-body">
+                        @****Perhatikan type nya jika submit akan berbeda hasil pada json, jadi pakai type button*@
+                        <input type="button" value="Save" id="submit" class="btn btn-primary bg-indigo float-left fw-bold">
+                        <a class="btn btn-default" asp-action="Index" asp-controller="ReceiveOrder">Cancel</a>
+                    </div>
+                </div>
+                <!-- /.end button footer -->
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Failed", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->
+@section Scripts {
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+        })
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $("#poList").change(function () {
+                $("#produklist").empty();
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("LoadPurchaseOrder")',
+                    dataType: 'json',
+                    data: { id: $("#poList").val() },
+                    success: function (items) {
+                        $("#produklist").append('<option value = "' + -1 + '" hidden disabled selected>' + "--Choose Product Receive--" + '</option>');
+                        $.each(items.purchaseOrderDetails, function (id, value) {
+                            var $option = $("<option/>", {
+                                value: value.purchaseOrderDetailId,
+                                text: value.productName
+                            });
+                            $("#produklist").append($option);
+                        });
+                    },
+                    error: function (ex) {
+                        alert('Failed to get data' + ex);
+                    }
+                });
+                return false;
+            })
+        })
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $("#produklist").change(function () {
+                var optId = $(this).find('option:selected').attr('id')
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("LoadPurchaseOrderDetail")',
+                    dataType: 'json',
+                    data: { id: $("#produklist").val() },
+                    success: function (item) {
+                        $.each(item, function () {
+                            $("#productnumber").val(item.productNumber);
+                            $("#productname").val(item.productName);
+                            $("#measure").val(item.measurement);
+                            $("#qtyorder").val(item.qty);
+                            $("#qtyreceive").val(item.qty);
+                        });
+                    },
+                    error: function (ex) {
+                        alert('Failed to get data' + ex);
+                    }
+                });
+                return false;
+            })
+        })
+    </script>
+
+    @*<script>
+        $(document).ready(function () {
+            $("#produklist").change(function () {
+                $("#qtyreceive").val() = ;
+            });
+        });
+    </script>*@
+
+    <script>
+        function qtyInput(qtySpecial) {
+            var qtySpecial = qtySpecial.replace(/[^0-9]+/g, "");
+            document.getElementById("qtyreceive").value = "";
+            document.getElementById("qtyreceive").value = qtySpecial;
+        };
+    </script>
+
+    <script>
+        var emptyRow = "<tr><td colspan='10' class='text-center'> Data not available </td></tr>";
+
+        $(document).ready(function () {
+            $('#tbldetailrcv tbody').append(emptyRow);
+
+            var detailItem = []
+            var detail = {};
+
+            var detailName = document.getElementsByClassName("row-productNumber");
+            var detailNameProduct = document.getElementsByClassName("row-productName");
+
+            $('#qtyreceive').keypress(function (e) {
+                if (e.keyCode == 13) {
+                    e.preventDefault();
+                    swal({
+                        title: "Warning",
+                        text: "Please click the Add to Table",
+                        type: "warning"
+                    });
+                }
+            });
+
+            //var QtyReceive = document.getElementsByClassName("row-QtyReceive");
+            //var QtyOrder = document.getElementsByClassName("row-qtyorder");
+
+            //Add button click function
+            $('#btnAdd').click(function () {
+                var QtyReceive = parseInt($('#qtyreceive').val());
+                var QtyOrder = parseInt($('#qtyorder').val());
+
+                if (QtyReceive == QtyOrder) {
+                    if (detailName.length >= 0) {
+                        var isValidItem = true;
+                        if ($('#productnumber').val().trim() == '') {
+                            isValidItem = false;
+                            $('#productnumber').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#productnumber').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        if ($('#productname').val().trim() == '') {
+                            isValidItem = false;
+                            $('#productname').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#productname').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        if ($('#measure').val().trim() == '') {
+                            isValidItem = false;
+                            $('#measure').siblings('span.error').css('visibility', 'visible');
+                        } else {
+                            $('#measure').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        if (!($('#qtyorder').val().trim() != '' && !isNaN($('#qtyorder').val().trim()))) {
+                            isValidItem = false;
+                            $('#qtyorder').siblings('span.error').css('visibility', 'visible');
+                            $("#qtyorder").val('').focus();
+                        } else {
+                            $('#qtyorder').siblings('span.error').css('visibility', 'hidden');
+                        }
+
+                        //Add Item to List if Valid
+                        if (isValidItem) {
+
+                            var productNumber = $('#productnumber').val().trim();
+                            var productName = $('#productname').val().trim();
+                            var measurement = $('#measure').val().trim();
+                            var QtyOrder = parseInt($('#qtyorder').val().trim());
+                            var QtyReceive = parseInt($('#qtyreceive').val().trim());
+
+                            if ($('#tbldetailrcv tbody').children().children().length == 1) {
+                                $('#tbldetailrcv tbody').html('');
+                            }
+                            var no = $('#tbldetailrcv tbody').children().length + 1;
+                            //var no = 0;
+                            var dynamicName = '<tr><td>' + productName + '</td></tr>'
+
+                            //create dynamic html string
+                            let i;
+                            for (i = 0; i <= detailName.length; i++) {
+                                if (detailName.length == 0) {
+                                    checkDuplicate = undefined;
+                                }
+                                else if (detailName.length > 0 && detailName[i] != undefined) {
+                                    if (detailName[i].innerText != productNumber) {
+                                        checkDuplicate = undefined;
+                                    }
+                                    else {
+                                        swal({
+                                            title: "Warning",
+                                            text: "Product Name " + detailNameProduct[i].innerText + " Already exist",
+                                            type: "warning"
+                                        });
+
+                                        $("#productnumber, #productname, #stock, #principal, #measure, #qtyorder").val('');
+                                        $('#produklist').select2('val', 'selectedIndex', 0);
+                                        $("#produklist").data('placeholder');
+                                        $("#qtyreceive").val('');
+                                        return;
+                                    }
+                                }
+                            }
+
+                            function dataName(proName) {
+                                return proName == dynamicName;
+                            }
+
+
+
+                            if (checkDuplicate == undefined) {
+                                var dynamicTr =
+                                    `
+                                        <tr id="R${no}" class="detailProduct">
+                                        <td class="row-index text-center"><p>${no}</p></td>
+                                        <td class="text-left row-productNumber"><input class="detproductnumber" type="hidden" value="${productNumber}">${productNumber}</td>
+                                        <td class="text-left row-productName"><input class="detproductname" type="hidden" value="${productName}">${productName}</td>
+                                        <td class="text-left"><input class="detmeasure" type="hidden" value="${measurement}">${measurement}</td>
+                                        <td class="text-center"><input class="detdiorder" type="hidden" value="${QtyOrder}">${QtyOrder}</td>
+                                        <td class="text-center"><input class="detditerima" type="hidden" value="${QtyReceive}">${QtyReceive}</td>
+                                        <td class="text-center"> <button class="btn btn-danger btn-sm">X</button></td>
+                                        </tr>
+                                    `;
+
+                                $('#tbldetailrcv tbody').append(dynamicTr);
+
+                                detailItem.push(dynamicTr);
+
+                                $("#productnumber, #productname, #stock, #principal, #measure, #qtyorder").val('');
+                                $('#produklist').select2('val', 'selectedIndex', 0);
+                                $("#produklist").data('placeholder');
+                                $("#qtyreceive").val('');
+
+                                $('.btn-sm').click(function () {
+                                    var child = $(this).closest('tr').nextAll();
+
+                                    child.each(function () {
+                                        var id = $(this).attr('id');
+                                        if (id.length > 2) {
+                                            var idx = $(this).children('.row-index').children('p');
+                                            var dig = parseInt(id.substring(2));
+                                            idx.html(`${dig - 1}`);
+                                            $(this).attr('id', `R${dig - 1}`);
+                                        } else {
+                                            var idx = $(this).children('.row-index').children('p');
+                                            var dig = parseInt(id.substring(1));
+                                            idx.html(`${dig - 1}`);
+                                            $(this).attr('id', `R${dig - 1}`);
+                                        }
+                                    });
+                                   
+                                    $(this).closest('tr').remove();
+
+                                    swal({
+                                        title: "Item successfully deleted",
+                                        type: "success"
+                                    });
+
+                                    if ($('#tbldetailrcv tbody').children().children().length == 0) {
+                                        $('#tbldetailrcv tbody').append(emptyRow);
+                                    }
+                                });
+                            } else {
+                                $('#errorDisplay').siblings('span.error').css('visibility', 'visible');
+                                return;
+                            }
+                        }
+                    }
+                } else if (QtyReceive > QtyOrder) {
+                    $('#qtyreceive').val(1);
+                    swal({
+                        title: "Warning",
+                        text: "Qty Received Exceeds Qty Ordered !",
+                        type: "warning"
+                    });
+
+                    $("#productnumber, #productname, #stock, #principal, #measure, #qtyorder").val('');
+                    $('#produklist').select2('val', 'selectedIndex', 0);
+                    $("#produklist").data('placeholder');
+                    $("#qtyreceive").val('');
+                } else if (QtyReceive == 0) {
+                    $('#qtyreceive').val(1);
+                    swal({
+                        title: "Warning",
+                        text: "Qty Received Cannot be 0",
+                        type: "warning"
+                    });
+
+                    $("#productnumber, #productname, #stock, #principal, #measure, #qtyorder").val('');
+                    $('#produklist').select2('val', 'selectedIndex', 0);
+                    $("#produklist").data('placeholder');
+                    $("#qtyreceive").val('');
+                } else {
+                    $('#qtyreceive').val(1);
+                    swal({
+                        title: "Warning",
+                        text: "Please input correctly !",
+                        type: "warning"
+                    });
+
+                    $("#productnumber, #productname, #stock, #principal, #measure, #qtyorder").val('');
+                    $('#produklist').select2('val', 'selectedIndex', 0);
+                    $("#produklist").data('placeholder');
+                    $("#qtyreceive").val('');
+                }
+            });
+
+
+            //Delete Item
+            $('.btn-sm').click(function () {
+                var child = $(this).closest('tr').nextAll();
+
+                child.each(function () {
+                    var id = $(this).attr('id');
+                    if (id.length > 2) {
+                        var idx = $(this).children('.row-index').children('p');
+                        var dig = parseInt(id.substring(2));
+                        idx.html(`${dig - 1}`);
+                        $(this).attr('id', `R${dig - 1}`);
+                    } else {
+                        var idx = $(this).children('.row-index').children('p');
+                        var dig = parseInt(id.substring(1));
+                        idx.html(`${dig - 1}`);
+                        $(this).attr('id', `R${dig - 1}`);
+                    }
+                });                
+
+                $(this).closest('tr').remove();
+
+                swal({
+                    title: "Item successfully deleted",
+                    type: "success"
+                });
+
+                if ($('#tbldetailrcv tbody').children().children().length == 0) {
+                    $('#tbldetailrcv tbody').append(emptyRow);
+                }
+            });
+
+            //Save button click function
+            $('#submit').click(function () {
+                var isAllValid = true;
+                var detailItemDone = [];
+                var detailDone = {};
+                var purchaseOrderNumber = $('#poList').find(":selected").val();
+
+                var detailTable = $('#tbldetailrcv tbody').children().children().length / 7;
+                var detailProdukList = document.getElementById("produklist").options.length - 1;
+
+                if (detailTable == detailProdukList) {
+                    if (detailItem.length == 0 && purchaseOrderNumber == '') {
+                        $('#poList').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Harap di pilih !</span>');
+                        swal({
+                            title: "Warning",
+                            text: "Items in the table cannot be empty",
+                            type: "warning"
+                        });
+                        //$('#tbldetailpr tbody').html('<tr><td colspan="10" class="text-center"><span style="color:red;">Item belum tersedia</span></td></tr>');
+                        isAllValid = false;
+                    } else if (detailItem.length != 0 && purchaseOrderNumber == '' ) {
+                        $('#poList').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Harap di pilih !</span>');
+                       swal({
+                            title: "Warning",
+                            text: "Sorry, please select...",
+                            type: "warning"
+                        });
+                        isAllValid = false;                                       
+                    } else if (detailItem.length == 0 && purchaseOrderNumber != '') {
+                        swal({
+                            title: "Warning",
+                            text: "Items in the table cannot be empty",
+                            type: "warning"
+                        });
+                        isAllValid = false;
+                    } else {
+                        $("#tbldetailrcv").find("tbody").children("tr").each(function (index, element) {
+                            //***Penggunaan nama detail harus sesuai dengan nama pada table. Misal productnumber,productname,dst harus sama.
+                            detailDone.productnumber = $(element).find(".detproductnumber").val();
+                            detailDone.productname = $(element).find(".detproductname").val();
+                            detailDone.measure = $(element).find(".detmeasure").val();
+                            detailDone.QtyOrder = $(element).find(".detdiorder").val();
+                            detailDone.QtyReceive = $(element).find(".detditerima").val();
+                            detailItemDone.push(detailDone);
+                            detailDone = {};
+                        });
+
+                        var ReceiveOrderNumber = $('#receiveordernumber').val();
+                        var PurchaseOrderId = $('#poList').val();
+                        var ReceiveById = $('#receivebyid').val();
+                        var Status = $('#status').val();
+                        var Note = $('#note').val();
+                        var ReceiveOrderDetail = detailItemDone;
+                    }
+
+                    if (isAllValid) {
+                        var dataPost = {};
+                        dataPost.ReceiveOrderNumber = ReceiveOrderNumber;
+                        dataPost.PurchaseOrderId = PurchaseOrderId;
+                        dataPost.ReceiveById = ReceiveById;
+                        dataPost.Status = Status;
+                        dataPost.Note = Note;
+                        dataPost.ReceiveOrderDetails = ReceiveOrderDetail;
+
+                        $(this).val('In Process...');
+
+                        $.post("@Url.Action("CreateReceiveOrder", "ReceiveOrder")", { model: dataPost },
+                            function (data) {
+                                window.location.href = data.redirectToUrl;
+                            }
+                        );
+                    }
+                } else {
+                    swal({
+                        title: "Warning",
+                        text: "The number of items entered is not the same, please check again !!!",
+                        type: "warning"
+                    });
+                }
+            });
+        });
+    </script>
+
+    <style>
+        span.error {
+            display: block;
+            visibility: hidden;
+            color: red;
+            font-size: 90%;
+        }
+
+        tr.error {
+            background-color: rgba(255,0,0,0.35);
+        }
+
+        /*css for table*/
+        .container td {
+            vertical-align: top;
+        }
+
+        .tablecontainer table {
+            width: 100%;
+            border-collapse: collapse;
+            border-top: 1px solid #BFAEAE;
+            border-right: 1px solid #BFAEAE;
+        }
+
+        .tablecontainer th {
+            border-bottom: 2px solid #BFAEAE;
+        }
+
+        .tablecontainer th, .tablecontainer td {
+            text-align: center;
+            border-left: 1px solid #BFAEAE;
+            padding: 5px;
+            border-bottom: 1px solid #BFAEAE;
+        }
+
+        .ui-widget {
+            font-size: 12px !important;
+        }
+    </style>
+}

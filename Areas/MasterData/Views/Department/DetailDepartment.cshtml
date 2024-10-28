@@ -1,0 +1,130 @@
+﻿@{
+    ViewData["Title"] = "Detail Department";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+@using Microsoft.AspNetCore.Identity;
+@using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model DepartmentViewModel
+
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <form enctype="multipart/form-data" asp-controller="Department" asp-action="DetailDepartment" method="post" class="form-horizontal">
+                <div class="card-header bg-cyan">
+                    <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-0"></div>
+                            <div class="col-md-12">
+                                <input hidden asp-for="DepartmentId" />
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="DepartmentCode"></label>
+                                        <input type="text" asp-for="DepartmentCode" class="form-control form-control-border border-width-2" id="DepartmentCode" placeholder="Department Code" readonly disabled>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="DepartmentName"></label>
+                                        <input maxlength="100" autocomplete="off" autofocus type="text" asp-for="DepartmentName" class="form-control form-control-border border-width-2" id="DepartmentName" placeholder="Department Name" disabled>
+                                        <span asp-validation-for="DepartmentName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="Note"></label>
+                                        <input maxlength="100" autocomplete="off" type="text" asp-for="Note" class="form-control form-control-border border-width-2" id="Note" placeholder="Note" disabled>
+                                        <span asp-validation-for="Note" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-0"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- start button footer -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-0"></div>
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold" id="btnsimpan"><div style="color:#ffffff">Save</div></button>&nbsp;
+                                    <a class="btn bg-indigo" id="btnubah">Change</a>
+                                    <a class="btn btn-default" id="btnbatalubah">Cancel Change</a>
+                                    <a class="btn btn-danger" asp-action="DeleteDepartment" asp-controller="Department" asp-area="MasterData" asp-route-id="@Model.DepartmentId" id="btnhapus">Delete</a>
+                                    <a class="btn btn-default" asp-action="Index" asp-controller="Department" asp-area="MasterData" id="btnbatal">Cancel</a>
+                                </div>
+                            </div>
+                            <div class="col-md-0"></div>
+                        </div>
+                    </div>
+                </div>
+               
+                <!-- /.end button footer -->
+                @section Scripts {
+                    <script>
+                        $(function () {
+                            //Initialize Select2 Elements
+                            $('.select2bs4').select2({
+                                theme: 'bootstrap4'
+                            })
+                        })
+                    </script>
+
+                    <script>
+                        $(function () {
+                            $("#btnsimpan").hide();
+                            $("#btnbatalubah").hide();
+
+                            $("#btnubah").click(function () {
+                                $("#btnubah").hide();
+                                $("#btnhapus").hide();
+                                $("#btnbatal").hide();
+                                $("#btnsimpan").show();
+                                $("#btnbatalubah").show();
+
+                                document.getElementById("DepartmentCode").disabled = false;
+                                document.getElementById("DepartmentName").disabled = false;
+                                document.getElementById("Note").disabled = false;
+                            })
+
+                            $("#btnbatalubah").click(function () {
+                                $("#btnubah").show();
+                                $("#btnhapus").show();
+                                $("#btnbatal").show();
+                                $("#btnsimpan").hide();
+                                $("#btnbatalubah").hide();
+
+                                document.getElementById("DepartmentCode").disabled = true;
+                                document.getElementById("DepartmentName").disabled = true;
+                                document.getElementById("Note").disabled = true;
+                            })
+                        })
+                    </script>
+                }
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Failed", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->

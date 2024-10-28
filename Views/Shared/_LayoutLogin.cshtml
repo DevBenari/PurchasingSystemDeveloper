@@ -1,0 +1,49 @@
+﻿@using Microsoft.AspNetCore.Identity;
+
+@inject SignInManager<ApplicationUser> SignInManager
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <!-- Favicon -->
+    <link rel="icon" type="image" href="~/favicon.ico">
+    <title>@ViewBag.Title</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/login/css/style.css">
+
+    @*Sweet Alert*@
+    <link media="screen" rel="stylesheet" href="https://cdn.jsdelivr.net/sweetalert2/6.3.8/sweetalert2.min.css" />
+    <link media="screen" rel="stylesheet" href='https://cdn.jsdelivr.net/sweetalert2/6.3.8/sweetalert2.css' />
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/sweetalert2/6.3.8/sweetalert2.min.js"></script>
+</head>
+<body>
+    <section class="ftco-section">
+        <div class="container">
+            <div class="row justify-content-center">                
+                <div class="col-md-12 col-lg-10">
+                    <div class="wrap d-md-flex p-4">
+                        <div class="img" style="background-image: url(/login/images/logo-login.png);"><h5><div class="text-center" style="color:#357AB8"><b>Pharmacy Purchasing System</b></div></h5></div>
+                        @RenderBody()
+                    </div>
+                    @if (IsSectionDefined("Scripts"))
+                    {
+                        @RenderSection("Scripts", required: true)
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="~/login/js/jquery.min.js"></script>
+    <script src="~/login/js/popper.js"></script>
+    <script src="~/login/js/bootstrap.min.js"></script>
+    <script src="~/login/js/main.js"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    @*<script src="~/lib/jquery-validate/dist/jquery.validate.js"></script>*@
+    @*<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>*@
+</body>
+</html>

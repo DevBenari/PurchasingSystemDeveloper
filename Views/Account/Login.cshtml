@@ -1,0 +1,76 @@
+﻿@model LoginViewModel
+
+@{
+    ViewBag.Title = "Login System";
+}
+
+<div class="login-wrap p-4 p-md-5">    
+    @if (TempData["Error"] != null)
+    {
+        <div class="col-md-12 alert alert-danger">
+            <span><b>Maaf!</b> - @TempData["Error"]</span>
+        </div>
+    }
+    <form method="post">
+        <div class="form-outline mb-4">
+            <input type="email" asp-for="Email" autocomplete="off" id="email" class="form-control" placeholder="Email" maxlength="45" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="form-outline mb-2">
+            <input type="password" asp-for="Password" id="password" class="form-control" placeholder="Kata Sandi" maxlength="45" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+            <div class="form-check form-check-inline">
+                <label>
+                    <input type="checkbox" id="showPassword">
+                    Tampilkan kata sandi
+                </label>
+            </div>
+        </div>
+        <button type="submit" class="form-control btn btn-primary rounded submit px-3"><div style="color:white">Masuk</div></button>
+    </form>
+    <div class="form-check form-check-inline">
+        <label asp-for="RememberMe">
+            <input asp-for="RememberMe">
+            @Html.DisplayNameFor(m => m.RememberMe)
+        </label>
+    </div>
+    <div class="text-center">
+        <a href="#">Pusat Bantuan</a>
+    </div>
+    @*<div class="text-center pt-1 mb-1 pb-1">
+        <a href="#" onclick="forgot()" id="forgotPassword">Pusat Bantuan</a>
+    </div>*@
+    @if (TempData["WarningMessage"] != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                swal("Failed !", '@TempData["WarningMessage"]', "warning");
+            };
+        </script>
+    }
+    else if (TempData["UserActiveMessage"] != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                swal("Oops...", '@TempData["UserActiveMessage"]', "error");
+            };
+        </script>
+    }
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        var show = document.getElementById('showPassword');
+        var textbox = document.getElementById('password');
+
+        show.addEventListener("click", function () {
+            var isCheked = show.checked;
+
+            if (isCheked) {
+                textbox.type = "text";
+            } else {
+                textbox.type = "password";
+            }
+        })
+    </script>
+}

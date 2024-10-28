@@ -1,0 +1,39 @@
+﻿@{
+    ViewBag.Title = "Delete Product";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+@using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
+@model ProductViewModel
+
+<div class="card card-cyan">
+    <div class="card-header">
+        <h3 class="card-title" style="color:#ffffff">@ViewBag.Title</h3>
+    </div>
+
+    <form enctype="multipart/form-data" asp-controller="Product" asp-action="DeleteProduct" method="post" class="form-horizontal">
+        <div class="card-body">
+            <h4>Yakin hapus data ini?</h4>
+            <hr />
+            <input hidden asp-for="ProductId" />
+            <input hidden asp-for="ProductCode" />
+            <input hidden asp-for="ProductName" />
+            <div class="post">
+                <div class="user-block">
+                    <span class="username">
+                        <a href="#">@Html.DisplayFor(model => model.ProductName)</a>
+                    </span>
+                    <span class="description">@Html.DisplayFor(model => model.ProductCode)</span>
+                </div>
+                <!-- /.user-block -->
+            </div>
+        </div>
+
+        <div class="card-footer">
+            @*<form asp-action="DeletePengguna" method="post">*@
+            <a class="btn btn-default" asp-action="Index" asp-controller="Product" asp-area="MasterData">Batal</a>
+            <button type="submit" class="btn btn-danger float-left fw-bold"><div style="color:#ffffff">Hapus</div></button>
+            @*</form>*@
+        </div>
+    </form>
+</div>

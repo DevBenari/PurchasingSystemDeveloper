@@ -1,0 +1,32 @@
+﻿@{
+    ViewData["Title"] = "Get Data API";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <div class="card-header bg-cyan">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+            </div>
+            <form id="apiForm" action="@Url.Action("Impor", "Api")" method="get">
+                <div class="card-body">
+                    <div class="form-group row">
+                        <div class="col-sm-6">
+                            <label>Url API Code:</label>
+                            <input type="text" class="form-control" name="apiCode" placeholder="Api Code" value="https://localhost:7133/MasterData/Product/GetProduct">
+                        </div>
+                    </div>
+                </div>
+                <div class="card card-orange">
+                    <div class="card-body">
+                        <button type="submit" class="btn btn-primary bg-indigo">
+                            <div style="color:#ffffff">Get Data</div>
+                        </button>
+                        <a class="btn btn-default" href="@Url.Action("Index", "Api")">Cancel</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

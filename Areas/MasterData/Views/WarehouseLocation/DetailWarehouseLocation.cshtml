@@ -1,0 +1,141 @@
+﻿@{
+    ViewData["Title"] = "Detail Warehouse Location";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+@using Microsoft.AspNetCore.Identity;
+@using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model WarehouseLocationViewModel
+
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <form enctype="multipart/form-data" asp-controller="WarehouseLocation" asp-action="DetailWarehouseLocation" method="post" class="form-horizontal">
+                <div class="card-header bg-cyan">
+                    <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-0"></div>
+                            <div class="col-md-12">
+                                <input hidden asp-for="WarehouseLocationId" />
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="WarehouseLocationCode"></label>
+                                        <input type="text" asp-for="WarehouseLocationCode" class="form-control form-control-border border-width-2" id="WarehouseLocationCode" placeholder="Warehouse Location Code" readonly disabled>
+                                    </div>                                    
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="WarehouseLocationName"></label>
+                                        <input maxlength="100" autocomplete="off" autofocus type="text" asp-for="WarehouseLocationName" class="form-control form-control-border border-width-2" id="WarehouseLocationName" placeholder="Warehouse Location Name" disabled>
+                                        <span asp-validation-for="WarehouseLocationName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="WarehouseManagerId"></label>
+                                        <select asp-for="WarehouseManagerId" asp-items="@ViewBag.WarehouseManager" class="form-control select2bs4" id="WarehouseManagerId" style="width: 100%;" disabled>
+                                            <option value="" hidden disabled selected>--Choice Warehouse Manager--</option>
+                                        </select>
+                                        <span asp-validation-for="WarehouseManagerId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="Address"></label>
+                                        <input maxlength="100" autocomplete="off" type="text" asp-for="Address" class="form-control form-control-border border-width-2" id="Address" placeholder="Address" disabled>
+                                        <span asp-validation-for="Address" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-0"></div>
+                        </div>                        
+                    </div>
+                </div>
+                
+                <!-- start button footer -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-0"></div>
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold" id="btnsimpan"><div style="color:#ffffff">Save</div></button>
+                                    <a class="btn bg-indigo" id="btnubah">Change</a>
+                                    <a class="btn btn-default" id="btnbatalubah">Cancel Change</a>
+                                    <a class="btn btn-danger" asp-action="DeleteWarehouseLocation" asp-controller="WarehouseLocation" asp-area="MasterData" asp-route-id="@Model.WarehouseLocationId" id="btnhapus">Delete</a>
+                                    <a class="btn btn-default" asp-action="Index" asp-controller="WarehouseLocation" asp-area="MasterData" id="btnbatal">Cancel</a>
+                                </div>
+                            </div>
+                            <div class="col-md-0"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- /.end button footer -->
+                @section Scripts {
+                    <script>
+                        $(function () {s
+                            //Initialize Select2 Elements
+                            $('.select2bs4').select2({
+                                theme: 'bootstrap4'
+                            })
+                        })
+                    </script>
+
+                    <script>
+                        $(function () {
+                            $("#btnsimpan").hide();
+                            $("#btnbatalubah").hide();
+
+                            $("#btnubah").click(function () {
+                                $("#btnubah").hide();
+                                $("#btnhapus").hide();
+                                $("#btnbatal").hide();
+                                $("#btnsimpan").show();
+                                $("#btnbatalubah").show();
+
+                                document.getElementById("WarehouseLocationCode").disabled = false;
+                                document.getElementById("WarehouseLocationName").disabled = false;
+                                document.getElementById("WarehouseManagerId").disabled = false;
+                                document.getElementById("Address").disabled = false;
+                            })
+
+                            $("#btnbatalubah").click(function () {
+                                $("#btnubah").show();
+                                $("#btnhapus").show();
+                                $("#btnbatal").show();
+                                $("#btnsimpan").hide();
+                                $("#btnbatalubah").hide();
+
+                                document.getElementById("WarehouseLocationCode").disabled = true;
+                                document.getElementById("WarehouseLocationName").disabled = true;
+                                document.getElementById("WarehouseManagerId").disabled = true;
+                                document.getElementById("Address").disabled = true;
+                            })
+                        })
+                    </script>
+                }
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Failed", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->

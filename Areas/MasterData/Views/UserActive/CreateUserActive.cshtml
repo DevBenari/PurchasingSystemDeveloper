@@ -1,0 +1,232 @@
+﻿@{
+    ViewData["Title"] = "Add User";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+@using Microsoft.AspNetCore.Identity;
+@using PurchasingSystemDeveloper.Models;
+@using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model UserActiveViewModel
+
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <form enctype="multipart/form-data" asp-controller="UserActive" asp-action="CreateUserActive" method="post" class="form-horizontal">
+                <div class="card-header bg-cyan">
+                    <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-0"></div>
+                            <div class="col-md-12">
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="UserActiveCode">User Code</label>
+                                        <input type="text" asp-for="UserActiveCode" class="form-control form-control-border border-width-2" id="UserActiveCode" placeholder="UserActive Code" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="FullName">Full Name</label>
+                                        <input type="text" asp-for="FullName" class="form-control form-control-border border-width-2" autofocus maxlength="250" autocomplete="off" id="FullName" placeholder="FullName">
+                                        <span asp-validation-for="FullName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12 input-group">
+                                        <label class="input-group" asp-for="IdentityNumber">Identity Number</label>
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
+                                        </div>
+                                        <input asp-for="IdentityNumber" autocomplete="off" type="text" class="form-control form-control-border border-width-2" placeholder="Identity Number" data-inputmask='"mask": "9999999999999999"' data-mask-identitas>
+                                        <span asp-validation-for="IdentityNumber" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="Gender">Gender</label>
+                                        <select asp-for="Gender" class="form-control select2bs4" style="width: 100%;" id="Gender" data-placeholder="--Choose Gender--">
+                                            <option value="" hidden disabled selected>--Choose Gender--</option>
+                                            <option value="Laki-Laki">Laki-Laki</option>
+                                            <option value="Perempuan">Perempuan</option>
+                                        </select>
+                                        <span asp-validation-for="Gender" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="DepartmentId">Department</label>
+                                        <select id="DepartmentList" class="form-control select2bs4" style="width: 100%;" asp-for="DepartmentId" asp-items="@ViewBag.Department" data-placeholder="--Choose Department--">
+                                            <option value="" hidden disabled selected>--Choose Department--</option>
+                                        </select>
+                                        <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="PositionId">Position</label>
+                                        <select id="PositionList" class="form-control select2bs4" style="width: 100%;" asp-for="PositionId" asp-items="@ViewBag.Position" data-placeholder="--Please select a department--">
+                                            <option value="" hidden disabled selected>--Please select a department--</option>
+                                        </select>
+                                        <span asp-validation-for="PositionId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="PlaceOfBirth">Place Of Birth</label>
+                                        <input type="text" asp-for="PlaceOfBirth" class="form-control form-control-border border-width-2" id="PlaceOfBirth" placeholder="Place Of Birth">
+                                        <span asp-validation-for="PlaceOfBirth" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12 input-group" id="tanggallahir" data-target-input="nearest">
+                                        <label class="input-group" asp-for="DateOfBirth">Date Of Birth</label>
+                                        <div class="input-group-append" data-target="#tanggallahir" data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                        </div>
+                                        <input asp-for="DateOfBirth" type="text" class="form-control datetimepicker-input" data-target="#tanggallahir" placeholder="Date Of Birth" />
+                                        <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="Address">Address</label>
+                                        <input maxlength="250" autocomplete="off" type="text" asp-for="Address" class="form-control form-control-border border-width-2" id="Address" placeholder="Address">
+                                        <span asp-validation-for="Gender" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12 input-group">
+                                        <label class="input-group" asp-for="Handphone">Handphone</label>
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                        </div>
+                                        <input asp-for="Handphone" autocomplete="off" type="text" class="form-control form-control-border border-width-2" id="Handphone" data-inputmask='"mask": "(9999) - 9999-9999-9"' data-mask-hp>
+                                        <span asp-validation-for="Handphone" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12 input-group">
+                                        <label class="input-group" asp-for="Email">Email</label>
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                        </div>
+                                        <input asp-for="Email" autocomplete="off" type="text" class="form-control form-control-border border-width-2" placeholder="Email">
+                                        <span asp-validation-for="Email" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="Foto">Upload Photo</label>
+                                        <div class="custom-file">
+                                            <input asp-for="Foto" class="form-control custom-file-input">
+                                            <label class="custom-file-label">Choose Photos...</label>
+                                        </div>
+                                        <span asp-validation-for="Foto" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-0"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- start button footer -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-0"></div>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold"><div style="color:#ffffff">Save</div></button>
+                                <a class="btn btn-default" asp-action="Index" asp-controller="UserActive">Cancel</a>
+                            </div>
+                            <div class="col-md-0"></div>
+                        </div>                        
+                    </div>
+                </div>
+                <!-- /.end button footer -->
+                @section Scripts {
+                    <script>
+                        $(function () {
+                            //Initialize Select2 Elements
+                            $('.select2bs4').select2({
+                                theme: 'bootstrap4'
+                            })
+
+                            $("#Gender").data('placeholder');
+                            $("#DepartmentList").data('placeholder');
+                            $("#PositionList").data('placeholder');
+                        })
+                    </script>
+
+                    <script>
+                        $(document).ready(function () {
+                            $('.custom-file-input').on("change", function () {
+                                var fileName = $(this).val().split("\\").pop();
+                                $(this).next('.custom-file-label').html(fileName);
+                            });
+                        });
+                    </script>
+
+                    <script>
+                        $(function () {
+                            //Data-Mask-Identitas
+                            $('[data-mask-identitas]').inputmask()
+
+                            //Data-Mask-Hp
+                            $('[data-mask-hp]').inputmask()
+
+                            //Tanggal Lahir
+                            $('#tanggallahir').datetimepicker({
+                                format: 'DD/MM/yyyy'
+                            })
+                        })
+                    </script>
+
+                    <script>
+                        $(document).ready(function () {
+                            $("#PositionList").empty();
+
+                            $("#DepartmentList").change(function () {
+                                $("#PositionList").empty();
+                                $.ajax({
+                                    type: 'GET',
+                                    url: '@Url.Action("LoadPosition")',
+                                    dataType: 'json',
+                                    data: { id: $("#DepartmentList").val() },
+                                    success: function (positions) {                                        
+                                        $.each(positions, function (i, position) {
+                                            $("#PositionList").append('<option value = "' + position.value + '">' + position.text + '</option>');
+                                        });
+                                    },
+                                    error: function (ex) {
+                                        alert('Failed get data Position !!!' + ex);
+                                    }
+                                });
+                                return false;
+                            })                            
+                        })
+                    </script>
+                }
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Failed !", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->

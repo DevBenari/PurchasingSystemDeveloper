@@ -1,0 +1,142 @@
+﻿@using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
+
+@{
+    Layout = "~/Views/Shared/_TopNavbarProfile.cshtml";
+    var photoPath = "~/UserPhoto/" + (Model.UserPhotoPath ?? "user.jpg");
+}
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model UserActiveViewModel
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-3 bg-white">
+            <div class="card-header bg-indigo">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@Html.DisplayFor(m => m.FullName)</h3>
+            </div>
+            <div class="card-body text-center">
+                <img src="@photoPath" asp-append-version="true" width="100%" height="100%" />
+            </div>
+
+            <ul class="list-group list-group-unbordered mb-3">
+                <li class="list-group-item">
+                    <b>Department</b> <a class="float-right">@Html.DisplayFor(x => x.Department)</a>
+                </li>
+                <li class="list-group-item">
+                    <b>Position</b> <a class="float-right">@Html.DisplayFor(s => s.Position)</a>
+                </li>
+            </ul>
+        </div>
+        <div class="col-md-9 bg-white">
+            <div class="card-header bg-indigo">
+                <h3 class="card-title fw-bold" style="color:#ffffff">Detail Information</h3>
+            </div>
+
+            <form enctype="multipart/form-data" asp-controller="UserActive" asp-action="DetailUserActive" method="post" class="form-horizontal">
+                <div class="card-body">
+                    <input hidden asp-for="UserActiveId" />
+                    <input hidden asp-for="UserPhotoPath" />
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="UserActiveCode">User Code</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="UserActiveCode" class="form-control form-control-border border-width-2" id="useractivecode" placeholder="User Active Code" readonly disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="FullName">FullName</label>
+                        <div class="col-sm-10">
+                            <input maxlength="100" autocomplete="off" type="text" asp-for="FullName" class="form-control form-control-border border-width-2" id="fullname" placeholder="FullName" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="IdentityNumber">Identity Number</label>
+                        <div class="col-sm-10 input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
+                            </div>
+                            <input asp-for="IdentityNumber" type="text" class="form-control form-control-border border-width-2" autofocus autocomplete="off" id="identitynumber" placeholder="Identity Number" data-inputmask='"mask": "9999999999999999"' data-mask-identitas disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="PlaceOfBirth">Place Of Birth</label>
+                        <div class="col-sm-10">
+                            <input maxlength="100" autocomplete="off" type="text" asp-for="PlaceOfBirth" class="form-control form-control-border border-width-2" id="placeofbirth" placeholder="Place Of Birth" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="DateOfBirth">Date Of Birth</label>
+                        <div class="col-sm-10 input-group date" id="tanggallahir" data-target-input="nearest">
+                            <div class="input-group-append" data-target="#tanggallahir" data-toggle="datetimepicker">
+                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                            </div>
+                            <input asp-for="DateOfBirth" type="text" class="form-control datetimepicker-input" data-target="#tanggallahir" id="dateofbirth" placeholder="Date Of Birth" disabled />
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="Gender">Gender</label>
+                        <div class="col-sm-10">
+                            <select asp-for="Gender" class="form-control select2bs4" style="width: 100%;" id="gender" disabled>
+                                <option value="" hidden disabled selected>--Chioce Gender--</option>
+                                <option value="Laki-Laki">Laki-Laki</option>
+                                <option value="Perempuan">Perempuan</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="Address">Address</label>
+                        <div class="col-sm-10">
+                            <input maxlength="100" autocomplete="off" type="text" asp-for="Address" class="form-control form-control-border border-width-2" id="address" placeholder="Address" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="Handphone">Handphone</label>
+                        <div class="col-sm-10 input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                            </div>
+                            <input asp-for="Handphone" autocomplete="off" type="text" class="form-control form-control-border border-width-2" id="handphone" data-inputmask='"mask": "(9999) - 9999-9999-9"' data-mask-hp disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="Email">Email</label>
+                        <div class="col-sm-10 input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                            </div>
+                            <input maxlength="100" autofocus autocomplete="off" asp-for="Email" type="email" class="form-control form-control-border border-width-2" id="email" placeholder="Email" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                @section Scripts {
+                    <script>
+                        $(function () {
+                            //Initialize Select2 Elements
+                            $('.select2bs4').select2({
+                                theme: 'bootstrap4'
+                            })
+                        })
+                    </script>
+
+                    <script>
+                        $(function () {
+                            //Data-Mask-Identitas
+                            $('[data-mask-identitas]').inputmask()
+
+                            //Data-Mask-Hp
+                            $('[data-mask-hp]').inputmask()
+
+                            //Tanggal Lahir
+                            $('#tanggallahir').datetimepicker({
+                                format: 'DD/MM/yyyy'
+                            })
+                        })
+                    </script>
+                }
+            </form>
+        </div>
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->

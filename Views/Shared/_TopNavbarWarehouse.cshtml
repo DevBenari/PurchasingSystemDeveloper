@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+</head>
+<body>
+    <section class="content">
+        <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#347FC4">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDarkDropdown" aria-controls="navbarNavDarkDropdown" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+                    <ul class="navbar-nav">
+                        <li class="nav-item dropdown">
+                            <a class="btn btn-orange" style="color:#ffffff" asp-action="Index" asp-controller="Dashboard" asp-area="Warehouse">
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="btn btn-orange" style="color:#ffffff" asp-action="Index" asp-controller="ReceiveOrder" asp-area="Warehouse">
+                                Receive Order
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="btn btn-orange" style="color:#ffffff" asp-action="Index" asp-controller="ApprovalRequest" asp-area="Warehouse">
+                                Approval Request
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="btn btn-orange" style="color:#ffffff" asp-action="Index" asp-controller="WarehouseRequest" asp-area="Warehouse">
+                                Warehouse Request
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="btn btn-orange" style="color:#ffffff" asp-action="Index" asp-controller="WarehouseTransfer" asp-area="Warehouse">
+                                Warehouse Transfer
+                            </a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="btn btn-orange" style="color:#ffffff" asp-action="Index" asp-controller="QtyDifference" asp-area="Warehouse">
+                                Qty Difference
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        @RenderBody()
+    </section>
+    @if (IsSectionDefined("Scripts"))
+    {
+        @RenderSection("Scripts", required: true)
+    }
+</body>
+</html>

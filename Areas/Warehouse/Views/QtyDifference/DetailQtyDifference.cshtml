@@ -1,0 +1,173 @@
+﻿@{
+    ViewData["Title"] = "Detail Qty Difference";
+    Layout = "~/Views/Shared/_TopNavbarWarehouse.cshtml";
+}
+
+@using Microsoft.AspNetCore.Identity;
+@using PurchasingSystemDeveloper.Areas.Warehouse.Models;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model PurchasingSystemDeveloper.Areas.Warehouse.Models.QtyDifference
+
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <div class="card-header bg-cyan">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+            </div>
+
+            <form enctype="multipart/form-data" asp-controller="QtyDifference" asp-action="DetailQtyDifference" method="post" class="form-horizontal">
+                <div class="card-body">
+                    <input asp-for="QtyDifferenceId" type="hidden" />
+
+                    @if (signInManager.IsSignedIn(User))
+                    {
+                        <input asp-for="@User.Identity.Name" class="form-control" type="hidden">
+                    }
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="QtyDifferenceNumber">Qty Diff Number</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="QtyDifferenceNumber" class="form-control form-control-border border-width-2" id="QtyDifferenceNumber" placeholder="Qty Difference Number" readonly disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="PurchaseOrderId">
+                            Purchase Order Number
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="PurchaseOrderId" asp-items="@ViewBag.PO" class="form-control select2bs4" id="purchaseordernumber" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Choose Purchase Order Number--</option>
+                            </select>
+                            <span asp-validation-for="PurchaseOrderId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="UserApprove1Id">
+                            Approve 1
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="UserApprove1Id" asp-items="@ViewBag.Approval" class="form-control select2bs4" id="UserApprove1List" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Choose User--</option>
+                            </select>
+                            <div class="col-sm-12">
+                                <label asp-for="MessageApprove1" class="col-form-label text-success">Note : @Html.DisplayFor(x => x.MessageApprove1)</label>
+                            </div>
+                            <span asp-validation-for="UserApprove1Id" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="UserApprove2Id">
+                            Approve 2
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="UserApprove2Id" asp-items="@ViewBag.Approval" class="form-control select2bs4" id="UserApprove2List" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Choose User--</option>
+                            </select>
+                            <div class="col-sm-12">
+                                <label asp-for="MessageApprove2" class="col-form-label text-success">Note : @Html.DisplayFor(x => x.MessageApprove2)</label>
+                            </div>
+                            <span asp-validation-for="UserApprove2Id" class="error"></span>
+                        </div>
+                    </div>                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="Status">Status</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="Status" class="form-control form-control-border border-width-2" id="status" placeholder="Status" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="Note">Note</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="Note" class="form-control form-control-border border-width-2" id="note" placeholder="Note" disabled>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-default">
+                    <div class="card-header bg-cyan">
+                        <h3 class="card-title fw-bold" style="color:#ffffff">Item</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="card-body table-responsive p-0">
+                            <table id="tbldetailpr" class="table table-head-fixed text-nowrap table-bordered table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">No</div></th>
+                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Number</div></th>
+                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Name</div></th>
+                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Measure</div></th>
+                                        <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff">Qty Order</div></th>
+                                        <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff">Qty Receive</div></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.QtyDifferenceDetails.Count; i++)
+                                    {
+                                        var no = (Model.QtyDifferenceDetails.Count - Model.QtyDifferenceDetails.Count) + i + 1;
+
+                                        if (@Model.QtyDifferenceDetails[i].QtyOrder != @Model.QtyDifferenceDetails[i].QtyReceive)                                        
+                                        {
+                                            <tr id="R$@no" class="detailProduct">
+                                                <td class="row-index text-center"><p>@no</p></td>
+                                                <td class="text-left row-productNumber"><input class="detkodeproduk" asp-for="@Model.QtyDifferenceDetails[i].ProductNumber" type="hidden" value="@Model.QtyDifferenceDetails[i].ProductNumber"><div style="color:red"><b>@Model.QtyDifferenceDetails[i].ProductNumber</b></div></td>
+                                                <td class="text-left row-productName"><input class="detnamaproduk" asp-for="@Model.QtyDifferenceDetails[i].ProductName" type="hidden" value="@Model.QtyDifferenceDetails[i].ProductName"><div style="color:red"><b>@Model.QtyDifferenceDetails[i].ProductName</b></div></td>
+                                                <td class="text-left"><input class="detsatuan" asp-for="@Model.QtyDifferenceDetails[i].Measurement" type="hidden" value="@Model.QtyDifferenceDetails[i].Measurement"><div style="color:red"><b>@Model.QtyDifferenceDetails[i].Measurement</b></div></td>
+                                                <td class="text-center"><input class="detqty" asp-for="@Model.QtyDifferenceDetails[i].QtyOrder" type="hidden" value="@Model.QtyDifferenceDetails[i].QtyOrder"><div style="color:red"><b>@Model.QtyDifferenceDetails[i].QtyOrder</b></div></td>
+                                                <td class="text-center"><input class="detprice" asp-for="@Model.QtyDifferenceDetails[i].QtyReceive" type="hidden" value="@Model.QtyDifferenceDetails[i].QtyReceive"><div style="color:red"><b>@Model.QtyDifferenceDetails[i].QtyReceive</b></div></td>
+                                            </tr>
+                                        } else
+                                        {
+                                            <tr id="R$@no" class="detailProduct">
+                                                <td class="row-index text-center"><p>@no</p></td>
+                                                <td class="text-left row-productNumber"><input class="detkodeproduk" asp-for="@Model.QtyDifferenceDetails[i].ProductNumber" type="hidden" value="@Model.QtyDifferenceDetails[i].ProductNumber">@Model.QtyDifferenceDetails[i].ProductNumber</td>
+                                                <td class="text-left row-productName"><input class="detnamaproduk" asp-for="@Model.QtyDifferenceDetails[i].ProductName" type="hidden" value="@Model.QtyDifferenceDetails[i].ProductName">@Model.QtyDifferenceDetails[i].ProductName</td>
+                                                <td class="text-left"><input class="detsatuan" asp-for="@Model.QtyDifferenceDetails[i].Measurement" type="hidden" value="@Model.QtyDifferenceDetails[i].Measurement">@Model.QtyDifferenceDetails[i].Measurement</td>
+                                                <td class="text-center"><input class="detqty" asp-for="@Model.QtyDifferenceDetails[i].QtyOrder" type="hidden" value="@Model.QtyDifferenceDetails[i].QtyOrder">@Model.QtyDifferenceDetails[i].QtyOrder</td>
+                                                <td class="text-center"><input class="detprice" asp-for="@Model.QtyDifferenceDetails[i].QtyReceive" type="hidden" value="@Model.QtyDifferenceDetails[i].QtyReceive">@Model.QtyDifferenceDetails[i].QtyReceive</td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- start button footer -->
+                <div class="card card-orange">
+                    <div class="card-body">
+                        <a class="btn bg-indigo" asp-action="PrintQtyDifference" asp-controller="QtyDifference" asp-area="Warehouse" asp-route-id="@Model.QtyDifferenceId"><i class="fas fa-print" style="color:white"></i></a>
+                        <a class="btn btn-default" asp-action="Index" asp-controller="QtyDifference">Cancel</a>
+                    </div>
+                </div>
+                <!-- /.end button footer -->
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Failed", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->
+@section Scripts {
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+        })
+    </script>
+}

@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Report ScriptLanguage="CSharp" ReportInfo.Created="08/01/2024 22:55:44" ReportInfo.Modified="08/03/2024 22:15:44" ReportInfo.CreatorVersion="2023.1.12.0">
+  <Dictionary>
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqGCgiDglzYkeDnnIBok3ESB9mNK+9rs5wIh5oJerocnviMKiQoAm+sRo5RiFAf7b2MWXhP2dCUZQZteG8PJHep+hHNyHfQtuh+IIq0htocadMBmXXIXcxSRwIPuFoKIYeRVn6RzqPLiIeIB2khX+F0nnkDzQ37+3AQK2xfwIQIhEy3LrEgpCiLffmOJZQLTt0dT3q0M/x/SUap76JjYy0wl056LxsJdRzXnkx4zaI+IzHYV8ErnPF4z7JXX3jfZdV">
+      <TableDataSource Name="OrdPurchaseRequestDetail" DataType="System.Int32" Enabled="true" TableName="OrdPurchaseRequestDetail" SelectCommand="exec GetPurchaseRequestDetailById @PurchaseRequestId">
+        <Column Name="PurchaseRequestDetailId" DataType="System.String"/>
+        <Column Name="PurchaseRequestId" DataType="System.Guid"/>
+        <Column Name="ProductNumber" DataType="System.String"/>
+        <Column Name="ProductName" DataType="System.String"/>
+        <Column Name="Measurement" DataType="System.String"/>
+        <Column Name="Principal" DataType="System.String"/>
+        <Column Name="Qty" DataType="System.Int32"/>
+        <Column Name="Price" DataType="System.Decimal"/>
+        <Column Name="Discount" DataType="System.Int32"/>
+        <Column Name="SubTotal" DataType="System.Decimal"/>
+        <Column Name="CreateDateTime" DataType="System.DateTime"/>
+        <Column Name="CreateBy" DataType="System.Guid"/>
+        <Column Name="UpdateDateTime" DataType="System.DateTime"/>
+        <Column Name="UpdateBy" DataType="System.Guid"/>
+        <Column Name="DeleteDateTime" DataType="System.DateTime"/>
+        <Column Name="DeleteBy" DataType="System.Guid"/>
+        <Column Name="IsCancel" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <Column Name="IsDelete" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <CommandParameter Name="PurchaseRequestId" DataType="22" Expression="[PurchaseRequestId]"/>
+      </TableDataSource>
+    </MsSqlDataConnection>
+    <Parameter Name="Conn" DataType="System.String" AsString=""/>
+    <Parameter Name="PurchaseRequestId" DataType="System.String" AsString=""/>
+    <Parameter Name="PrNumber" DataType="System.String" AsString=""/>
+    <Parameter Name="CreateDate" DataType="System.String" AsString=""/>
+    <Parameter Name="CreateBy" DataType="System.String" AsString=""/>
+    <Parameter Name="HeadDivision" DataType="System.String" AsString=""/>
+    <Parameter Name="TermOfPayment" DataType="System.String" AsString=""/>
+    <Parameter Name="GrandTotal" DataType="System.String" AsString=""/>
+    <Parameter Name="Tax" DataType="System.String" AsString=""/>
+    <Parameter Name="GrandTotalAfterTax" DataType="System.String" AsString=""/>
+    <Parameter Name="Note" DataType="System.String" AsString=""/>
+  </Dictionary>
+  <ReportPage Name="Page1" Watermark.Font="Arial, 60pt">
+    <ReportTitleBand Name="ReportTitle1" Width="718.2" Height="170.1">
+      <TextObject Name="Text1" Width="718.2" Height="37.8" Border.Color="White" Border.Width="2" Text="RS METROPOLITAN MEDICAL CENTRE" HorzAlign="Center" VertAlign="Center" Font="Arial, 20pt, style=Bold"/>
+      <TextObject Name="Text2" Top="37.8" Width="718.2" Height="37.8" Border.Color="White" Border.Width="2" Text="Metropolitan Medical Centre, Jl. H. R. Rasuna Said No.C-21, RT.1/RW.7, Karet Kuningan, Kecamatan Setiabudi, Kota Jakarta Selatan, Daerah Khusus Ibukota Jakarta 12940" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <LineObject Name="Line1" Top="85.05" Width="718.2" Border.Color="DeepSkyBlue" Border.Width="5"/>
+      <TextObject Name="Text5" Left="444.15" Top="94.5" Width="132.3" Height="18.9" Border.Color="Red" Border.Width="5" Text="Create Date" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text6" Left="444.15" Top="132.3" Width="132.3" Height="18.9" Border.Color="Red" Border.Width="5" Text="Head Division" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text7" Left="444.15" Top="113.4" Width="132.3" Height="18.9" Border.Color="Red" Border.Width="5" Text="Create By" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text9" Left="576.45" Top="94.5" Width="141.75" Height="18.9" Border.Color="Red" Border.Width="5" Text=": [CreateDate]" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text28" Left="576.45" Top="132.3" Width="141.75" Height="18.9" Text=": [HeadDivision]" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text29" Left="576.45" Top="113.4" Width="141.75" Height="18.9" Text=": [CreateBy]" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text32" Left="444.15" Top="151.2" Width="132.3" Height="18.9" Border.Color="Red" Border.Width="5" Text="Term Of Payment" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+      <TextObject Name="Text33" Left="576.45" Top="151.2" Width="141.75" Height="18.9" Text=": [TermOfPayment]" Font="Arial, 10pt, style=Bold"/>
+      <ShapeObject Name="Shape1" Top="94.5" Width="434.7" Height="75.6" Border.Color="White" Fill="LinearGradient" Fill.StartColor="DeepSkyBlue" Fill.EndColor="White" Fill.Angle="0" Fill.Focus="1" Fill.Contrast="1"/>
+      <TextObject Name="Text3" Top="113.4" Width="274.05" Height="37.8" Border.Color="White" Border.Width="2" Text="PURCHASE REQUEST NUMBER :" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+      <TextObject Name="Text31" Left="274.05" Top="113.4" Width="160.65" Height="37.8" Border.Color="White" Border.Width="2" Text="[PrNumber]" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
+    </ReportTitleBand>
+    <PageHeaderBand Name="PageHeader1" Top="172.66" Width="718.2" Height="37.8">
+      <TextObject Name="Text13" Top="9.45" Width="37.8" Height="18.9" Border.Color="Red" Border.Width="5" Text="No" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <LineObject Name="Line2" Top="9.45" Width="718.2" Border.Width="2"/>
+      <TextObject Name="Text14" Left="37.8" Top="9.45" Width="103.95" Height="18.9" Border.Color="Red" Border.Width="5" Text="Product Number" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text15" Left="141.75" Top="9.45" Width="302.4" Height="18.9" Border.Color="Red" Border.Width="5" Text="Product Name" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text16" Left="444.15" Top="9.45" Width="47.25" Height="18.9" Border.Color="Red" Border.Width="5" Text="Qty" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text17" Left="491.4" Top="9.45" Width="56.7" Height="18.9" Border.Color="Red" Border.Width="5" Text="Measure" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text18" Left="548.1" Top="9.45" Width="85.05" Height="18.9" Border.Color="Red" Border.Width="5" Text="Price" HorzAlign="Right" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text19" Left="633.15" Top="9.45" Width="85.05" Height="18.9" Border.Color="Red" Border.Width="5" Text="Sub Total" HorzAlign="Right" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <LineObject Name="Line3" Top="28.35" Width="718.2" Border.Width="2"/>
+    </PageHeaderBand>
+    <DataBand Name="Data1" Top="213.02" Width="718.2" Height="18.9" Guides="0" DataSource="OrdPurchaseRequestDetail">
+      <TextObject Name="Text38" Width="37.8" Height="18.9" Text="[Row#]" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text39" Left="37.8" Width="103.95" Height="18.9" Text="[OrdPurchaseRequestDetail.ProductNumber]" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text40" Left="141.75" Width="302.4" Height="18.9" Text="[OrdPurchaseRequestDetail.ProductName]" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text34" Left="444.15" Width="47.25" Height="18.9" Text="[OrdPurchaseRequestDetail.Qty]" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text35" Left="491.4" Width="56.7" Height="18.9" Text="[OrdPurchaseRequestDetail.Measurement]" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TextObject Name="Text36" Left="548.1" Width="85.05" Height="18.9" Text="[OrdPurchaseRequestDetail.Price]" Format="Currency" Format.UseLocale="true" Format.DecimalDigits="0" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="Arial, 8pt, style=Bold" Trimming="EllipsisCharacter"/>
+      <TextObject Name="Text37" Left="633.15" Width="85.05" Height="18.9" Text="[OrdPurchaseRequestDetail.SubTotal]" Format="Currency" Format.UseLocale="true" Format.DecimalDigits="0" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="Arial, 8pt, style=Bold" Trimming="EllipsisCharacter"/>
+    </DataBand>
+    <PageFooterBand Name="PageFooter1" Top="234.48" Width="718.2" Height="226.8">
+      <TableObject Name="Table1" Top="85.05" Width="718.3" Height="113.4">
+        <TableColumn Name="Column5" Width="400.05"/>
+        <TableColumn Name="Column1" Width="163.85"/>
+        <TableColumn Name="Column2" Width="154.4"/>
+        <TableRow Name="Row1">
+          <TableCell Name="Cell22" Text="Note :" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+          <TableCell Name="Cell1" Border.Lines="All" Border.Width="2" Text="Create By :" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+          <TableCell Name="Cell2" Border.Lines="All" Border.Width="2" Text="Head Division :" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+        </TableRow>
+        <TableRow Name="Row2" Height="75.6">
+          <TableCell Name="Cell23" Text="[Note]" Font="Arial, 10pt, style=Bold" RowSpan="2"/>
+          <TableCell Name="Cell6" Border.Lines="All" Border.Width="2" Font="Arial, 10pt"/>
+          <TableCell Name="Cell7" Border.Lines="All" Border.Width="2" Font="Arial, 10pt"/>
+        </TableRow>
+        <TableRow Name="Row6">
+          <TableCell Name="Cell24" Font="Arial, 10pt"/>
+          <TableCell Name="Cell20" Border.Lines="All" Border.Width="2" Text="[CreateBy]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+          <TableCell Name="Cell21" Border.Lines="All" Border.Width="2" Text="[HeadDivision]" HorzAlign="Center" VertAlign="Center" Font="Arial, 10pt, style=Bold"/>
+        </TableRow>
+      </TableObject>
+      <TextObject Name="Text41" Left="652.05" Top="207.9" Width="66.15" Height="18.9" Text="[PageN]" HorzAlign="Right" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+      <TableObject Name="Table2" Width="718.25" Height="56.7">
+        <TableColumn Name="Column3" Width="633.15"/>
+        <TableColumn Name="Column4" Width="85.1"/>
+        <TableRow Name="Row3">
+          <TableCell Name="Cell8" Border.Lines="Top" Border.Width="2" Text="Grand Total :" HorzAlign="Right" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+          <TableCell Name="Cell9" Border.Lines="Top" Border.Width="2" Text="[GrandTotal]" Format="Currency" Format.UseLocale="true" Format.DecimalDigits="0" HorzAlign="Right" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+        </TableRow>
+        <TableRow Name="Row4">
+          <TableCell Name="Cell13" Text="Tax (11%) :" HorzAlign="Right" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+          <TableCell Name="Cell14" Text="[Tax]" Format="Currency" Format.UseLocale="true" Format.DecimalDigits="0" HorzAlign="Right" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+        </TableRow>
+        <TableRow Name="Row5">
+          <TableCell Name="Cell18" Border.Lines="Bottom" Border.Width="2" Text="Grand Total After Tax :" HorzAlign="Right" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+          <TableCell Name="Cell19" Border.Lines="Bottom" Border.Width="2" Text="[GrandTotalAfterTax]" Format="Currency" Format.UseLocale="true" Format.DecimalDigits="0" HorzAlign="Right" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
+        </TableRow>
+      </TableObject>
+    </PageFooterBand>
+  </ReportPage>
+</Report>

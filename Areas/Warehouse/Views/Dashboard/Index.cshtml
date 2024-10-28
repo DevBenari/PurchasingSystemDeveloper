@@ -1,0 +1,119 @@
+﻿@{
+    ViewData["Title"] = "Dashboard Warehouse";
+    Layout = "~/Views/Shared/_TopNavbarWarehouse.cshtml";
+}
+
+<!-- Main content -->
+<section class="content">
+    <!-- Info boxes -->
+    <div class="row">
+        <div class="col-12">
+            <!-- Widget: user widget style 1 -->
+            <div class="card card-widget widget-user">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <div class="widget-user-header bg-info">
+                    <h1 class="widget-user-username"><b>@ViewBag.Title</b></h1>
+                    @*<h5 class="widget-user-desc">Founder & CEO</h5>*@
+                </div>
+                <div class="widget-user-image">
+                    @*<img class="img-circle elevation-2" src="../dist/img/user1-128x128.jpg" alt="User Avatar">*@
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-sm-4 border-right">
+                            <div class="description-block">
+                                <h5 class="description-header">@ViewBag.CountPurchaseRequest</h5>
+                                <span class="description-text">PURCHASE REQUEST</span>
+                            </div>
+                            <!-- /.description-block -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-sm-4 border-right">
+                            <div class="description-block">
+                                <h5 class="description-header">@ViewBag.CountApproval</h5>
+                                <span class="description-text">APPROVAL</span>
+                            </div>
+                            <!-- /.description-block -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-sm-4 border-right">
+                            <div class="description-block">
+                                <h5 class="description-header">@ViewBag.CountPurchaseOrder</h5>
+                                <span class="description-text">PURCHASE ORDER</span>
+                            </div>
+                            <!-- /.description-block -->
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                    <!-- /.row -->
+                </div>
+            </div>
+            <!-- /.widget-user -->
+        </div>
+    </div>
+    <!-- /.row -->
+    <div class="row mb-2">
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <a asp-controller="ReceiveOrder" asp-action="Index" asp-area="Warehouse">
+                <div class="small-box " style="background-color:#347FC4">
+                    @*change color in adminlte.min.cs*@
+                    <div class="inner">
+                        <h4 class="fw-bold" style="color:#ffffff">Receive Order</h4>
+                        <p style="color:#ffffff">Receive Order</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-luggage-cart"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <a asp-controller="ApprovalRequest" asp-action="Index" asp-area="Warehouse">
+                <div class="small-box " style="background-color:#347FC4">
+                    @*change color in adminlte.min.cs*@
+                    <div class="inner">
+                        <h4 class="fw-bold" style="color:#ffffff">Approval Request</h4>
+                        <p style="color:#ffffff">Approval Request</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <a asp-controller="WarehouseRequest" asp-action="Index" asp-area="Warehouse">
+                <div class="small-box " style="background-color:#347FC4">
+                    @*change color in adminlte.min.cs*@
+                    <div class="inner">
+                        <h4 class="fw-bold" style="color:#ffffff">Warehouse Request</h4>
+                        <p style="color:#ffffff">Warehouse Request</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-medkit"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <a asp-controller="QtyDifference" asp-action="Index" asp-area="Warehouse">
+                <div class="small-box " style="background-color:#347FC4">
+                    @*change color in adminlte.min.cs*@
+                    <div class="inner">
+                        <h4 class="fw-bold" style="color:#ffffff">Qty Difference</h4>
+                        <p style="color:#ffffff">Qty Difference</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-dice"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->

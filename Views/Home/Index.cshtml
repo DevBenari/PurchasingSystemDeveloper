@@ -1,0 +1,459 @@
+﻿@using PurchasingSystemDeveloper.Areas.MasterData.Models;
+@using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
+
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var photoPath = "~/UserPhoto/" + (Model.UserActiveViewModels.UserPhotoPath ?? "user.jpg");
+}
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model Dashboard
+
+<!-- Main content -->
+<section class="container-fluid">    
+    <div class="row">
+        <div class="col-12">
+            <!-- Widget: user widget style 1 -->
+            <div class="card card-widget widget-user">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <div class="widget-user-header bg-info">
+                    <h1 class="widget-user-username"><b>@ViewBag.Title</b></h1>
+                </div>                
+            </div>
+            <!-- /.widget-user -->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 bg-white">
+            <div class="card">
+                <div class="card-header bg-indigo">
+                    <h3 class="card-title fw-bold" style="color:#ffffff">@Html.DisplayFor(m => m.UserActiveViewModels.FullName)</h3>
+                </div>
+                <div class="card-body text-center">
+                    <img src="@photoPath" asp-append-version="true" width="100%" height="100%" />
+                </div>
+
+                <div class="card-body">
+                    <ul class="list-group list-group-unbordered mb-3">
+                        <li class="list-group-item">
+                            <b>Date Of Birth</b> <a class="float-right">@Model.UserActiveViewModels.DateOfBirth.ToString("dd MMMM yyyy")</a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>Department</b> <a class="float-right">@Html.DisplayFor(x => x.UserActiveViewModels.Department)</a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>Position</b> <a class="float-right">@Html.DisplayFor(s => s.UserActiveViewModels.Position)</a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>Handphone</b> <a class="float-right">@Html.DisplayFor(s => s.UserActiveViewModels.Handphone)</a>
+                        </li>
+                        <li class="list-group-item">
+                            <b>Email</b> <a class="float-right">@Html.DisplayFor(s => s.UserActiveViewModels.Email)</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>            
+
+            <div class="card">
+                <div class="card-header bg-indigo">
+                    <h3 class="card-title fw-bold" style="color:#ffffff">User Online</h3>
+                </div>
+                <div class="card-body table-responsive p-0">
+                    <table id="tblTemplate2" class="table table-hover table-head-fixed text-nowrap">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="show_data">
+                            @foreach (var user in Model.UserOnlines)
+                            {
+                                <tr>
+                                    <td>@user.NamaUser</td>
+                                    @if (@user.IsOnline == true)
+                                    {
+                                        <td><i class='fas fa-circle' style='color:greenyellow'></i> Online</td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-9 bg-white">
+            <div class="card-header bg-indigo">
+                <h3 class="card-title fw-bold" style="color:#ffffff">Detail Information</h3>
+            </div>
+            
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box">
+                        <span class="info-box-icon shadow-sm" style="background-color: #347FC4">
+                            <i class="fa-solid fa-globe" style="color:white"></i> 
+                        </span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">User Online</span> <span class="info-box-number" style="margin-top: -10px;">
+                                @ViewBag.UserOnline
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box">
+                        <span class="info-box-icon shadow-sm" style="background-color: #E53D00">
+                            <i class="fas fa-file-alt" style="color: white"></i>
+                        </span>
+                        <div class="info-box-content"> <span class="info-box-text">Purchase Request</span> 
+                            <span class="info-box-number" style="margin-top: -10px;">
+                                @ViewBag.CountPurchaseRequest
+                            </span> 
+                         </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box">
+                        <span class="info-box-icon shadow-sm" style="background-color: #FFE900">
+                            <i class="fas fa-file-archive" style="color: white"></i>
+                        </span>
+                        <div class="info-box-content"> <span class="info-box-text">Purchase Order</span> 
+                            <span class="info-box-number" style="margin-top: -10px;">
+                                @ViewBag.CountPurchaseOrder
+                            </span> 
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box">
+                        <span class="info-box-icon shadow-sm" style="background-color: #F7C1BB">
+                            <i class="fa-solid fa-file-circle-check" style="color: white"></i>
+                        </span>
+                        <div class="info-box-content"> <span class="info-box-text">Approval</span> 
+                            <span class="info-box-number" style="margin-top: -10px;">
+                                @ViewBag.CountApproval
+                            </span> 
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box">
+                        <span class="info-box-icon shadow-sm" style="background-color: #84B082">
+                            <i class="fas fa-clipboard" style="color:white"></i>
+                        </span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Unit Request</span> <span class="info-box-number" style="margin-top: -10px;">
+                                @ViewBag.CountUnitRequest
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box">
+                        <span class="info-box-icon shadow-sm" style="background-color: #F7C1BB">
+                            <i class="fa-solid fa-file-pen" style="color: white"></i>
+                        </span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Receive Order</span> <span class="info-box-number" style="margin-top: -10px;">
+                                @ViewBag.CountReceiveOrder
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box">
+                        <span class="info-box-icon shadow-sm" style="background-color: #347FC4">
+                            <i class="fa-solid fa-truck-fast" style="color: white"></i>
+                        </span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Approval Unit Request</span> <span class="info-box-number" style="margin-top: -10px;">
+                                @ViewBag.CountApprovalUnitRequest
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box">
+                        <span class="info-box-icon shadow-sm" style="background-color: #E53D00">
+                            <i class="fa-solid fa-file-circle-check" style="color: white"></i>
+                        </span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">Warehouse Transfer</span> <span class="info-box-number" style="margin-top: -10px;">
+                                @ViewBag.CountWarehouseTransfer
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div id="barChart"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-sm-6">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div id="chart"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header bg-indigo">
+                            <h3 class="card-title fw-bold" style="color:#ffffff">Stock Monitoring Under Min Stock</h3>
+                        </div>
+                        <div class="card-body table-responsive p-0">
+                            <table id="tblTemplate" class="table table-hover table-head-fixed text-nowrap">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Product Name</th>
+                                        <th>Supplier</th>
+                                        <th>Min Stock</th>
+                                        <th>Max Stock</th>
+                                        <th>Buffer Stock</th>
+                                        <th>Stock</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="show_data">
+                                    @foreach (var prd in Model.Products)
+                                    {
+                                        <tr>
+                                            <td></td>
+                                            <td>@prd.ProductName</td>
+                                            <td>@prd.Supplier.SupplierName</td>
+                                            <td>@prd.MinStock</td>
+                                            <td>@prd.MaxStock</td>
+                                            <td>@prd.BufferStock</td>
+                                            <td>@prd.Stock</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>    
+</section>
+
+@section Scripts{
+    <script src="~/scripts/TableTemplate.js"></script>
+    <script src="~/scripts/TableTemplate2.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js" integrity="sha256-+vh8GkaU7C9/wbSLIcwq82tQ2wTf44aOHA8HlBMwRI8=" crossorigin="anonymous"></script>
+    <!-- /.content -->
+    <script>
+        var options = {
+            series: [{
+                name: 'Total Request',
+                data: [500, 750]
+            }, {
+                name: 'Total Order',
+                data: [500, 2000]
+            }, {
+                name: 'Purchase Completed',
+                data: [500, 2500]
+            }],
+            chart: {
+                type: 'bar',
+                height: 289
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '55%',
+                    endingShape: 'rounded'
+                },
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ['transparent']
+            },
+            xaxis: {
+                categories: ['Aug', 'Sep'],
+            },
+            yaxis: {
+                title: {
+                    text: 'Total Of Param'
+                }
+            },
+            fill: {
+                opacity: 1
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val
+                    }
+                }
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+    </script>
+    <script>
+        var options = {
+            series: [{
+                name: 'September',
+                data: [20, 10, 10, 10, 2500]
+            }, {
+                name: 'Agustus',
+                data: [0, 0, 0, 0, 500]
+            }],
+            chart: {
+                type: 'bar',
+                height: 289
+            },
+            plotOptions: {
+                bar: {
+                    borderRadius: 4,
+                    borderRadiusApplication: 'end',
+                    horizontal: true,
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            xaxis: {
+                categories: ['Purchase Generating', 'Purchase Approval', 'Accounting Approval', 'Warehouse Approval', 'Purchase Completed']
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#barChart"), options);
+        chart.render();
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#tblTemplate').DataTable();
+        });
+    </script>
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: 'Roboto',sans-serif;
+        }
+
+        .box {
+            background: #fff;
+            width: 260px;
+            height: 212px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            flex-direction: column;
+            box-shadow: 0 30px 60px rgba(0,0,0,.4);
+            transition: transform .2s;
+        }
+            /* .box:hover
+            {
+             transform:scale(1.2);
+            } */
+            .box .percent {
+                width: 150px;
+                height: 150px;
+                position: relative;
+            }
+
+                .box .percent svg {
+                    width: 150px;
+                    height: 150px;
+                    position: relative;
+                }
+
+                    .box .percent svg circle {
+                        width: 150px;
+                        height: 150px;
+                        fill: none;
+                        stroke-width: 10;
+                        stroke: #000;
+                        transform: translate(5px,5px);
+                        stroke-dasharray: 440;
+                        stroke-dashoffset: 440;
+                        stroke-linecap: round;
+                    }
+
+                        .box .percent svg circle:nth-child(1) {
+                            stroke-dashoffset: 0;
+                            stroke: #f3f3f3;
+                        }
+
+                        .box .percent svg circle:nth-child(2) {
+                            stroke-dashoffset: calc(440 - (440 * 87) / 100);
+                            stroke: #03a9f4;
+                        }
+
+                .box .percent .num {
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    position: absolute;
+                    color: #111;
+                }
+
+                    .box .percent .num h2 {
+                        font-size: 48px;
+                    }
+
+                        .box .percent .num h2 span {
+                            font-size: 24px;
+                        }
+
+            .box .text {
+                padding 10px 0 0;
+                color: #999;
+                font-weight: 700;
+                letter-spacing: 1px;
+            }
+
+    </style>
+}
+@* <script>
+    const MAX = 100
+
+    const cp = new CircleProgress('.progress', {
+        max: MAX,
+        value: 50,
+        animationDuration: 400,
+        textFormat: (val) => val + '%',
+    });
+
+    document.querySelector('#value-input').addEventListener('change', e => {
+        const val = e.target.value;
+        cp.value = val;
+        cp.el.style.setProperty('--progress-value', val / MAX);
+    })
+</script> *@

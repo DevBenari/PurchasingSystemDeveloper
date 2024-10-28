@@ -1,0 +1,240 @@
+﻿@{
+    ViewData["Title"] = "Key Perfomance Indikator";
+    //Layout = "~/Views/Shared/_TopNavbarOrder.cshtml";
+}
+
+@using PurchasingSystemDeveloper.Areas.Order.Models;
+@using PurchasingSystemDeveloper.Models;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+
+<!-- Main content -->
+<section class="content">
+    <br />
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-cyan">
+                <div class="card-header">
+                    <h3 class="card-title" style="color:#ffffff">@ViewBag.Title</h3>
+                </div>
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box">
+                <span class="info-box-icon"> <i class="fa-solid fa-file-pen"></i> </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Your Data<b> Request</b> Created</span> <span class="info-box-number" id="data_requested"></span>
+                    <div class="progress mb-2" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar bg-warning requested"></div>
+                    </div>
+                    <span class="progress-description" id="desc-requested">
+
+                    </span>
+                </div> <!-- /.info-box-content -->
+            </div> <!-- /.info-box -->
+        </div> <!-- /.col -->
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box">
+                <span class="info-box-icon"> <i class="fa-solid fa-file-circle-check"></i> </span>
+                <div class="info-box-content">
+                    <span class="info-box-text"> Process Your <b>Approval</b> PR</span> <span class="info-box-number" id="data_approved"></span>
+                    <div class="progress mb-2" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar bg-success approved"></div>
+                    </div>
+                    <span class="progress-description" id="desc-approved">
+                        Finish Your Obligation, Please!
+                    </span>
+                </div> <!-- /.info-box-content -->
+            </div> <!-- /.info-box -->
+        </div> <!-- /.col -->
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box">
+                <span class="info-box-icon"> <i class="fa-solid fa-file-circle-xmark"></i> </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">You has been <b>Rejected</b> PR</span> <span class="info-box-number" id="data_rejected"></span>
+                    <div class="progress mb-2" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar bg-danger rejected"></div>
+                    </div>
+                    <span class="progress-description">
+                        Dont Forget to Description Your Reason
+                    </span>
+                </div> <!-- /.info-box-content -->
+            </div> <!-- /.info-box -->
+        </div> <!-- /.col -->
+        <div class="col-md-3 col-sm-6 col-12">
+            <div class="info-box">
+                <span class="info-box-icon"> <i class="fa-solid fa-list"></i> </span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Your PO <b>In Order </b>Status</span> <span class="info-box-number" id="data_completed"></span>
+                    <div class="progress mb-2" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar bg-info completed"></div>
+                    </div>
+                    <span class="progress-description" id="desc-completed">
+
+                    </span>
+                </div> <!-- /.info-box-content -->
+            </div> <!-- /.info-box -->
+        </div> <!-- /.col -->
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="border-bottom">KPIs Monthly</h4>
+                            <div id="chart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="card progress-circle">
+                        <div class="progress">
+                            <span class="title timer" data-from="0" data-to="85" data-speed="1800">85</span>
+                            <div class="overlay"></div>
+                            <div class="left"></div>
+                            <div class="right"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="card progress-circle">
+                        <div class="progress">
+                            <span class="title timer" data-from="0" data-to="85" data-speed="1800">85</span>
+                            <div class="overlay"></div>
+                            <div class="left"></div>
+                            <div class="right"></div>
+                        </div>
+                    </div>
+                </div>
+                @* <div class="col-sm-6">
+                <div class="info-box">
+                <span class="info-box-icon"> <i class="fa-solid fa-file-pen"></i> </span>
+                <div class="info-box-content">
+                <span class="info-box-text">Your Data<b> Requested</b></span> <span class="info-box-number" id="data_requested"></span>
+                <div class="progress mb-2" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar bg-warning requested"></div>
+                </div>
+                <span class="progress-description" id="desc-requested">
+
+                </span>
+                </div> <!-- /.info-box-content -->
+                </div> <!-- /.info-box -->
+                </div>
+                <div class="col-sm-6">
+                <div class="info-box">
+                <span class="info-box-icon"> <i class="fa-solid fa-file-pen"></i> </span>
+                <div class="info-box-content">
+                <span class="info-box-text">Your Data<b> Requested</b></span> <span class="info-box-number" id="data_requested"></span>
+                <div class="progress mb-2" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar bg-warning requested"></div>
+                </div>
+                <span class="progress-description" id="desc-requested">
+
+                </span>
+                </div> <!-- /.info-box-content -->
+                </div> <!-- /.info-box -->
+                </div> *@
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="border-bottom">Datatable</h4>
+                    <table id="tblTemplate" class="table table-hover table-bordered">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Create Date</th>
+                                <th>Create By</th>
+                                <th>UR Number</th>
+                                <th>Unit Location</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="show_data">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- /.row -->
+</section>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js" integrity="sha256-+vh8GkaU7C9/wbSLIcwq82tQ2wTf44aOHA8HlBMwRI8=" crossorigin="anonymous"></script>
+<script src="https://cdn.datatables.net/2.1.7/js/dataTables.min.js"></script>
+<!-- /.content -->
+<script>
+    
+    $.ajax({
+        type: "POST",
+        url: '@Url.Action("Json")',
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        success: function (r) {
+            //console.log(r);
+            let dataRequested = r.dataRequest;
+            let dataApproval = r.dataApproval;
+            let dataOrder = r.dataOrder;
+            let id   = r.userId;
+            let purchaseId = [];
+            let purchaseProcess = [];
+            let purchaseReject = [];
+
+            const totalRequest = dataRequested.length;
+            dataRequested.forEach(function (e) {
+                let getId = e.applicationUser["id"];
+                if (getId == id) {
+                    purchaseId.push(e.purchaseRequestId);
+                }
+            });
+
+            const totalApproval = dataApproval.length;
+            //console.log(totalApproval);
+            dataApproval.forEach(function (e) {
+                if (e.status == 'Approve') {
+                    purchaseProcess.push(e.purchaseRequestId);
+                } else if (e.status == 'Reject') {
+                    purchaseReject.push(e.purchaseRequestId);
+                }
+            });
+
+            //Data PR
+            let dataPr = purchaseId.length
+            let dataRequest = dataPr + "/" + totalRequest;
+            const intDataPr = parseInt(dataPr);
+            const intTotalPr = parseInt(totalRequest);
+            const percentPr = ((intDataPr / intTotalPr) * 100).toFixed() + "%";
+            $('#data_requested').text(dataRequest);
+            $(".requested").width(percentPr);
+            $("#desc-requested").text(percentPr + " From All Unit Request Data");
+
+            //Data Approval
+            let dataApp = purchaseProcess.length;
+            let dataRej = purchaseReject.length;
+            let lengthCompleted = dataOrder.length;
+            let dataApproved = dataApp + "/" + totalApproval;
+            let dataRejected = dataRej + "/" + totalApproval;
+            let dataCompleted = lengthCompleted + "/" + totalApproval;
+            let intTotalApp = parseInt(totalApproval);
+            let intDataApp = parseInt(dataApp);
+            let intDataRej = parseInt(dataRej);
+            let intDataCompleted = parseInt(dataCompleted);
+            $('#data_approved').text(dataApproved);
+            $('#data_rejected').text(dataRejected);
+            $('#data_completed').text(dataCompleted);
+            const percentApp = ((intDataApp / intTotalApp) * 100).toFixed() + "%";
+            $(".approved").width(percentApp);
+            const percentRejected = ((intDataRej / intTotalApp) * 100).toFixed() + "%";
+            $(".rejected").width(percentRejected);
+            const percentCompleted = ((intDataCompleted / intTotalApp) * 100).toFixed() + "%";
+            $(".completed").width(percentCompleted);
+        }
+    });
+</script>

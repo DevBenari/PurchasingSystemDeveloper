@@ -1,0 +1,94 @@
+﻿@{
+    ViewData["Title"] = "Add Department";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+@using Microsoft.AspNetCore.Identity;
+@using PurchasingSystemDeveloper.Models;
+@using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model DepartmentViewModel
+
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <form enctype="multipart/form-data" asp-controller="Department" asp-action="CreateDepartment" method="post" class="form-horizontal">
+                <div class="card-header bg-cyan">
+                    <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-0"></div>
+                            <div class="col-md-12">
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="DepartmentCode"></label>
+                                        <input type="text" asp-for="DepartmentCode" class="form-control form-control-border border-width-2" id="DepartmentCode" placeholder="Department Code" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="DepartmentName"></label>
+                                        <input maxlength="100" autocomplete="off" autofocus type="text" asp-for="DepartmentName" class="form-control form-control-border border-width-2" id="DepartmentName" placeholder="Department Name">
+                                        <span asp-validation-for="DepartmentName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="Note"></label>
+                                        <input maxlength="100" autocomplete="off" type="text" asp-for="Note" class="form-control form-control-border border-width-2" id="Note" placeholder="Note">
+                                        <span asp-validation-for="Note" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-0"></div>
+                        </div>                        
+                    </div>
+                </div>
+                
+                <!-- start button footer -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-0"></div>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold"><div style="color:#ffffff">Save</div></button>
+                                <a class="btn btn-default" asp-action="Index" asp-controller="Department">Cancel</a>
+                            </div>
+                            <div class="col-md-0"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- /.end button footer -->
+                @section Scripts {
+                    <script>
+                        $(function () {
+                            //Initialize Select2 Elements
+                            $('.select2bs4').select2({
+                                theme: 'bootstrap4'
+                            })
+                        })
+                    </script>
+                }
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Failed !", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->

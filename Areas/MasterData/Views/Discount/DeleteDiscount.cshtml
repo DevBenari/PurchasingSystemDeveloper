@@ -1,0 +1,51 @@
+﻿@{
+    ViewBag.Title = "Delete Discount";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+@using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
+
+
+@model DiscountViewModel
+
+<div class="card card-cyan">
+    <div class="card-header">
+        <h3 class="card-title" style="color:#ffffff">@ViewBag.Title</h3>
+    </div>
+
+
+    <form enctype="multipart/form-data" asp-controller="Discount" asp-action="DeleteDiscount" method="post" class="form-horizontal">
+        <div class="card-body">
+            <h4>Yakin hapus data ini?</h4>
+            <hr />
+            <input hidden asp-for="DiscountId" />
+            <input hidden asp-for="DiscountCode" />
+            <input hidden asp-for="DiscountValue" />
+            <div class="post">
+                <div class="user-block">
+                    <span class="username">
+                        <a href="#">@Html.DisplayFor(model => model.DiscountValue)</a>
+                    </span>
+                    <span class="description">@Html.DisplayFor(model => model.DiscountCode)</span>
+                </div>
+                <!-- /.user-block -->
+            </div>
+        </div>
+
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Failed", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+
+        <div class="card-footer">
+            @*<form asp-action="DeletePengguna" method="post">*@
+            <a class="btn btn-default" asp-action="Index" asp-controller="Discount" asp-area="MasterData">Batal</a>
+            <button type="submit" class="btn btn-danger float-left fw-bold"><div style="color:#ffffff">Hapus</div></button>
+            @*</form>*@
+        </div>
+    </form>
+</div>

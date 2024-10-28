@@ -1,0 +1,119 @@
+﻿@{
+    ViewData["Title"] = "Dashboard Master Data";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+<!-- Main content -->
+<section class="content">
+    <!-- Info boxes -->
+    <div class="row">
+        <div class="col-12">
+            <!-- Widget: user widget style 1 -->
+            <div class="card card-widget widget-user">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <div class="widget-user-header bg-info">
+                    <h1 class="widget-user-username"><b>@ViewBag.Title</b></h1>
+                    @*<h5 class="widget-user-desc">Founder & CEO</h5>*@
+                </div>
+                <div class="widget-user-image">
+                    @*<img class="img-circle elevation-2" src="../dist/img/user1-128x128.jpg" alt="User Avatar">*@
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <div class="col-sm-4 border-right">
+                            <div class="description-block">
+                                <h5 class="description-header">@ViewBag.CountUser</h5>
+                                <span class="description-text">USERS</span>
+                            </div>
+                            <!-- /.description-block -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-sm-4 border-right">
+                            <div class="description-block">
+                                <h5 class="description-header">@ViewBag.CountPrincipal</h5>
+                                <span class="description-text">PRINCIPALS</span>
+                            </div>
+                            <!-- /.description-block -->
+                        </div>
+                        <!-- /.col -->
+                        <div class="col-sm-4 border-right">
+                            <div class="description-block">
+                                <h5 class="description-header">@ViewBag.CountProduct</h5>
+                                <span class="description-text">PRODUCTS</span>
+                            </div>
+                            <!-- /.description-block -->
+                        </div>
+                        <!-- /.col -->                        
+                    </div>
+                    <!-- /.row -->
+                </div>
+            </div>
+            <!-- /.widget-user -->
+        </div>
+    </div>
+    <!-- /.row -->
+    <div class="row mb-2">
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <a asp-controller="UserActive" asp-action="Index" asp-area="MasterData">
+                <div class="small-box " style="background-color:#347FC4">
+                    @*change color in adminlte.min.cs*@
+                    <div class="inner">
+                        <h4 class="fw-bold" style="color:#ffffff">User</h4>
+                        <p style="color:#ffffff">User</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                </div>
+            </a>
+        </div>        
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <a asp-controller="Principal" asp-action="Index" asp-area="MasterData">
+                <div class="small-box " style="background-color:#347FC4">
+                    @*change color in adminlte.min.cs*@
+                    <div class="inner">
+                        <h4 class="fw-bold" style="color:#ffffff">Principal</h4>
+                        <p style="color:#ffffff">Principal</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <a asp-controller="Product" asp-action="Index" asp-area="MasterData">
+                <div class="small-box " style="background-color:#347FC4">
+                    @*change color in adminlte.min.cs*@
+                    <div class="inner">
+                        <h4 class="fw-bold" style="color:#ffffff">Product</h4>
+                        <p style="color:#ffffff">Product</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fa fa-book"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <a asp-controller="Warehouse" asp-action="Index" asp-area="MasterData">
+                <div class="small-box " style="background-color:#347FC4">
+                    @*change color in adminlte.min.cs*@
+                    <div class="inner">
+                        <h4 class="fw-bold" style="color:#ffffff">Warehouse</h4>
+                        <p style="color:#ffffff">Warehouse</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fa fa-building"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->

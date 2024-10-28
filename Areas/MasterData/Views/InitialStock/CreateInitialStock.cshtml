@@ -1,0 +1,160 @@
+﻿@{
+    ViewData["Title"] = "Add Calculate Min-Max, Buffer Stock";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+@using Microsoft.AspNetCore.Identity;
+@using PurchasingSystemDeveloper.Models;
+@using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model InitialStockViewModel
+
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <form enctype="multipart/form-data" asp-controller="InitialStock" asp-action="CreateInitialStock" method="post" class="form-horizontal">
+                <div class="card-header bg-cyan">
+                    <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-0"></div>
+                            <div class="col-md-12">
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label class="col-sm-3 col-form-label" asp-for="GenerateBy">Generate By</label>
+                                        <<select asp-for="GenerateBy" class="form-control select2bs4" style="width: 100%;" id="generateby">
+                                            <option value="" hidden disabled selected>--Choose Generate--</option>
+                                            <option value="Product">Product</option>
+                                            <option value="Supplier">Supplier</option>
+                                        </select>
+                                        <span asp-validation-for="GenerateBy" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row" id="listproduct">
+                                    <div class="col-sm-12">
+                                        <label class="col-sm-3 col-form-label" asp-for="ProductId">Product</label>
+                                        <select asp-for="ProductId" data-placeholder="--Choose Product--" asp-items="@ViewBag.Product" class="form-control select2bs4" style="width: 100%;" id="ProductList">
+                                            <option value="" hidden disabled selected>--Choose Product--</option>
+                                        </select>
+                                        <span asp-validation-for="ProductId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row" id="listSupplier">
+                                    <div class="col-sm-12">
+                                        <label class="col-sm-3 col-form-label" asp-for="SupplierId">Supplier</label>
+                                        <select asp-for="SupplierId" data-placeholder="--Choose Supplier--" asp-items="@ViewBag.Supplier" class="form-control select2bs4" style="width: 100%;" id="SupplierList">
+                                            <option value="" hidden disabled selected>--Choose Supplier--</option>
+                                        </select>
+                                        <span asp-validation-for="SupplierId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label class="col-sm-3 col-form-label" asp-for="LeadTimeId">Lead Time</label>
+                                        <select asp-for="LeadTimeId" asp-items="@ViewBag.LeadTime" class="form-control select2bs4" style="width: 100%;" id="LeadTimeList">
+                                            <option value="" hidden disabled selected>--Choice LeadTime--</option>
+                                        </select>
+                                        <span asp-validation-for="LeadTimeId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label class="col-sm-3 col-form-label" asp-for="CalculateBaseOn">Calculate Base On</label>
+                                        <select asp-for="CalculateBaseOn" class="form-control select2bs4" style="width: 100%;" id="calculatebaseon">
+                                            <option value="" hidden disabled selected>--Choose Calculate--</option>
+                                            <option value="Daily">Daily</option>
+                                            <option value="Weekly">Weekly</option>
+                                            <option value="Monthly">Monthly</option>
+                                        </select>
+                                        <span asp-validation-for="CalculateBaseOn" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label class="col-sm-3 col-form-label" asp-for="MaxRequest">Max Request</label>
+                                        <input maxlength="100" autocomplete="off" type="number" asp-for="MaxRequest" class="form-control form-control-border border-width-2" id="" placeholder="Max Request">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label class="col-sm-3 col-form-label" asp-for="AverageRequest">Average Request Daily</label>
+                                        <input maxlength="100" autocomplete="off" type="number" asp-for="AverageRequest" class="form-control form-control-border border-width-2" id="" placeholder="Average Request">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-0"></div>
+                        </div>
+                    </div>
+                </div>
+               
+                <!-- start button footer -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-0"></div>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold"><div style="color:#ffffff">Calculate</div></button>
+                                <a class="btn btn-default" asp-action="Index" asp-controller="InitialStock">Cancel</a>
+                            </div>
+                            <div class="col-md-0"></div>
+                        </div>                        
+                    </div>
+                </div>
+
+                <!-- /.end button footer -->
+                @section Scripts {
+                    <script>
+                        $(function () {
+                            //Initialize Select2 Elements
+                            $('.select2bs4').select2({
+                                theme: 'bootstrap4'
+                            })
+                        })
+                    </script>
+
+                    <script>
+                        $("#listproduct").hide();
+                        $("#listSupplier").hide();
+                        
+                        $("#generateby").change(function () {
+                            if ($(this).val() == "Product") {
+                                $("#listproduct").show();
+                            }
+                            else {
+                                $("#listproduct").hide();
+                                $('#ProductList').select2('val', 'selectedIndex', 0);
+                                $("#ProductList").data('placeholder');
+                            }
+
+                            if ($(this).val() == "Supplier") {
+                                $("#listSupplier").show();
+                            } else {
+                                $("#listSupplier").hide();
+                                $('#SupplierList').select2('val', 'selectedIndex', 0);
+                                $("#SupplierList").data('placeholder');
+                            }
+                        });
+                    </script>                    
+                }
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Failed !", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>            
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->

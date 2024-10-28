@@ -1,0 +1,103 @@
+﻿@{
+    ViewData["Title"] = "Add Unit Location";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+
+@using Microsoft.AspNetCore.Identity;
+@using PurchasingSystemDeveloper.Models;
+@using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model UnitLocationViewModel
+
+<!-- Tempusdominus Bootstrap 4 -->
+<link rel="stylesheet" href="~/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <form enctype="multipart/form-data" asp-controller="UnitLocation" asp-action="CreateUnitLocation" method="post" class="form-horizontal">
+                <div class="card-header bg-cyan">
+                    <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-0"></div>
+                            <div class="col-md-12">
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="UnitLocationCode"></label>
+                                        <input type="text" asp-for="UnitLocationCode" class="form-control form-control-border border-width-2" id="UnitLocationCode" placeholder="Unit Location Code" readonly>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="UnitLocationName"></label>
+                                        <input maxlength="100" autocomplete="off" autofocus type="text" asp-for="UnitLocationName" class="form-control form-control-border border-width-2" id="UnitLocationName" placeholder="Unit Location Name">
+                                        <span asp-validation-for="UnitLocationName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="UnitManagerId"></label>
+                                        <select asp-for="UnitManagerId" asp-items="@ViewBag.UnitManager" class="form-control select2bs4" id="UnitManagerId" style="width: 100%;">
+                                            <option value="" hidden disabled selected>--Choice Unit Manager--</option>
+                                        </select>
+                                        <span asp-validation-for="UnitManagerId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="Address"></label>
+                                        <input maxlength="100" autocomplete="off" type="text" asp-for="Address" class="form-control form-control-border border-width-2" id="Address" placeholder="Address">
+                                        <span asp-validation-for="Address" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-0"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- start button footer -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-0"></div>
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold"><div style="color:#ffffff">Save</div></button>
+                                <a class="btn btn-default" asp-action="Index" asp-controller="UnitLocation">Cancel</a>
+                            </div>
+                            <div class="col-md-0"></div>
+                        </div>
+                    </div>
+                </div>
+               
+                <!-- /.end button footer -->
+                @section Scripts {
+                    <script>
+                        $(function () {
+                            //Initialize Select2 Elements
+                            $('.select2bs4').select2({
+                                theme: 'bootstrap4'
+                            })
+                        })
+                    </script>
+                }
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Failed !", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->

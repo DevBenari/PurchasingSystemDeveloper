@@ -1,0 +1,216 @@
+﻿@{
+    ViewData["Title"] = "List Approval Request";
+    Layout = "~/Views/Shared/_TopNavbarWarehouse.cshtml";
+}
+
+@using Microsoft.AspNetCore.Identity;
+@using PurchasingSystemDeveloper.Areas.Warehouse.ViewModels;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model ApprovalRequestViewModel
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <div class="card-header bg-cyan">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+            </div>
+
+            <form enctype="multipart/form-data" asp-controller="ApprovalRequest" asp-action="DetailApprovalRequest" method="post" class="form-horizontal">
+                <div class="card-body">
+                    @if (signInManager.IsSignedIn(User))
+                    {
+                        <input asp-for="@User.Identity.Name" class="form-control" type="hidden">
+                    }
+                    @*<input asp-for="Status" value="Belum Disetujui" type="hidden">*@
+                    <input type="hidden" asp-for="ApprovalRequestId" />
+                    <input type="hidden" asp-for="UnitRequestId" />
+                    <input type="hidden" asp-for="UserAccessId" />
+                    <input type="hidden" asp-for="WarehouseApprovalId" />
+                    @*Jika dihilangkan tidak berjalan walaupun sudah ditampilkan dengan statement*@
+                    <input type="hidden" asp-for="ApproveDate" />
+                    <input type="hidden" asp-for="WarehouseApproveBy" />
+                    <input type="hidden" asp-for="QtyTotal" />
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="UnitRequestNumber">Request Number</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="UnitRequestNumber" class="form-control form-control-border border-width-2" id="UnitRequestNumber" placeholder="Request Number" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="UserAccessId">
+                            Create By
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="UserAccessId" asp-items="@ViewBag.User" class="form-control select2bs4" id="userid" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Choose User--</option>
+                            </select>
+                            <span asp-validation-for="UserAccessId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="UnitLocationId">
+                            Unit Location
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="UnitLocationId" asp-items="@ViewBag.UnitLocation" class="form-control select2bs4" id="UnitLocation" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Choose Location--</option>
+                            </select>
+                            <span asp-validation-for="UnitLocationId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="UnitRequestManagerId">
+                            Request Manager
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="UnitRequestManagerId" asp-items="@ViewBag.RequestBy" class="form-control select2bs4" id="UnitRequestManager" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Choose User--</option>
+                            </select>
+                            <span asp-validation-for="UnitRequestManagerId" class="error"></span>
+                        </div>
+                    </div>                    
+                    @if (Model.Status == "Approved" || Model.Status == "Rejected")
+                    {
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" asp-for="Status">Status</label>
+                            <div class="col-sm-10">
+                                @*Perbedaan nya adalah ketika sudah disetujui/ditolak form input Status dan Keterangan di nonaktifkan*@
+                                <select class="form-control select2bs4" style="width: 100%;" asp-for="Status" disabled>
+                                    <option value="" hidden disabled selected>--Choose Status--</option>
+                                    <option>Approved</option>
+                                    <option>Request</option>
+                                    <option>Rejected</option>
+                                </select>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" asp-for="ApproveDate">Approve Date</label>
+                            <div class="col-sm-10">
+                                <input type="text" asp-for="ApproveDate" class="form-control form-control-border border-width-2" id="approvedate" placeholder="Approve Date" readonly>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" asp-for="WarehouseApproveBy">Approved/Rejected By</label>
+                            <div class="col-sm-10">
+                                <input type="text" asp-for="WarehouseApproveBy" class="form-control form-control-border border-width-2" id="WarehouseApproveBy" placeholder="Warehouse Approve By" readonly disabled>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" asp-for="Note">Note</label>
+                            <div class="col-sm-10">
+                                <input asp-for="Note" autocomplete="off" class="form-control" disabled>
+                                <span asp-validation-for="Note" class="text-danger"></span>
+                            </div>
+                        </div>
+                    }
+                    else if (Model.Status == "Request")
+                    {
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" asp-for="Status">Status</label>
+                            <div class="col-sm-10">
+                                <select class="form-control select2bs4" style="width: 100%;" asp-for="Status">
+                                    <option value="" hidden disabled selected>--Choose Status--</option>
+                                    <option>Approved</option>
+                                    <option>Request</option>
+                                    <option>Rejected</option>
+                                </select>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label" asp-for="Note">Note</label>
+                            <div class="col-sm-10">
+                                <input asp-for="Note" autocomplete="off" class="form-control">
+                                <span asp-validation-for="Note" class="text-danger"></span>
+                            </div>
+                        </div>
+                    }
+
+
+                    <div class="card card-default">
+                        <div class="card-header bg-cyan">
+                            <h3 class="card-title fw-bold" style="color:#ffffff">Item</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <div class="card-body table-responsive p-0">
+                                <table id="tbldetailpr" class="table table-head-fixed text-nowrap table-bordered table-hover table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">No</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Number</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Name</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Supplier</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Measure</div></th>
+                                            <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff">Qty</div></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < Model.UnitRequestDetails.Count; i++)
+                                        {
+                                            var no = (Model.UnitRequestDetails.Count - Model.UnitRequestDetails.Count) + i + 1;
+
+                                            <tr id="R$@no" class="detailProduct">
+                                                <td class="row-index text-center"><p>@no</p></td>
+                                                <td class="text-left row-productNumber"><input class="detkodeproduk" asp-for="@Model.UnitRequestDetails[i].ProductNumber" type="hidden" value="@Model.UnitRequestDetails[i].ProductNumber">@Model.UnitRequestDetails[i].ProductNumber</td>
+                                                <td class="text-left row-productName"><input class="detnamaproduk" asp-for="@Model.UnitRequestDetails[i].ProductName" type="hidden" value="@Model.UnitRequestDetails[i].ProductName">@Model.UnitRequestDetails[i].ProductName</td>
+                                                <td class="text-left"><input class="detSupplier" asp-for="@Model.UnitRequestDetails[i].Supplier" type="hidden" value="@Model.UnitRequestDetails[i].Supplier">@Model.UnitRequestDetails[i].Supplier</td>
+                                                <td class="text-left"><input class="detsatuan" asp-for="@Model.UnitRequestDetails[i].Measurement" type="hidden" value="@Model.UnitRequestDetails[i].Measurement">@Model.UnitRequestDetails[i].Measurement</td>
+                                                <td class="text-center row-qty"><input class="text-center detqty" asp-for="@Model.UnitRequestDetails[i].Qty" type="hidden" value="@Model.UnitRequestDetails[i].Qty">@Model.UnitRequestDetails[i].Qty</td>                                                
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="5" class="text-right">Total Qty</th>
+                                            <td id="producttotalqty" class="text-center productTotalQty">@Model.QtyTotal</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- start button footer -->
+                    <div class="card card-orange">
+                        <div class="card-body">
+                            @if (Model.Status == "Request")
+                            {
+                                <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold" id="btnsimpan"><div style="color:#ffffff">Save</div></button>
+                                <a class="btn btn-default" asp-action="Index" asp-controller="ApprovalRequest" asp-area="Warehouse" id="btnbatal">Cancel</a>
+                            }
+                            else if (Model.Status == "Approved" || Model.Status == "Rejected")
+                            {
+                                <a class="btn btn-default" asp-action="Index" asp-controller="ApprovalRequest" asp-area="Warehouse" id="btnbatal">Cancel</a>
+                            }
+                        </div>
+                    </div>
+                    <!-- /.end button footer -->
+                </div>
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Gagal Simpan", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->
+@section Scripts {
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+        })
+    </script>
+}

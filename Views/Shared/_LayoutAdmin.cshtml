@@ -1,7 +1,9 @@
 ﻿﻿@using Microsoft.AspNetCore.Identity;
 @using PurchasingSystemDeveloper.Models;
 @inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
-
+@{
+    var listRole = Context.Session.GetString("ListRole");
+}
 <!DOCTYPE html>
 
 <html>
@@ -97,11 +99,14 @@
             <ul class="navbar-nav ml-auto">
 
                 <!-- Messages Dropdown Menu -->
+                @if (!string.IsNullOrEmpty(listRole) && listRole.Split(',').Contains("Approval Purchase Req"))
+                {
                 <li class="nav-item dropdown">
                     <a class="nav-link" data-toggle="dropdown" href="#">
                         <i class="far fa-bell"></i>
                         <span class="badge badge-danger navbar-badge" id="notifikasiCount"></span>
                     </a>
+                    
                     <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="max-height: 400px; max-width: 400px; overflow-x:auto; overflow-y: auto;" id="loggerContainer">
                         @* <a href="#" class="dropdown-item">
                             <!-- Message Start -->
@@ -120,7 +125,8 @@
                         <div class="dropdown-divider"></div>
                         <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
                     </div>
-                </li>
+                    </li>
+                }
 
                 <!-- Navbar Search -->
                 @if (signInManager.IsSignedIn(User))
@@ -162,156 +168,202 @@
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
                         <!-- Add icons to the links using the .nav-icon class
                              with font-awesome or any other icon font library -->
-                        <li class="@(ViewBag.Active == "Dashboard" ? "nav-item menu-open active":"")">
-                            <a asp-action="Index" is-active-route asp-controller="Home" class="nav-link">
-                                <i class="nav-icon fas fa-home" style="color:#FFFFFF"></i>
-                                <p style="color:#FFFFFF">
-                                    Dashboard
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-header">Administrator</li>
-                        <li class="@(ViewBag.Active == "MasterData" ? "nav-item menu-open active":"")">
-                            <a asp-action="Index" is-active-route asp-controller="Dashboard" asp-area="MasterData" class="nav-link">
-                                <i class="nav-icon fas fa-table" style="color:#FFFFFF"></i>
-                                <p style="color:#FFFFFF">
-                                    Master Data
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-header">Purchasing</li>
-                        <li class="@(ViewBag.Active == "PurchaseRequest" ? "nav-item menu-open active":"")">
-                            <a asp-action="Index" is-active-route asp-controller="PurchaseRequest" asp-area="Order" class="nav-link">
-                                <i class="nav-icon fas fa-cart-plus" style="color:#FFFFFF"></i>
-                                <p style="color:#FFFFFF">
-                                    Purchase Request @*<span class="float-right badge bg-info">@ViewBag.CountPurchaseRequestStatus</span>*@
-                                </p>
-                            </a>
-                        </li>
-                        <li class="@(ViewBag.Active == "Approval" ? "nav-item menu-open active":"")">
-                            <a asp-action="Index" is-active-route asp-controller="Approval" asp-area="Order" class="nav-link">
-                                <i class="nav-icon fas fa-calendar-check" style="color:#FFFFFF"></i>
-                                <p style="color:#FFFFFF">
-                                    Approval Purchase Req @*<span class="float-right badge bg-info">@ViewBag.CountPurchaseRequestStatus</span>*@
-                                </p>
-                            </a>
-                        </li>
-                        <li class="@(ViewBag.Active == "PurchaseOrder" ? "nav-item menu-open active":"")">
-                            <a asp-action="Index" is-active-route asp-controller="PurchaseOrder" asp-area="Order" class="nav-link">
-                                <i class="nav-icon fas fa-shopping-bag" style="color:#FFFFFF"></i>
-                                <p style="color:#FFFFFF">
-                                    Purchase Order @*<span class="float-right badge bg-info">@ViewBag.CountPurchaseRequestStatus</span>*@
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-header">Pharmacy</li>
-                        <li class="@(ViewBag.Active == "UnitRequest" ? "nav-item menu-open active":"")">
-                            <a asp-action="Index" is-active-route asp-controller="UnitRequest" asp-area="Transaction" class="nav-link">
-                                <i class="nav-icon fas fa-first-aid" style="color:#FFFFFF"></i>
-                                <p style="color:#FFFFFF">
-                                    Unit Request
-                                </p>
-                            </a>
-                        </li>
-                        <li class="@(ViewBag.Active == "ApprovalRequest" ? "nav-item menu-open active":"")">
-                            <a asp-action="Index" is-active-route asp-controller="ApprovalRequest" asp-area="Warehouse" class="nav-link">
-                                <i class="nav-icon fas fa-calendar-check" style="color:#FFFFFF"></i>
-                                <p style="color:#FFFFFF">
-                                    Approval Unit Request
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-header">Warehouse Management</li>
-                        <li class="@(ViewBag.Active == "ReceiveOrder" ? "nav-item menu-open active":"")">
-                            <a asp-action="Index" is-active-route asp-controller="ReceiveOrder" asp-area="Warehouse" class="nav-link">
-                                <i class="nav-icon fas fa-box-open" style="color:#FFFFFF"></i>
-                                <p style="color:#FFFFFF">
-                                    Receive Order
-                                </p>
-                            </a>
-                        </li>
-                        <li class="@(ViewBag.Active == "QtyDifference" ? "nav-item menu-open active":"")">
-                            <a asp-action="Index" is-active-route asp-controller="QtyDifference" asp-area="Warehouse" class="nav-link">
-                                <i class="nav-icon fas fa-truck-loading" style="color:#FFFFFF"></i>
-                                <p style="color:#FFFFFF">
-                                    Qty Difference
-                                </p>
-                            </a>
-                        </li>
-                        <li class="@(ViewBag.Active == "ApprovalQtyDifference" ? "nav-item menu-open active":"")">
-                            <a asp-action="Index" is-active-route asp-controller="ApprovalQtyDifference" asp-area="Order" class="nav-link">
-                                <i class="nav-icon fas fa-calendar-check" style="color:#FFFFFF"></i>
-                                <p style="color:#FFFFFF">
-                                    Approval Qty Difference
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-header">General</li>
-                        <li class="@(ViewBag.Active == "Stock Monitoring" ? "nav-item menu-open active":"")">
-                            <a asp-action="Index" is-active-route asp-controller="StockMonitoring" asp-area="General" class="nav-link">
-                                <i class="nav-icon fas fa-clipboard-list" style="color:#FFFFFF"></i>
-                                <p style="color:#FFFFFF">
-                                    Stock Monitoring
-                                </p>
-                            </a>
-                        </li>
-                        <li class="@(ViewBag.Active == "KPI" ? "nav-item menu-open active":"")">
-                            <a asp-action="Index" is-active-route asp-controller="KeyPerformanceIndicator" asp-area="Transaction" class="nav-link">
-                                <i class="nav-icon fa-solid fa-key" style="color:#FFFFFF"></i>
-                                <p style="color:#FFFFFF">
-                                    KPI
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-header">Reporting</li>
-                        <li class="@(ViewBag.Active == "Report" ? "nav-item menu-open active":"")">
-                            <a asp-action="Index" is-active-route asp-controller="Dashboard" asp-area="Report" class="nav-link">
-                                <i class="nav-icon fas fa-file-alt" style="color:#FFFFFF"></i>
-                                <p style="color:#FFFFFF">
-                                    Report
-                                </p>
-                            </a>
-                        </li>
-                        @*<li class="nav-item">
-                            <a asp-action="Index" is-active-route asp-controller="Home" class="nav-link">
-                                <i class="nav-icon fas fa-receipt" style="color:#FFFFFF"></i>
-                                <p style="color:#FFFFFF">
-                                    Surat Jalan
-                                </p>
-                            </a>
-                        </li>                        
-                        <li class="nav-item">
-                            <a asp-action="Index" is-active-route asp-controller="Home" class="nav-link">
-                                <i class="nav-icon fas fa-truck-moving" style="color:#FFFFFF"></i>
-                                <p style="color:#FFFFFF">
-                                    Pengiriman Barang
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a asp-action="Index" is-active-route asp-controller="Home" class="nav-link">
-                                <i class="nav-icon fas fa-file-invoice" style="color:#FFFFFF"></i>
-                                <p style="color:#FFFFFF">
-                                    Invoice
-                                </p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a asp-action="Index" is-active-route asp-controller="Home" class="nav-link">
-                                <i class="nav-icon fas fa-cash-register" style="color:#FFFFFF"></i>
-                                <p style="color:#FFFFFF">
-                                    Pembayaran
-                                </p>
-                            </a>
-                        </li>                        
-                        <li class="nav-item">
-                            <a asp-action="Index" is-active-route asp-controller="Home" class="nav-link">
-                                <i class="nav-icon fas fa-file-invoice" style="color:#FFFFFF"></i>
-                                <p style="color:#FFFFFF">
-                                    Laporan
-                                </p>
-                            </a>
-                        </li>*@
+                        @if (!string.IsNullOrEmpty(listRole))
+                        {
+                            var roles = listRole.Split(',');
+                            if (roles.Contains("Dashboard"))
+                            {
+                                <li class="@(ViewBag.Active == "Dashboard" ? "nav-item menu-open active":"")">
+                                    <a asp-action="Index" is-active-route asp-controller="Home" class="nav-link">
+                                        <i class="nav-icon fas fa-home" style="color:#FFFFFF"></i>
+                                        <p style="color:#FFFFFF">
+                                            Dashboard
+                                        </p>
+                                    </a>
+                                </li>
+                            }
+                           @*  if (roles.Contains("Master Data"))
+                            { *@
+                                <li class="nav-header">Administrator</li>
+                                <li class="@(ViewBag.Active == "MasterData" ? "nav-item menu-open active":"")">
+                                    <a asp-action="Index" is-active-route asp-controller="Dashboard" asp-area="MasterData" class="nav-link">
+                                        <i class="nav-icon fas fa-table" style="color:#FFFFFF"></i>
+                                        <p style="color:#FFFFFF">
+                                            Master Data
+                                        </p>
+                                    </a>
+                                </li>
+                            @* } *@
+                            if (roles.Contains("Purchase Request"))
+                            {
+                                <li class="nav-header">Purchasing</li>
+                                <li class="@(ViewBag.Active == "PurchaseRequest" ? "nav-item menu-open active":"")">
+                                    <a asp-action="Index" is-active-route asp-controller="PurchaseRequest" asp-area="Order" class="nav-link">
+                                        <i class="nav-icon fas fa-cart-plus" style="color:#FFFFFF"></i>
+                                        <p style="color:#FFFFFF">
+                                            Purchase Request @*<span class="float-right badge bg-info">@ViewBag.CountPurchaseRequestStatus</span>*@
+                                        </p>
+                                    </a>
+                                </li>
+                            }
+
+                            if (roles.Contains("Approval Purchase Req"))
+                            {
+                                <li class="@(ViewBag.Active == "Approval" ? "nav-item menu-open active":"")">
+                                    <a asp-action="Index" is-active-route asp-controller="Approval" asp-area="Order" class="nav-link">
+                                        <i class="nav-icon fas fa-calendar-check" style="color:#FFFFFF"></i>
+                                        <p style="color:#FFFFFF">
+                                            Approval Purchase Req @*<span class="float-right badge bg-info">@ViewBag.CountPurchaseRequestStatus</span>*@
+                                        </p>
+                                    </a>
+                                </li>
+                            }
+                            if (roles.Contains("Purchase Order"))
+                            {
+                                <li class="@(ViewBag.Active == "PurchaseOrder" ? "nav-item menu-open active":"")">
+                                    <a asp-action="Index" is-active-route asp-controller="PurchaseOrder" asp-area="Order" class="nav-link">
+                                        <i class="nav-icon fas fa-shopping-bag" style="color:#FFFFFF"></i>
+                                        <p style="color:#FFFFFF">
+                                            Purchase Order @*<span class="float-right badge bg-info">@ViewBag.CountPurchaseRequestStatus</span>*@
+                                        </p>
+                                    </a>
+                                </li>
+                            }
+                            if (roles.Contains("Unit Request"))
+                            {
+                                <li class="nav-header">Pharmacy</li>
+                                <li class="@(ViewBag.Active == "UnitRequest" ? "nav-item menu-open active":"")">
+                                    <a asp-action="Index" is-active-route asp-controller="UnitRequest" asp-area="Transaction" class="nav-link">
+                                    <i class="nav-icon fas fa-first-aid" style="color:#FFFFFF"></i>
+                                    <p style="color:#FFFFFF">
+                                        Unit Request
+                                    </p>
+                                    </a>
+                                </li>
+                            }
+                            if (roles.Contains("Approval Unit Request"))
+                            {
+                                <li class="@(ViewBag.Active == "ApprovalRequest" ? "nav-item menu-open active":"")">
+                                    <a asp-action="Index" is-active-route asp-controller="ApprovalRequest" asp-area="Warehouse" class="nav-link">
+                                        <i class="nav-icon fas fa-calendar-check" style="color:#FFFFFF"></i>
+                                        <p style="color:#FFFFFF">
+                                            Approval Unit Request
+                                        </p>
+                                    </a>
+                                </li>
+                            }
+                            if (roles.Contains("Receive Order"))
+                            {
+                                <li class="nav-header">Warehouse Management</li>
+                                <li class="@(ViewBag.Active == "ReceiveOrder" ? "nav-item menu-open active":"")">
+                                    <a asp-action="Index" is-active-route asp-controller="ReceiveOrder" asp-area="Warehouse" class="nav-link">
+                                        <i class="nav-icon fas fa-box-open" style="color:#FFFFFF"></i>
+                                        <p style="color:#FFFFFF">
+                                            Receive Order
+                                        </p>
+                                    </a>
+                                </li>
+                            }
+                            if (roles.Contains("Qty Difference"))
+                            {
+                                <li class="@(ViewBag.Active == "QtyDifference" ? "nav-item menu-open active":"")">
+                                    <a asp-action="Index" is-active-route asp-controller="QtyDifference" asp-area="Warehouse" class="nav-link">
+                                        <i class="nav-icon fas fa-truck-loading" style="color:#FFFFFF"></i>
+                                        <p style="color:#FFFFFF">
+                                            Qty Difference
+                                        </p>
+                                    </a>
+                                </li>
+                            }
+                            if (roles.Contains("Approval Qty Difference"))
+                            {
+                                <li class="@(ViewBag.Active == "ApprovalQtyDifference" ? "nav-item menu-open active":"")">
+                                    <a asp-action="Index" is-active-route asp-controller="ApprovalQtyDifference" asp-area="Order" class="nav-link">
+                                        <i class="nav-icon fas fa-calendar-check" style="color:#FFFFFF"></i>
+                                        <p style="color:#FFFFFF">
+                                            Approval Qty Difference
+                                        </p>
+                                    </a>
+                                </li>
+                            }
+                            if (roles.Contains("Stock Monitoring"))
+                            {
+                                <li class="nav-header">General</li>
+                                <li class="@(ViewBag.Active == "Stock Monitoring" ? "nav-item menu-open active":"")">
+                                    <a asp-action="Index" is-active-route asp-controller="StockMonitoring" asp-area="General" class="nav-link">
+                                        <i class="nav-icon fas fa-clipboard-list" style="color:#FFFFFF"></i>
+                                        <p style="color:#FFFFFF">
+                                            Stock Monitoring
+                                        </p>
+                                    </a>
+                                </li>
+                            }
+                            if (roles.Contains("KPI"))
+                            {
+                                <li class="@(ViewBag.Active == "KPI" ? "nav-item menu-open active":"")">
+                                    <a asp-action="Index" is-active-route asp-controller="KeyPerformanceIndicator" asp-area="Transaction" class="nav-link">
+                                        <i class="nav-icon fa-solid fa-key" style="color:#FFFFFF"></i>
+                                        <p style="color:#FFFFFF">
+                                            KPI
+                                        </p>
+                                    </a>
+                                </li>
+                            }
+                            if (roles.Contains("Report"))
+                            {
+                                <li class="nav-header">Reporting</li>
+                                <li class="@(ViewBag.Active == "Report" ? "nav-item menu-open active":"")">
+                                    <a asp-action="Index" is-active-route asp-controller="Dashboard" asp-area="Report" class="nav-link">
+                                        <i class="nav-icon fas fa-file-alt" style="color:#FFFFFF"></i>
+                                        <p style="color:#FFFFFF">
+                                            Report
+                                        </p>
+                                    </a>
+                                </li>
+                            }
+                        }
+                       @*   if (roles.Contains("Approval"))
+                                {
+                            <li class="nav-item">
+                                <a asp-action="Index" is-active-route asp-controller="Home" class="nav-link">
+                                    <i class="nav-icon fas fa-receipt" style="color:#FFFFFF"></i>
+                                    <p style="color:#FFFFFF">
+                                        Surat Jalan
+                                    </p>
+                                </a>
+                            </li>                        
+                            <li class="nav-item">
+                                <a asp-action="Index" is-active-route asp-controller="Home" class="nav-link">
+                                    <i class="nav-icon fas fa-truck-moving" style="color:#FFFFFF"></i>
+                                    <p style="color:#FFFFFF">
+                                        Pengiriman Barang
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-action="Index" is-active-route asp-controller="Home" class="nav-link">
+                                    <i class="nav-icon fas fa-file-invoice" style="color:#FFFFFF"></i>
+                                    <p style="color:#FFFFFF">
+                                        Invoice
+                                    </p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a asp-action="Index" is-active-route asp-controller="Home" class="nav-link">
+                                    <i class="nav-icon fas fa-cash-register" style="color:#FFFFFF"></i>
+                                    <p style="color:#FFFFFF">
+                                        Pembayaran
+                                    </p>
+                                </a>
+                            </li>                        
+                            <li class="nav-item">
+                                <a asp-action="Index" is-active-route asp-controller="Home" class="nav-link">
+                                    <i class="nav-icon fas fa-file-invoice" style="color:#FFFFFF"></i>
+                                    <p style="color:#FFFFFF">
+                                        Laporan
+                                    </p>
+                                </a>
+                            </li>*@
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->

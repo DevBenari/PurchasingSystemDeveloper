@@ -160,15 +160,17 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
             var fourStar = getApproval.Count(x => x.RemainingDay == 0);
             var threeStar = getPurchaseOrder.Count(x => x.Status != "In Order");
             var twoStar = getApproval.Count(x => x.RemainingDay == -14);
-            var oneStar = getApproval.Count(x => x.RemainingDay > -30);
+            var oneStar = getApproval.Count(x => x.RemainingDay < -30);
+            var data = getApproval.Count();
 
             var kpiRate = new
             {
+                Data = data,
                 FiveStart = fiveStar,
                 FourStar = fourStar,
-                threeStar = threeStar,
-                twoStar = twoStar,
-                oneStar = oneStar
+                ThreeStar = threeStar,
+                TwoStar = twoStar,
+                OneStar = oneStar
             };
             return Json(kpiRate);
         }

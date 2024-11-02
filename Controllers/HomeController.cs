@@ -58,8 +58,8 @@ namespace PurchasingSystemDeveloper.Controllers
             IApprovalRepository approvalRepository,
             IQtyDifferenceRepository qtyDifferenceRepository,
             IApprovalQtyDifferenceRepository approvalQtyDifferenceRepository,
-            
-            IHostingEnvironment hostingEnvironment)
+
+            IHostingEnvironment hostingEnvironment,
             
             IUnitRequestRepository unitRequestRepository,
             IApprovalUnitRequestRepository approvalUnitRequestRepository)

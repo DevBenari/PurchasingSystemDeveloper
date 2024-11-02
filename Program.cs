@@ -89,6 +89,7 @@ builder.Services.AddScoped<IWarehouseLocationRepository>();
 builder.Services.AddScoped<IUnitLocationRepository>();
 builder.Services.AddScoped<IDepartmentRepository>();
 builder.Services.AddScoped<IPositionRepository>();
+builder.Services.AddScoped<IGroupRoleRepository>();
 builder.Services.AddSignalR();
 #endregion
 

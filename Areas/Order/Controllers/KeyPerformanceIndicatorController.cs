@@ -8,15 +8,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol;
 using PurchasingSystemDeveloper.Areas.MasterData.Models;
 using PurchasingSystemDeveloper.Areas.MasterData.Repositories;
+using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
 using PurchasingSystemDeveloper.Areas.Order.Models;
 using PurchasingSystemDeveloper.Areas.Order.Repositories;
 using PurchasingSystemDeveloper.Areas.Order.ViewModels;
 using PurchasingSystemDeveloper.Areas.Transaction.Repositories;
 using PurchasingSystemDeveloper.Data;
 using PurchasingSystemDeveloper.Models;
+using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics.Metrics;
+using System.Reflection.Metadata.Ecma335;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 namespace PurchasingSystemDeveloper.Areas.Order.Controllers
 {
@@ -30,7 +35,6 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
         private readonly IApprovalRepository _approvalRepository;
         private readonly IPurchaseOrderRepository _purchaseOrderRepository;
         private readonly IPurchaseRequestRepository _purchaseRequestRepository;
-        private readonly IQtyDifferenceRequestRepository _qtyDifferenceRequestRepository;
         private readonly IUserActiveRepository _userActiveRepository;
 
         public KeyPerformanceIndicatorController(
@@ -40,7 +44,6 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
             IApprovalRepository approvalRepository,
             IPurchaseOrderRepository purchaseOrderRepository,
             IPurchaseRequestRepository purchaseRequestRepository,
-            IQtyDifferenceRequestRepository qtyDifferenceRequestRepository,
             IUserActiveRepository userActiveRepository
         )
         {
@@ -50,7 +53,6 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
             _approvalRepository = approvalRepository;   
             _purchaseOrderRepository = purchaseOrderRepository;
             _purchaseRequestRepository = purchaseRequestRepository;
-            _qtyDifferenceRequestRepository = qtyDifferenceRequestRepository;
             _userActiveRepository = userActiveRepository;
         }
 
@@ -60,7 +62,47 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
         {
             ViewBag.Active = "KeyPerformanceIndikator";
             var data = _purchaseRequestRepository.GetAllPurchaseRequest();
-            return View(data);
+
+            var checkUserLogin = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+            var getUserActive = _userActiveRepository.GetAllUser().Where(c => c.UserActiveCode == checkUserLogin.KodeUser).FirstOrDefault();
+            var userLogin = _userActiveRepository.GetAllUserLogin().Where(u => u.IsOnline == true).ToList();
+            var user = _userActiveRepository.GetAllUser().Where(u => u.FullName == checkUserLogin.NamaUser).FirstOrDefault();
+
+            if (user != null)
+            {
+                UserActiveViewModel viewModel = new UserActiveViewModel
+                {
+                    UserActiveId = user.UserActiveId,
+                    UserActiveCode = user.UserActiveCode,
+                    FullName = user.FullName,
+                    IdentityNumber = user.IdentityNumber,
+                    DepartmentId = user.DepartmentId,
+                    Department = user.Department.DepartmentName,
+                    PositionId = user.PositionId,
+                    Position = user.Position.PositionName,
+                    PlaceOfBirth = user.PlaceOfBirth,
+                    DateOfBirth = user.DateOfBirth,
+                    Gender = user.Gender,
+                    Address = user.Address,
+                    Handphone = user.Handphone,
+                    Email = user.Email,
+                    UserPhotoPath = user.Foto
+                };
+
+                return View(viewModel);
+            }
+            else if (user == null && checkUserLogin.NamaUser == "SuperAdmin")
+            {
+                UserActiveViewModel viewModel = new UserActiveViewModel
+                {
+                    UserActiveCode = checkUserLogin.KodeUser,
+                    FullName = checkUserLogin.NamaUser,
+                    Email = checkUserLogin.Email
+                };
+                return View(viewModel);
+            }
+
+            return View();
         }
 
         [HttpPost]

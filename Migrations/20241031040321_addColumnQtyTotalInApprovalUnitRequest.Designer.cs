@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PurchasingSystemDeveloper.Data;
 
@@ -11,9 +12,10 @@ using PurchasingSystemDeveloper.Data;
 namespace PurchasingSystemDeveloper.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241031040321_addColumnQtyTotalInApprovalUnitRequest")]
+    partial class addColumnQtyTotalInApprovalUnitRequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1751,6 +1753,9 @@ namespace PurchasingSystemDeveloper.Migrations
 
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("QtyTotal")
+                        .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .IsRequired()

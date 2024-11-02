@@ -21,6 +21,7 @@
 
             <form enctype="multipart/form-data" asp-controller="UnitRequest" asp-action="DetailUnitRequest" method="post" class="form-horizontal">
                 <div class="card-body">
+                    <input asp-for="UnitRequestId" type="hidden" />
                     <input asp-for="Status" id="Status" value="Request" type="hidden">
                     <input asp-for="UserAccessId" id="UserAccessId" type="hidden">
 
@@ -36,6 +37,20 @@
                         </div>
                     </div>
                     <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="UserApprove1Id">
+                            Approve 1
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="UserApprove1Id" asp-items="@ViewBag.Approval" class="form-control select2bs4" id="UserApprove1List" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Choose User--</option>
+                            </select>
+                            <div class="col-sm-12">
+                                <label asp-for="MessageApprove1" class="col-form-label text-success">Note : @Html.DisplayFor(x => x.MessageApprove1)</label>
+                            </div>
+                            <span asp-validation-for="UserApprove1Id" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
                         <label class="col-sm-2 col-form-label" asp-for="UnitLocationId">
                             Unit Location
                         </label>
@@ -45,18 +60,7 @@
                             </select>
                             <span asp-validation-for="UnitLocationId" class="error"></span>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" asp-for="UnitRequestManagerId">
-                            Request By
-                        </label>
-                        <div class="col-sm-10">
-                            <select asp-for="UnitRequestManagerId" asp-items="@ViewBag.RequestBy" class="form-control select2bs4" id="RequestBy" style="width: 100%;" disabled>
-                                <option value="" hidden disabled selected>--Choose User--</option>
-                            </select>
-                            <span asp-validation-for="UnitRequestManagerId" class="error"></span>
-                        </div>
-                    </div>
+                    </div>                    
                     <div class="form-group row">
                         <label class="col-sm-2 col-form-label" asp-for="WarehouseLocationId">
                             Warehouse Location
@@ -67,18 +71,7 @@
                             </select>
                             <span asp-validation-for="WarehouseLocationId" class="error"></span>
                         </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" asp-for="WarehouseApprovalId">
-                            Warehouse Approval
-                        </label>
-                        <div class="col-sm-10">
-                            <select asp-for="WarehouseApprovalId" asp-items="@ViewBag.Approval" class="form-control select2bs4" id="WarehouseApproval" style="width: 100%;" disabled>
-                                <option value="" hidden disabled selected>--Choose User--</option>
-                            </select>
-                            <span asp-validation-for="WarehouseApprovalId" class="error"></span>
-                        </div>
-                    </div>
+                    </div>                   
                     <div class="form-group row">
                         <label class="col-sm-2 col-form-label" asp-for="Note">Note</label>
                         <div class="col-sm-10">
@@ -93,129 +86,168 @@
                     </div>
                     <!-- /.card-header -->
                     <div class="card-body">
-                        <div class="form-group row">
-                            <div class="col-sm-5">
-                                <div class="form-group">
-                                    <select asp-items="@ViewBag.Product" class="form-control select2bs4" style="width: 100%;" id="produklist" data-placeholder="--Choose Product--">
-                                        <option value="" hidden disabled selected>--Choose Product--</option>
-                                    </select>
+                        @if (Model.ApproveStatusUser1 == null)
+                        {
+                            <div class="form-group row" id="inputProduct">
+                                <div class="col-sm-5">
+                                    <span>Search Product</span>
+                                    <div class="form-group">
+                                        <select asp-items="@ViewBag.Product" class="form-control select2bs4" style="width: 100%;" id="produklist" data-placeholder="--Choose Product--">
+                                            <option value="" hidden disabled selected>--Choose Product--</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-1">
+                                    <span>Qty</span>
+                                    <input autocomplete="off" class="form-control" type="number" pattern="/^-?\d+\.?\d*$/" onKeyUp="qtyInput(this.value)" onKeyPress="if(this.value.length==4) return false;" min="1" max="1000" id="qty" placeholder="Qty">
+                                    <span class="error">Required !</span>
+                                </div>
+                                <div class="col-sm-2">
+                                    <span>&nbsp;</span>
+                                    <div class="form-group">
+                                        @if (signInManager.IsSignedIn(User))
+                                        {
+                                            <a class="btn bg-indigo" id="btnAdd">
+                                                <div style="color:#ffffff">Add to Table</div>
+                                            </a>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-sm-1">
+                                    <input autocomplete="off" class="form-control" id="minstock" type="hidden" placeholder="Min Stock" readonly>
+                                </div>
+                                <div class="col-sm-1">
+                                    <input autocomplete="off" class="form-control" id="maxstock" type="hidden" placeholder="Max Stock" readonly>
+                                </div>
+                                <div class="col-sm-2">
+                                    <input autocomplete="off" class="form-control" id="bufferstock" type="hidden" placeholder="Buffer Stock" readonly>
                                 </div>
                             </div>
-                            <div class="col-sm-1">
-                                <input autocomplete="off" class="form-control" type="number" pattern="/^-?\d+\.?\d*$/" onKeyUp="qtyInput(this.value)" onKeyPress="if(this.value.length==4) return false;" min="1" max="1000" id="qty" placeholder="Qty">
-                                <span class="error">Required !</span>
-                            </div>
-                            <div class="col-sm-2">
-                                <div class="form-group">
-                                    @if (signInManager.IsSignedIn(User))
-                                    {
-                                        <a class="btn bg-indigo" id="btnAdd">
-                                            <div style="color:#ffffff">Add to Table</div>
-                                        </a>
-                                    }
+
+                            <div class="form-group row" id="descriptionProduct">
+                                <div class="col-sm-3" id="GroupProductNumber">
+                                    <span>Product Number</span>
+                                    <input autocomplete="off" class="form-control" id="productnumber" placeholder="Product Number" readonly>
+                                    <span class="error">Required !</span>
+                                </div>
+                                <div class="col-sm-4" id="GroupProductName">
+                                    <span>Product Name</span>
+                                    <input autocomplete="off" class="form-control" id="productname" placeholder="Product Name" readonly>
+                                    <span class="error">Required !</span>
+                                </div>
+                                <div class="col-sm-2" id="GroupStock">
+                                    <span>Stock</span>
+                                    <input autocomplete="off" class="form-control" id="stock" placeholder="Stock" readonly>
+                                    <span class="error">Required !</span>
+                                </div>
+                                <div class="col-sm-2" id="GroupSupplier">
+                                    <span>Supplier</span>
+                                    <input autocomplete="off" class="form-control" id="Supplier" placeholder="Supplier" readonly>
+                                    <span class="error">Required !</span>
+                                </div>
+                                <div class="col-sm-1" id="GroupMeasure">
+                                    <span>Measure</span>
+                                    <input autocomplete="off" class="form-control" id="measure" placeholder="Measure" readonly>
+                                    <span class="error">Required !</span>
                                 </div>
                             </div>
-                            <div class="col-sm-1">
-                                <input autocomplete="off" class="form-control" id="minstock" type="hidden" placeholder="Min Stock" readonly>
-                            </div>
-                            <div class="col-sm-1">
-                                <input autocomplete="off" class="form-control" id="maxstock" type="hidden" placeholder="Max Stock" readonly>
-                            </div>
-                            <div class="col-sm-2">
-                                <input autocomplete="off" class="form-control" id="bufferstock" type="hidden" placeholder="Buffer Stock" readonly>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <div class="col-sm-3">
-                                <span>Product Number</span>
-                                <input autocomplete="off" class="form-control" id="productnumber" placeholder="Product Number" readonly>
-                                <span class="error">Required !</span>
-                            </div>
-                            <div class="col-sm-4">
-                                <span>Product Name</span>
-                                <input autocomplete="off" class="form-control" id="productname" placeholder="Product Name" readonly>
-                                <span class="error">Required !</span>
-                            </div>
-                            <div class="col-sm-2">
-                                <span>Stock</span>
-                                <input autocomplete="off" class="form-control" id="stock" placeholder="Stock" readonly>
-                                <span class="error">Required !</span>
-                            </div>
-                            <div class="col-sm-2">
-                                <span>Supplier</span>
-                                <input autocomplete="off" class="form-control" id="Supplier" placeholder="Supplier" readonly>
-                                <span class="error">Required !</span>
-                            </div>
-                            <div class="col-sm-1">
-                                <span>Measure</span>
-                                <input autocomplete="off" class="form-control" id="measure" placeholder="Measure" readonly>
-                                <span class="error">Required !</span>
-                            </div>
-                        </div>
 
-                        <div class="card-body table-responsive p-0">
-                            <table id="tbldetailpr" class="table table-head-fixed text-nowrap table-bordered table-hover table-striped">
-                                <thead>
-                                    <tr>
-                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">No</div></th>
-                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Number</div></th>
-                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Name</div></th>
-                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Supplier</div></th>
-                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Measure</div></th>
-                                        <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff">Qty</div></th>
-                                        <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff"></div></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @for (int i = 0; i < Model.UnitRequestDetails.Count; i++)
-                                    {
-                                        var no = (Model.UnitRequestDetails.Count - Model.UnitRequestDetails.Count) + i + 1;
-
-                                        <tr id="R$@no" class="detailProduct">
-                                            <td class="row-index text-center"><p>@no</p></td>
-                                            <td class="text-left row-productNumber"><input class="detProductNumber" asp-for="@Model.UnitRequestDetails[i].ProductNumber" type="hidden" value="@Model.UnitRequestDetails[i].ProductNumber">@Model.UnitRequestDetails[i].ProductNumber</td>
-                                            <td class="text-left row-productName"><input class="detProductName" asp-for="@Model.UnitRequestDetails[i].ProductName" type="hidden" value="@Model.UnitRequestDetails[i].ProductName">@Model.UnitRequestDetails[i].ProductName</td>
-                                            <td class="text-left"><input class="detSupplier" asp-for="@Model.UnitRequestDetails[i].Supplier" type="hidden" value="@Model.UnitRequestDetails[i].Supplier">@Model.UnitRequestDetails[i].Supplier</td>
-                                            <td class="text-left"><input class="detMeasurement" asp-for="@Model.UnitRequestDetails[i].Measurement" type="hidden" value="@Model.UnitRequestDetails[i].Measurement">@Model.UnitRequestDetails[i].Measurement</td>
-                                            <td class="text-center row-qty"><input class="detQty" asp-for="@Model.UnitRequestDetails[i].Qty" type="hidden" value="@Model.UnitRequestDetails[i].Qty">@Model.UnitRequestDetails[i].Qty</td>                                            
-                                            <td class="text-center"><button class="btn btn-danger btn-sm">X</button></td>
+                            <div class="card-body table-responsive p-0">
+                                <table id="tbldetailpr" class="table table-head-fixed text-nowrap table-bordered table-hover table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">No</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Number</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Name</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Supplier</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Measure</div></th>
+                                            <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff">Qty</div></th>
+                                            <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff"></div></th>
                                         </tr>
-                                    }
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td colspan="5" class="text-right"><b>Total Qty</b></td>
-                                        <td id="producttotalqty" class="text-center productTotalQty">@Model.QtyTotal</td>
-                                        <td></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < Model.UnitRequestDetails.Count; i++)
+                                        {
+                                            var no = (Model.UnitRequestDetails.Count - Model.UnitRequestDetails.Count) + i + 1;
+
+                                            <tr id="R$@no" class="detailProduct">
+                                                <td class="row-index text-center"><p>@no</p></td>
+                                                <td class="text-left row-productNumber"><input class="detProductNumber" asp-for="@Model.UnitRequestDetails[i].ProductNumber" type="hidden" value="@Model.UnitRequestDetails[i].ProductNumber">@Model.UnitRequestDetails[i].ProductNumber</td>
+                                                <td class="text-left row-productName"><input class="detProductName" asp-for="@Model.UnitRequestDetails[i].ProductName" type="hidden" value="@Model.UnitRequestDetails[i].ProductName">@Model.UnitRequestDetails[i].ProductName</td>
+                                                <td class="text-left"><input class="detSupplier" asp-for="@Model.UnitRequestDetails[i].Supplier" type="hidden" value="@Model.UnitRequestDetails[i].Supplier">@Model.UnitRequestDetails[i].Supplier</td>
+                                                <td class="text-left"><input class="detMeasurement" asp-for="@Model.UnitRequestDetails[i].Measurement" type="hidden" value="@Model.UnitRequestDetails[i].Measurement">@Model.UnitRequestDetails[i].Measurement</td>
+                                                <td class="text-center row-qty"><input class="detQty" asp-for="@Model.UnitRequestDetails[i].Qty" type="hidden" value="@Model.UnitRequestDetails[i].Qty">@Model.UnitRequestDetails[i].Qty</td>
+                                                <td class="text-center"><button class="btn btn-danger btn-sm">X</button></td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="5" class="text-right"><b>Total Qty</b></td>
+                                            <td id="producttotalqty" class="text-center productTotalQty">@Model.QtyTotal</td>
+                                            <td></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="card-body table-responsive p-0">
+                                <table id="tbldetailpr" class="table table-head-fixed text-nowrap table-bordered table-hover table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">No</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Number</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Name</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Supplier</div></th>
+                                            <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Measure</div></th>
+                                            <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff">Qty</div></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @for (int i = 0; i < Model.UnitRequestDetails.Count; i++)
+                                        {
+                                            var no = (Model.UnitRequestDetails.Count - Model.UnitRequestDetails.Count) + i + 1;
+
+                                            <tr id="R$@no" class="detailProduct">
+                                                <td class="row-index text-center"><p>@no</p></td>
+                                                <td class="text-left row-productNumber"><input class="detProductNumber" asp-for="@Model.UnitRequestDetails[i].ProductNumber" type="hidden" value="@Model.UnitRequestDetails[i].ProductNumber">@Model.UnitRequestDetails[i].ProductNumber</td>
+                                                <td class="text-left row-productName"><input class="detProductName" asp-for="@Model.UnitRequestDetails[i].ProductName" type="hidden" value="@Model.UnitRequestDetails[i].ProductName">@Model.UnitRequestDetails[i].ProductName</td>
+                                                <td class="text-left"><input class="detSupplier" asp-for="@Model.UnitRequestDetails[i].Supplier" type="hidden" value="@Model.UnitRequestDetails[i].Supplier">@Model.UnitRequestDetails[i].Supplier</td>
+                                                <td class="text-left"><input class="detMeasurement" asp-for="@Model.UnitRequestDetails[i].Measurement" type="hidden" value="@Model.UnitRequestDetails[i].Measurement">@Model.UnitRequestDetails[i].Measurement</td>
+                                                <td class="text-center row-qty"><input class="detQty" asp-for="@Model.UnitRequestDetails[i].Qty" type="hidden" value="@Model.UnitRequestDetails[i].Qty">@Model.UnitRequestDetails[i].Qty</td>                                             
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="5" class="text-right"><b>Total Qty</b></td>
+                                            <td id="producttotalqty" class="text-center productTotalQty">@Model.QtyTotal</td>                                            
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        }
                     </div>
                 </div>
 
                 <!-- start button footer -->
                 <div class="card card-orange">
                     <div class="card-body">
-                        @if (Model.Status == "Request")
+                        @if (Model.ApproveStatusUser1 == null)
                         {
                             @****Perhatikan type nya jika submit akan berbeda hasil pada json, jadi pakai type button*@
-                            <input type="button" value="Simpan" id="submit" class="btn btn-primary bg-red float-left fw-bold">
-                            <a class="btn bg-indigo" id="btnubah">Ubah</a>
-                            <a class="btn bg-indigo" id="btnbatalubah">Batal Ubah</a>
+                            <input type="button" value="Save" id="submit" class="btn btn-primary bg-indigo float-left fw-bold">
+                            <a class="btn bg-indigo" id="btnubah">Change</a>
                             <a class="btn bg-indigo" asp-action="PrintUnitRequest" asp-controller="UnitRequest" asp-area="Transaction" asp-route-id="@Model.UnitRequestId"><i class="fas fa-print" style="color:white"></i></a>
-                            <a class="btn btn-default" id="btnbatal" asp-action="Index" asp-controller="UnitRequest">Batal</a>
-                        }
-                        else if (Model.Status == "Approved")
-                        {
-                            <a class="btn btn-success" asp-action="GenerateRequest" asp-controller="UnitRequest" asp-area="Transaction" asp-route-id="@Model.UnitRequestId">Generate Request</a>
-                            <a class="btn bg-indigo" asp-action="PrintUnitRequest" asp-controller="UnitRequest" asp-area="Transaction" asp-route-id="@Model.UnitRequestId"><i class="fas fa-print" style="color:white"></i></a>
-                            <a class="btn btn-default" id="btnbatal" asp-action="Index" asp-controller="UnitRequest">Batal</a>
+                            <a class="btn btn-default" id="btnbatalubah">Cancel Change</a>
+                            <a class="btn btn-default" id="btnbatal" asp-action="Index" asp-controller="UnitRequest">Cancel</a>
                         }
                         else
                         {
                             <a class="btn bg-indigo" asp-action="PrintUnitRequest" asp-controller="UnitRequest" asp-area="Transaction" asp-route-id="@Model.UnitRequestId"><i class="fas fa-print" style="color:white"></i></a>
-                            <a class="btn btn-default" id="btnbatal" asp-action="Index" asp-controller="UnitRequest">Batal</a>
+                            <a class="btn btn-default" id="btnbatal" asp-action="Index" asp-controller="UnitRequest">Cancel</a>
                         }
                     </div>
                 </div>
@@ -247,8 +279,9 @@
     <script>
         $(function () {
             $("#submit").hide();
-            $("#btnbatalubah").hide();
-            $("#btnAdd").hide();
+            $("#btnbatalubah").hide();                      
+            $("#inputProduct").hide();
+            $("#descriptionProduct").hide();
             $(".btn-sm").hide();
 
             $("#btnubah").click(function () {
@@ -256,18 +289,17 @@
                 $("#btnbatal").hide();
                 $("#submit").show();
                 $("#btnbatalubah").show();
-                $("#btnAdd").show();
+                $("#inputProduct").show();
+                $("#descriptionProduct").show();
                 $(".btn-sm").show();
-                $("#produklist").show();
-                $("#qty").show();
+                $("#qty").show();                
 
                 document.getElementById("UnitRequestNumber").disabled = false;
-                document.getElementById("UnitLocation").disabled = false;
-                document.getElementById("RequestBy").disabled = false;
-                document.getElementById("WarehouseLocation").disabled = false;
-                document.getElementById("WarehouseApproval").disabled = false;
+                document.getElementById("UserApprove1List").disabled = true;
+                document.getElementById("UnitLocation").disabled = true;
+                document.getElementById("WarehouseLocation").disabled = true;
                 document.getElementById("Note").disabled = false;
-                document.getElementById("produklist").disabled = false;
+                document.getElementById("ListObat").disabled = false;
                 document.getElementById("qty").disabled = false;
             })
 
@@ -276,16 +308,16 @@
                 $("#btnbatal").show();
                 $("#submit").hide();
                 $("#btnbatalubah").hide();
-                $("#btnAdd").hide();
+                $("#inputProduct").hide();
+                $("#descriptionProduct").hide();
                 $(".btn-sm").hide();
 
                 document.getElementById("UnitRequestNumber").disabled = true;
+                document.getElementById("UserApprove1List").disabled = true;
                 document.getElementById("UnitLocation").disabled = true;
-                document.getElementById("RequestBy").disabled = true;
                 document.getElementById("WarehouseLocation").disabled = true;
-                document.getElementById("WarehouseApproval").disabled = true;
                 document.getElementById("Note").disabled = true;
-                document.getElementById("produklist").disabled = true;
+                document.getElementById("ListObat").disabled = true;
                 document.getElementById("qty").disabled = true;
             })
         })
@@ -434,6 +466,18 @@
                                     if (detailName[i].innerText != productNumber) {
                                         checkDuplicate = undefined;
                                     }
+                                    else if (detailName[i].innerText != productNumber && detailSupplier[i].innerText != supplier) {
+                                        swal({
+                                            title: "Warning",
+                                            text: "Sorry, supplier " + supplier + " different from previous supplier",
+                                            type: "warning"
+                                        });
+
+                                        $('#produklist').select2('val', 'selectedIndex', 0);
+                                        $("#produklist").data('placeholder');
+                                        $("#productnumber,#productname,#stock,#Supplier,#measure,#qty,#minstock,#maxstock,#bufferstock").val('');
+                                        return;
+                                    }
                                     else {
                                         swal({
                                             title: "Warning",
@@ -455,16 +499,17 @@
 
                             if (checkDuplicate == undefined) {
                                 //var dynamicTr = `<tr id="R${no}"><td class="row-index text-center"><p>${no}</p></td><td class="text-center">${productNumber}</td><td class="text-left row-productName">${productName}</td><td class="text-left">${Supplier}</td><td class="text-center">${measurement}</td><td class="text-center row-qty">${qty}</td><td class="text-right">${price}</td><td class="text-right">${discount}</td><td class="text-right row-total">${total}</td><td class="text-center"> <button class="btn btn-danger btn-sm">-</button> </td></tr>`;
-                                var dynamicTr = `@for (int i = 0; i < 1; i++){
-                                                                    <tr id="R${no}" class="detailProduct">
-                                                                    <td class="row-index text-center"><p>${no}</p></td>
-                                                                                <td class="text-left row-productNumber"><input class="detProductNumber" asp-for="@Model.UnitRequestDetails[i].ProductNumber" type="hidden" value="${productNumber}">${productNumber}</td>
-                                                                                <td class="text-left row-productName"><input class="detProductName" asp-for="@Model.UnitRequestDetails[i].ProductName" type="hidden" value="${productName}">${productName}</td>
-                                                                                <td class="text-left"><input class="detSupplier" asp-for="@Model.UnitRequestDetails[i].Supplier" type="hidden" value="${Supplier}">${Supplier}</td>
-                                                                                <td class="text-left"><input class="detMeasurement" asp-for="@Model.UnitRequestDetails[i].Measurement" type="hidden" value="${measurement}">${measurement}</td>
-                                                                                <td class="text-center row-qty"><input class="detQty" asp-for="@Model.UnitRequestDetails[i].Qty" type="hidden" value="${qty}">${qty}</td>
-                                                                    <td class="text-center"> <button class="btn btn-danger btn-sm">X</button> </td></tr>
-        }`;
+                                var dynamicTr = `@for (int i = 0; i < 1; i++) {
+                                    <tr id="R${no}" class="detailProduct">
+                                        <td class="row-index text-center"><p>${no}</p></td>
+                                        <td class="text-left row-productNumber"><input class="detProductNumber" asp-for="@Model.UnitRequestDetails[i].ProductNumber" type="hidden" value="${productNumber}">${productNumber}</td>
+                                        <td class="text-left row-productName"><input class="detProductName" asp-for="@Model.UnitRequestDetails[i].ProductName" type="hidden" value="${productName}">${productName}</td>
+                                        <td class="text-left"><input class="detSupplier" asp-for="@Model.UnitRequestDetails[i].Supplier" type="hidden" value="${Supplier}">${Supplier}</td>
+                                        <td class="text-left"><input class="detMeasurement" asp-for="@Model.UnitRequestDetails[i].Measurement" type="hidden" value="${measurement}">${measurement}</td>
+                                        <td class="text-center row-qty"><input class="detQty" asp-for="@Model.UnitRequestDetails[i].Qty" type="hidden" value="${qty}">${qty}</td>
+                                        <td class="text-center"> <button class="btn btn-danger btn-sm">X</button> </td>
+                                    </tr>
+                                }`;
 
                                 $('#tbldetailpr tbody').append(dynamicTr);
 
@@ -598,9 +643,8 @@
                 var detailItemDone = [];
                 var detailDone = {};
                 var UnitLocationId = $('#UnitLocation').find(":selected").val();
-                var UnitRequestManagerId = $('#RequestBy').find(":selected").val();
                 var WarehouseLocationId = $('#WarehouseLocation').find(":selected").val();
-                var WarehouseApprovalId = $('#WarehouseApproval').find(":selected").val();
+                var UserApprove1Id = $('#UserApprove1List').find(":selected").val();
                 var detailTable = $('#tbldetailpr tbody').children().children().length;
 
                 if (detailTable == 1) { // 1 adalah isi dari keterangan pada table dihitung 1
@@ -613,9 +657,10 @@
                 } else {
                     //Sembunyikan pesan error
                     $('#UnitLocation').siblings('span.error').css('visibility', 'hidden')
-                    $('#RequestBy').siblings('span.error').css('visibility', 'hidden')
                     $('#WarehouseLocation').siblings('span.error').css('visibility', 'hidden')
-                    $('#WarehouseApproval').siblings('span.error').css('visibility', 'hidden')
+                    $('#Department1List').siblings('span.error').css('visibility', 'hidden')
+                    $('#Position1List').siblings('span.error').css('visibility', 'hidden')
+                    $('#UserApprove1List').siblings('span.error').css('visibility', 'hidden')
 
                     $("#tbldetailpr").find("tbody").children("tr").each(function (index, element) {
                         //***Penggunaan nama detail harus sesuai dengan nama pada table. Misal kodeproduk,namaproduk,dst harus sama.
@@ -631,9 +676,10 @@
                     var UnitRequestNumber = $('#UnitRequestNumber').val();
                     var UserAccessId = $('#UserAccessId').val();
                     var UnitLocationId = $('#UnitLocation').val();
-                    var UnitRequestManagerId = $('#RequestBy').val();
                     var WarehouseLocationId = $('#WarehouseLocation').val();
-                    var WarehouseApprovalId = $('#WarehouseApproval').val();
+                    var Department1Id = $('#Department1List').val();
+                    var Position1Id = $('#Position1List').val();
+                    var UserApprove1Id = $('#UserApprove1List').val();
                     var QtyTotal = $('.productTotalQty').text();
                     var Status = $('#Status').val();
                     var Note = $('#Note').val();
@@ -645,9 +691,10 @@
                     dataPost.UnitRequestNumber = UnitRequestNumber;
                     dataPost.UserAccessId = UserAccessId;
                     dataPost.UnitLocationId = UnitLocationId;
-                    dataPost.UnitRequestManagerId = UnitRequestManagerId;
                     dataPost.WarehouseLocationId = WarehouseLocationId;
-                    dataPost.WarehouseApprovalId = WarehouseApprovalId;
+                    dataPost.Department1Id = Department1Id;
+                    dataPost.Position1Id = Position1Id;
+                    dataPost.UserApprove1Id = UserApprove1Id;
                     dataPost.QtyTotal = QtyTotal;
                     dataPost.Status = Status;
                     dataPost.Note = Note;

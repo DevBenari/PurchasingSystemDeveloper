@@ -56,6 +56,14 @@
             };
         </script>
     }
+    else if (TempData["UserLockOut"] != null)
+    {
+        <script type="text/javascript">
+            window.onload = function () {
+                swal("Locked !", '@TempData["UserLockOut"]', "error");
+            };
+        </script>
+    }
 </div>
 
 @section Scripts {

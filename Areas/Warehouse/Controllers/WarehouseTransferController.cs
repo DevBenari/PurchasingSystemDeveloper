@@ -105,9 +105,8 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
                 .Include(d => d.WarehouseTransferDetails)
                 .Include(u => u.ApplicationUser)
                 .Include(p => p.UnitLocation)
-                .Include(b => b.UnitRequestManager)
                 .Include(t => t.WarehouseLocation)
-                .Include(y => y.WarehouseApproval)
+                .Include(y => y.UserApprove1)
                 .Where(p => p.WarehouseTransferId == Id).FirstOrDefault();
 
             if (WarehouseTransfer == null)
@@ -120,13 +119,12 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
             {
                 WarehouseTransferId = WarehouseTransfer.WarehouseTransferId,
                 WarehouseTransferNumber = WarehouseTransfer.WarehouseTransferNumber,
-                WarehouseRequestId = WarehouseTransfer.WarehouseRequestId,
-                WarehouseRequestNumber = WarehouseTransfer.WarehouseRequestNumber,
+                UnitOrderId = WarehouseTransfer.UnitOrderId,
+                UnitOrderNumber = WarehouseTransfer.UnitOrderNumber,
                 UserAccessId = WarehouseTransfer.UserAccessId,
                 UnitLocationId = WarehouseTransfer.UnitLocationId,
-                UnitRequestManagerId = WarehouseTransfer.UnitRequestManagerId,
                 WarehouseLocationId = WarehouseTransfer.WarehouseLocationId,
-                WarehouseApprovalId = WarehouseTransfer.WarehouseApprovalId,
+                UserApprove1Id = WarehouseTransfer.UserApprove1Id,
                 QtyTotal = WarehouseTransfer.QtyTotal,
                 Status = WarehouseTransfer.Status
             };

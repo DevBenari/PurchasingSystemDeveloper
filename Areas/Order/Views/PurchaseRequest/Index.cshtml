@@ -81,128 +81,69 @@
                                         <th>Approve 3</th>
                                         <th>PR Number</th>
                                         <th>Status</th>
-                                        @*<th>Grand Total</th>*@
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach (var pr in Model)
                                     {
-                                        @if (pr.Status == "Waiting Approval")
-                                        {
-                                            //Background In Status
-                                            <tr data-href="@Url.Action("DetailPurchaseRequest", "PurchaseRequest", new {id=pr.PurchaseRequestId})">
-                                                <td></td>
-                                                <td>@pr.CreateDateTime.ToString("dd MMMM yyyy")</td>
-                                                <td>@pr.ExpiredDate.ToString("dd MMMM yyyy")</td>
-                                                <td>@pr.ExpiredDay day</td>
-                                                <td>@pr.RemainingDay day</td>
-                                                <td>@pr.ApplicationUser.NamaUser</td>
-                                                @if (pr.ApproveStatusUser1 == "Approve")
-                                                {
-                                                    <td><span class="badge bg-success"><b>@pr.UserApprove1.FullName</b></span></td>
-                                                }
-                                                else if (pr.ApproveStatusUser1 == "Reject")
-                                                {
-                                                    <td><span class="badge bg-danger"><b>@pr.UserApprove1.FullName</b></span></td>
-                                                }
-                                                else
-                                                {
-                                                    <td><span class="badge"><b>@pr.UserApprove1.FullName</b></span></td>
-                                                }
-                                                @if (pr.ApproveStatusUser2 == "Approve")
-                                                {
-                                                    <td><span class="badge bg-success"><b>@pr.UserApprove2.FullName</b></span></td>
-                                                }
-                                                else if (pr.ApproveStatusUser2 == "Reject")
-                                                {
-                                                    <td><span class="badge bg-danger"><b>@pr.UserApprove2.FullName</b></span></td>
-                                                }
-                                                else
-                                                {
-                                                    <td><span class="badge"><b>@pr.UserApprove2.FullName</b></span></td>
-                                                }
-                                                @if (pr.ApproveStatusUser3 == "Approve")
-                                                {
-                                                    <td><span class="badge bg-success"><b>@pr.UserApprove3.FullName</b></span></td>
-                                                }
-                                                else if (pr.ApproveStatusUser3 == "Reject")
-                                                {
-                                                    <td><span class="badge bg-danger"><b>@pr.UserApprove3.FullName</b></span></td>
-                                                }
-                                                else
-                                                {
-                                                    <td><span class="badge"><b>@pr.UserApprove3.FullName</b></span></td>
-                                                }
-                                                <td>@pr.PurchaseRequestNumber</td>
+                                        <tr data-href="@Url.Action("DetailPurchaseRequest", "PurchaseRequest", new {id=pr.PurchaseRequestId})">
+                                            <td></td>
+                                            <td>@pr.CreateDateTime.ToString("dd MMMM yyyy")</td>
+                                            <td>@pr.ExpiredDate.ToString("dd MMMM yyyy")</td>
+                                            <td>@pr.ExpiredDay day</td>
+                                            <td>@pr.RemainingDay day</td>
+                                            <td>@pr.ApplicationUser.NamaUser</td>
+                                            @if (pr.ApproveStatusUser1 == "Approve")
+                                            {
+                                                <td><span class="badge bg-success"><b>@pr.UserApprove1.FullName</b></span></td>
+                                            }
+                                            else if (pr.ApproveStatusUser1 == "Reject")
+                                            {
+                                                <td><span class="badge bg-danger"><b>@pr.UserApprove1.FullName</b></span></td>
+                                            }
+                                            else
+                                            {
+                                                <td><span class="badge"><b>@pr.UserApprove1.FullName</b></span></td>
+                                            }
+                                            @if (pr.ApproveStatusUser2 == "Approve")
+                                            {
+                                                <td><span class="badge bg-success"><b>@pr.UserApprove2.FullName</b></span></td>
+                                            }
+                                            else if (pr.ApproveStatusUser2 == "Reject")
+                                            {
+                                                <td><span class="badge bg-danger"><b>@pr.UserApprove2.FullName</b></span></td>
+                                            }
+                                            else
+                                            {
+                                                <td><span class="badge"><b>@pr.UserApprove2.FullName</b></span></td>
+                                            }
+                                            @if (pr.ApproveStatusUser3 == "Approve")
+                                            {
+                                                <td><span class="badge bg-success"><b>@pr.UserApprove3.FullName</b></span></td>
+                                            }
+                                            else if (pr.ApproveStatusUser3 == "Reject")
+                                            {
+                                                <td><span class="badge bg-danger"><b>@pr.UserApprove3.FullName</b></span></td>
+                                            }
+                                            else
+                                            {
+                                                <td><span class="badge"><b>@pr.UserApprove3.FullName</b></span></td>
+                                            }
+                                            <td>@pr.PurchaseRequestNumber</td>
+
+                                            @if (pr.Status == "Waiting Approval")
+                                            {
                                                 <td><span class="badge bg-danger"><b>@pr.Status</b></span></td>
-                                            </tr>
-                                        }
-                                        else if (pr.Status == "Approve")
-                                        {
-                                            //Background In Status
-                                            <tr data-href="@Url.Action("DetailPurchaseRequest", "PurchaseRequest", new {id=pr.PurchaseRequestId})">
-                                                <td></td>
-                                                <td>@pr.CreateDateTime.ToString("dd MMMM yyyy")</td>
-                                                <td>@pr.ExpiredDate.ToString("dd MMMM yyyy")</td>
-                                                <td>@pr.ExpiredDay day</td>
-                                                <td>@pr.RemainingDay day</td>
-                                                <td>@pr.ApplicationUser.NamaUser</td>
-                                                @if (pr.ApproveStatusUser1 == "Approve")
-                                                {
-                                                    <td><span class="badge bg-success"><b>@pr.UserApprove1.FullName</b></span></td>
-                                                }
-                                                else if (pr.ApproveStatusUser1 == "Reject")
-                                                {
-                                                    <td><span class="badge bg-danger"><b>@pr.UserApprove1.FullName</b></span></td>
-                                                }
-                                                else
-                                                {
-                                                    <td><span class="badge"><b>@pr.UserApprove1.FullName</b></span></td>
-                                                }
-                                                @if (pr.ApproveStatusUser2 == "Approve")
-                                                {
-                                                    <td><span class="badge bg-success"><b>@pr.UserApprove2.FullName</b></span></td>
-                                                }
-                                                else if (pr.ApproveStatusUser2 == "Reject")
-                                                {
-                                                    <td><span class="badge bg-danger"><b>@pr.UserApprove2.FullName</b></span></td>
-                                                }
-                                                else
-                                                {
-                                                    <td><span class="badge"><b>@pr.UserApprove2.FullName</b></span></td>
-                                                }
-                                                @if (pr.ApproveStatusUser3 == "Approve")
-                                                {
-                                                    <td><span class="badge bg-success"><b>@pr.UserApprove3.FullName</b></span></td>
-                                                }
-                                                else if (pr.ApproveStatusUser3 == "Reject")
-                                                {
-                                                    <td><span class="badge bg-danger"><b>@pr.UserApprove3.FullName</b></span></td>
-                                                }
-                                                else
-                                                {
-                                                    <td><span class="badge"><b>@pr.UserApprove3.FullName</b></span></td>
-                                                }
-                                                <td>@pr.PurchaseRequestNumber</td>
+                                            }
+                                            else if (pr.Status == "Approve")
+                                            {
                                                 <td><span class="badge bg-success"><b>@pr.Status</b></span></td>
-                                            </tr>
-                                        }
-                                        else
-                                        {
-                                            <tr data-href="@Url.Action("DetailPurchaseRequest", "PurchaseRequest", new {id=pr.PurchaseRequestId})">
-                                                <td></td>
-                                                <td>@pr.CreateDateTime.ToString("dd MMMM yyyy")</td>
-                                                <td>@pr.ExpiredDate.ToString("dd MMMM yyyy")</td>
-                                                <td>@pr.ExpiredDay day</td>
-                                                <td>@pr.RemainingDay day</td>
-                                                <td>@pr.ApplicationUser.NamaUser</td>
-                                                <td>@pr.UserApprove1.FullName</td>
-                                                <td>@pr.UserApprove2.FullName</td>
-                                                <td>@pr.UserApprove3.FullName</td>
-                                                <td>@pr.PurchaseRequestNumber</td>
+                                            }
+                                            else
+                                            {
                                                 <td><b>@pr.Status</b></td>
-                                            </tr>
-                                        }
+                                            }
+                                        </tr>
                                     }
                                 </tbody>
                             </table>

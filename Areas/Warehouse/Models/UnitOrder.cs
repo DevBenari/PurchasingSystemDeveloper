@@ -7,22 +7,23 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PurchasingSystemDeveloper.Areas.Warehouse.Models
 {
-    [Table("WrhWarehouseRequest", Schema = "dbo")]
-    public class WarehouseRequest : UserActivity
+    [Table("WrhUnitOrder", Schema = "dbo")]
+    public class UnitOrder : UserActivity
     {
         [Key]
-        public Guid WarehouseRequestId { get; set; }
-        public string WarehouseRequestNumber { get; set; }
+        public Guid UnitOrderId { get; set; }
+        public string UnitOrderNumber { get; set; }
         public Guid? UnitRequestId { get; set; }
         public string UnitRequestNumber { get; set; }
         public string UserAccessId { get; set; }
         public Guid? UnitLocationId { get; set; }
-        public Guid? UnitRequestManagerId { get; set; }
         public Guid? WarehouseLocationId { get; set; }
-        public Guid? WarehouseApprovalId { get; set; }
+        public Guid? UserApprove1Id { get; set; }
+        public string? ApproveStatusUser1 { get; set; }
         public string Status { get; set; }
         public int QtyTotal { get; set; }
-        public List<WarehouseRequestDetail> WarehouseRequestDetails { get; set; } = new List<WarehouseRequestDetail>();
+        public string? Note { get; set; }
+        public List<UnitOrderDetail> UnitOrderDetails { get; set; } = new List<UnitOrderDetail>();
 
         //Relationship
         [ForeignKey("UnitRequestId")]
@@ -30,21 +31,19 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Models
         [ForeignKey("UserAccessId")]
         public ApplicationUser? ApplicationUser { get; set; }
         [ForeignKey("UnitLocationId")]
-        public UnitLocation? UnitLocation { get; set; }
-        [ForeignKey("UnitRequestManagerId")]
-        public UserActive? UnitRequestManager { get; set; }
+        public UnitLocation? UnitLocation { get; set; }        
         [ForeignKey("WarehouseLocationId")]
         public WarehouseLocation? WarehouseLocation { get; set; }
-        [ForeignKey("WarehouseApprovalId")]
-        public UserActive? WarehouseApproval { get; set; }
+        [ForeignKey("UserApprove1Id")]
+        public UserActive? UserApprove1 { get; set; }
     }
 
-    [Table("WrhWarehouseRequestDetail", Schema = "dbo")]
-    public class WarehouseRequestDetail : UserActivity
+    [Table("WrhUnitOrderDetail", Schema = "dbo")]
+    public class UnitOrderDetail : UserActivity
     {
         [Key]
-        public Guid WarehouseRequestDetailId { get; set; }
-        public Guid? WarehouseRequestId { get; set; }
+        public Guid UnitOrderDetailId { get; set; }
+        public Guid? UnitOrderId { get; set; }
         public string ProductNumber { get; set; }
         public string ProductName { get; set; }
         public string Measurement { get; set; }
@@ -54,7 +53,7 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Models
         public bool Checked { get; set; }
 
         //Relationship
-        [ForeignKey("WarehouseRequestId")]
-        public WarehouseRequest? WarehouseRequest { get; set; }
+        [ForeignKey("UnitOrderId")]
+        public UnitOrder? UnitOrder { get; set; }
     }
 }

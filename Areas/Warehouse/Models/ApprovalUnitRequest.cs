@@ -7,31 +7,34 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PurchasingSystemDeveloper.Areas.Warehouse.Models
 {
-    [Table("WrhApprovalRequest", Schema = "dbo")]
-    public class ApprovalRequest : UserActivity
+    [Table("WrhApprovalUnitRequest", Schema = "dbo")]
+    public class ApprovalUnitRequest : UserActivity
     {
-        public Guid ApprovalRequestId { get; set; }
+        public Guid ApprovalUnitRequestId { get; set; }
         public Guid? UnitRequestId { get; set; }
         public string UnitRequestNumber { get; set; }
         public string UserAccessId { get; set; } //Dibuat Oleh
         public Guid? UnitLocationId { get; set; }
-        public Guid? UnitRequestManagerId { get; set; }
-        public DateTime ApproveDate { get; set; }
-        public Guid? WarehouseApprovalId { get; set; } //Mengetahui        
-        public string WarehouseApproveBy { get; set; } //Disetujui Oleh
+        public Guid? WarehouseLocationId { get; set; }
+        public Guid? UserApproveId { get; set; }
+        public string ApproveBy { get; set; }
+        public string? ApprovalTime { get; set; }
+        public DateTimeOffset ApprovalDate { get; set; }
+        public string? ApprovalStatusUser { get; set; }
         public string Status { get; set; }
         public string? Note { get; set; }
+        public string? Message { get; set; }
 
         //Relationship
         [ForeignKey("UnitRequestId")]
-        public UnitRequest? UnitRequest { get; set; }
+        public UnitRequest? UnitRequest { get; set; }        
         [ForeignKey("UnitLocationId")]
         public UnitLocation? UnitLocation { get; set; }
-        [ForeignKey("UnitRequestManagerId")]
-        public UserActive? UnitRequestManager { get; set; }
-        [ForeignKey("WarehouseApprovalId")]
-        public UserActive? WarehouseApproval { get; set; }
+        [ForeignKey("WarehouseLocationId")]
+        public WarehouseLocation? WarehouseLocation { get; set; }        
         [ForeignKey("UserAccessId")]
         public ApplicationUser? ApplicationUser { get; set; }
+        [ForeignKey("UserApproveId")]
+        public UserActive? UserApprove { get; set; }
     }
 }

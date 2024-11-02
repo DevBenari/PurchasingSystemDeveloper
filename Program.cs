@@ -30,13 +30,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
     options.Password.RequireNonAlphanumeric = false;
+
+    options.Lockout.MaxFailedAccessAttempts = 3;
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
 }).AddDefaultTokenProviders().AddEntityFrameworkStores<ApplicationDbContext>();
-
-builder.Services.AddSession();
-
-//Script Auto Show Login Account First Time
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie();
 
 builder.Services.AddMvc(options =>
 {
@@ -49,10 +46,19 @@ builder.Services.AddMvc(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 });
 
+//Script Auto Show Login Account First Time
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.Cookie.Name = "UserLoginCookie";
+    });
+
 // konfigurasi session 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromHours(8);
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
@@ -60,7 +66,7 @@ builder.Services.AddSession(options =>
 // konfigurasi cookie Authentication 
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.ExpireTimeSpan = TimeSpan.FromHours(8);
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(2);
     options.SlidingExpiration = true;
 
 });
@@ -90,21 +96,20 @@ builder.Services.AddSignalR();
 builder.Services.AddScoped<IPurchaseRequestRepository>();
 builder.Services.AddScoped<IApprovalRepository>();
 builder.Services.AddScoped<IPurchaseOrderRepository>();
-builder.Services.AddScoped<IQtyDifferenceRequestRepository>();
 builder.Services.AddScoped<IEmailRepository>();
 builder.Services.AddScoped<IApprovalQtyDifferenceRepository>();
 #endregion
 
 #region Areas Warehouse
 builder.Services.AddScoped<IReceiveOrderRepository>();
-builder.Services.AddScoped<IWarehouseRequestRepository>();
+builder.Services.AddScoped<IUnitOrderRepository>();
 builder.Services.AddScoped<IWarehouseTransferRepository>();
 builder.Services.AddScoped<IQtyDifferenceRepository>();
 #endregion
 
 #region Areas Unit Request
 builder.Services.AddScoped<IUnitRequestRepository>();
-builder.Services.AddScoped<IApprovalRequestRepository>();
+builder.Services.AddScoped<IApprovalUnitRequestRepository>();
 #endregion
 
 //Initialize Fast Report
@@ -145,12 +150,9 @@ app.UseEndpoints(endpoints =>
 //   konfigurasi end session 
 app.Use(async (context, next) =>
 {
-    if (!context.Session.Keys.Any())
+    if (!context.User.Identity?.IsAuthenticated ?? true)
     {
-        await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-        context.Response.Cookies.Delete(".AspNetCore.Identity.Application");
-        //context.Response.Redirect("./LoginWith2fa");
+        context.Response.Redirect("/Account/Logout");
         return ;
     }
     await next();

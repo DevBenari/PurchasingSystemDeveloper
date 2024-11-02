@@ -15,12 +15,15 @@ namespace PurchasingSystemDeveloper.Areas.Transaction.Models
         public string UnitRequestNumber { get; set; }
         public string UserAccessId { get; set; }
         public Guid? UnitLocationId { get; set; }
-        public Guid? UnitRequestManagerId { get; set; }
         public Guid? WarehouseLocationId { get; set; }
-        public Guid? WarehouseApprovalId { get; set; }
+        public Guid? Department1Id { get; set; }
+        public Guid? Position1Id { get; set; }
+        public Guid? UserApprove1Id { get; set; }
+        public string? ApproveStatusUser1 { get; set; }
         public int QtyTotal { get; set; }
         public string Status { get; set; }
         public string? Note { get; set; }
+        public string? MessageApprove1 { get; set; }
         public List<UnitRequestDetail> UnitRequestDetails { get; set; } = new List<UnitRequestDetail>();
 
         //Relationship
@@ -28,12 +31,14 @@ namespace PurchasingSystemDeveloper.Areas.Transaction.Models
         public ApplicationUser? ApplicationUser { get; set; }
         [ForeignKey("UnitLocationId")]
         public UnitLocation? UnitLocation { get; set; }
-        [ForeignKey("UnitRequestManagerId")]
-        public UserActive? UnitRequestManager { get; set; }
         [ForeignKey("WarehouseLocationId")]
         public WarehouseLocation? WarehouseLocation { get; set; }
-        [ForeignKey("WarehouseApprovalId")]
-        public UserActive? WarehouseApproval { get; set; }
+        [ForeignKey("Department1Id")]
+        public Department? Department1 { get; set; }
+        [ForeignKey("Position1Id")]
+        public Position? Position1 { get; set; }
+        [ForeignKey("UserApprove1Id")]
+        public UserActive? UserApprove1 { get; set; }
     }
 
     [Table("TscUnitRequestDetail", Schema = "dbo")]

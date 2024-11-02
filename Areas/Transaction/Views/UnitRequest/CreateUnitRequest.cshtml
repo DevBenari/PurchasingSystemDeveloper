@@ -26,7 +26,7 @@
                     {
                         <input asp-for="@User.Identity.Name" class="form-control" type="hidden">
                     }
-                    <input asp-for="Status" id="Status" value="Request" type="hidden">
+                    <input asp-for="Status" id="Status" value="Waiting Approval" type="hidden">
                     <input asp-for="UserAccessId" id="UserAccessId" type="hidden">
 
                     <div class="form-group row">
@@ -35,6 +35,49 @@
                             <input type="text" asp-for="UnitRequestNumber" class="form-control form-control-border border-width-2" id="UnitRequestNumber" placeholder="Request Number" readonly>
                         </div>
                     </div>
+
+                    @*Content Approve User 1*@
+                    <div class="col-md-12 bg-white">
+                        <div class="card-header bg-cyan">
+                            <h3 class="card-title fw-bold" style="color:#ffffff">Approve 1</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label" asp-for="Department1Id">
+                                    Department Name
+                                </label>
+                                <div class="col-sm-10">
+                                    <select asp-for="Department1Id" asp-items="@ViewBag.Department" class="form-control select2bs4" id="Department1List" style="width: 100%;">
+                                        <option value="" hidden disabled selected>--Choose Department--</option>
+                                    </select>
+                                    <span asp-validation-for="Department1Id" class="error"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label" asp-for="Position1Id">
+                                    Position Name
+                                </label>
+                                <div class="col-sm-10">
+                                    <select asp-for="Position1Id" asp-items="@ViewBag.Position" class="form-control select2bs4" id="Position1List" style="width: 100%;">
+                                        <option value="" hidden disabled selected>--Choose Position--</option>
+                                    </select>
+                                    <span asp-validation-for="Position1Id" class="error"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-sm-2 col-form-label" asp-for="UserApprove1Id">
+                                    User Approve
+                                </label>
+                                <div class="col-sm-10">
+                                    <select asp-for="UserApprove1Id" asp-items="@ViewBag.Approval" class="form-control select2bs4" id="UserApprove1List" style="width: 100%;">
+                                        <option value="" hidden disabled selected>--Choose User--</option>
+                                    </select>
+                                    <span asp-validation-for="UserApprove1Id" class="error"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-group row">
                         <label class="col-sm-2 col-form-label" asp-for="UnitLocationId">
                             Unit Location
@@ -44,17 +87,6 @@
                                 <option value="" hidden disabled selected>--Choose Unit--</option>
                             </select>
                             <span asp-validation-for="UnitLocationId" class="error"></span>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" asp-for="UnitRequestManagerId">
-                            Request By
-                        </label>
-                        <div class="col-sm-10">
-                            <select asp-for="UnitRequestManagerId" asp-items="@ViewBag.RequestBy" class="form-control select2bs4" id="RequestBy" style="width: 100%;">
-                                <option value="" hidden disabled selected>--Choose User--</option>
-                            </select>
-                            <span asp-validation-for="UnitRequestManagerId" class="error"></span>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -68,17 +100,6 @@
                             <span asp-validation-for="WarehouseLocationId" class="error"></span>
                         </div>
                     </div>
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" asp-for="WarehouseApprovalId">
-                            Warehouse Approval
-                        </label>
-                        <div class="col-sm-10">
-                            <select asp-for="WarehouseApprovalId" asp-items="@ViewBag.Approval" class="form-control select2bs4" id="WarehouseApproval" style="width: 100%;">
-                                <option value="" hidden disabled selected>--Choose User--</option>
-                            </select>
-                            <span asp-validation-for="WarehouseApprovalId" class="error"></span>
-                        </div>
-                    </div>                    
                     <div class="form-group row">
                         <label class="col-sm-2 col-form-label" asp-for="Note">Note</label>
                         <div class="col-sm-10">
@@ -245,6 +266,53 @@
 
     <script>
         $(document).ready(function () {
+            $("#Position1List").empty();
+            $("#UserApprove1List").empty();
+
+            $("#Department1List").change(function () {
+                $("#Position1List").empty();
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("LoadPosition1")',
+                    dataType: 'json',
+                    data: { id: $("#Department1List").val() },
+                    success: function (positions) {
+                        $("#Position1List").append('<option value = "' + undefined + '">' + "--Choose Position--" + '</option>');
+                        $.each(positions, function (i, position) {
+                            $("#Position1List").append('<option value = "' + position.value + '">' + position.text + '</option>');
+                        });
+                    },
+                    error: function (ex) {
+                        alert('Failed get data Position !!!' + ex);
+                    }
+                });
+                return false;
+            })
+
+            $("#Position1List").change(function () {
+                $("#UserApprove1List").empty();
+                $.ajax({
+                    type: 'GET',
+                    url: '@Url.Action("LoadUser1")',
+                    dataType: 'json',
+                    data: { id: $("#Position1List").val() },
+                    success: function (users) {
+                        $("#UserApprove1List").append('<option value = "' + undefined + '">' + "--Choose User--" + '</option>');
+                        $.each(users, function (i, user) {
+                            $("#UserApprove1List").append('<option value = "' + user.value + '">' + user.text + '</option>');
+                        });
+                    },
+                    error: function (ex) {
+                        alert('Failed get data User !!!' + ex);
+                    }
+                });
+                return false;
+            })
+        })
+    </script>
+
+    <script>
+        $(document).ready(function () {
             $("#produklist").change(function () {
                 $("#qty").val('1').focus();
             });
@@ -380,16 +448,17 @@
                                 //var dynamicTr = `<tr id="R${no}"><td class="row-index text-center"><p>${no}</p></td><td class="text-center">${productNumber}</td><td class="text-left row-productName">${productName}</td><td class="text-left">${Supplier}</td><td class="text-center">${measurement}</td><td class="text-center row-qty">${qty}</td><td class="text-right">${price}</td><td class="text-right">${discount}</td><td class="text-right row-total">${total}</td><td class="text-center"> <button class="btn btn-danger btn-sm">-</button> </td></tr>`;
                                 var dynamicTr =
                                     `@for (int i = 0; i < Model.UnitRequestDetails.Count; i++)
-        {
-                                                        <tr id="R${no}" class="detailProduct">
-                                                        <td class="row-index text-center"><p>${no}</p></td>
-                                                                    <td class="text-left row-productNumber"><input class="detProductNumber" asp-for="@Model.UnitRequestDetails[i].ProductNumber" type="hidden" value="${productNumber}">${productNumber}</td>
-                                                                    <td class="text-left row-productName"><input class="detProductName" asp-for="@Model.UnitRequestDetails[i].ProductName" type="hidden" value="${productName}">${productName}</td>
-                                                                    <td class="text-left"><input class="detSupplier" asp-for="@Model.UnitRequestDetails[i].Supplier" type="hidden" value="${Supplier}">${Supplier}</td>
-                                                                    <td class="text-left"><input class="detMeasurement" asp-for="@Model.UnitRequestDetails[i].Measurement" type="hidden" value="${measurement}">${measurement}</td>
-                                                                    <td class="text-center row-qty"><input class="detQty" asp-for="@Model.UnitRequestDetails[i].Qty" type="hidden" value="${qty}">${qty}</td>                                                                    
-                                                        <td class="text-center"> <button class="btn btn-danger btn-sm">X</button> </td></tr>
-        }`;
+                                    {
+                                        <tr id="R${no}" class="detailProduct">
+                                            <td class="row-index text-center"><p>${no}</p></td>
+                                                <td class="text-left row-productNumber"><input class="detProductNumber" asp-for="@Model.UnitRequestDetails[i].ProductNumber" type="hidden" value="${productNumber}">${productNumber}</td>
+                                                <td class="text-left row-productName"><input class="detProductName" asp-for="@Model.UnitRequestDetails[i].ProductName" type="hidden" value="${productName}">${productName}</td>
+                                                <td class="text-left"><input class="detSupplier" asp-for="@Model.UnitRequestDetails[i].Supplier" type="hidden" value="${Supplier}">${Supplier}</td>
+                                                <td class="text-left"><input class="detMeasurement" asp-for="@Model.UnitRequestDetails[i].Measurement" type="hidden" value="${measurement}">${measurement}</td>
+                                                <td class="text-center row-qty"><input class="detQty" asp-for="@Model.UnitRequestDetails[i].Qty" type="hidden" value="${qty}">${qty}</td>
+                                            <td class="text-center"> <button class="btn btn-danger btn-sm">X</button> </td>
+                                        </tr>
+                                    }`;
 
                                 $('#tbldetailpr tbody').append(dynamicTr);
 
@@ -548,10 +617,11 @@
                 var isAllValid = true;
                 var detailItemDone = [];
                 var detailDone = {};
-                var UnitLocationId = $('#UnitLocation').find(":selected").val();
-                var UnitRequestManagerId = $('#RequestBy').find(":selected").val();
+                var UnitLocationId = $('#UnitLocation').find(":selected").val();               
                 var WarehouseLocationId = $('#WarehouseLocation').find(":selected").val();
-                var WarehouseApprovalId = $('#WarehouseApproval').find(":selected").val();
+                var Department1Id = $('#Department1List').find(":selected").val();
+                var Position1Id = $('#Position1List').find(":selected").val();
+                var UserApprove1Id = $('#UserApprove1List').find(":selected").val();
                 var detailTable = $('#tbldetailpr tbody').children().children().length;
 
                 if (detailTable == 1) { // 1 adalah isi dari keterangan pada table dihitung 1
@@ -561,43 +631,52 @@
                         type: "warning"
                     });
                     isAllValid = false;
-                } else if (detailTable != 1 && UnitLocation == '' && RequestBy == '' && WarehouseLocation == '' && WarehouseApproval == '') {
+                } else if (detailTable != 1 && Department1List == '' && Position1List == '' && UserApprove1List == '' && UnitLocation == '' && WarehouseLocation == '') {
+                    $('#Department1List').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please select !</span>');
+                    $('#Position1List').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please select !</span>');
+                    $('#UserApprove1List').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please select !</span>');
+                    $('#UnitLocation').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please select !</span>');                    
+                    $('#WarehouseLocation').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please select !</span>');                    
+                    swal({
+                        title: "Warning",
+                        text: "Sorry, please select...",
+                        type: "warning"
+                    });
+                    isAllValid = false;
+                } else if (detailTable != 1 && Department1Id == '') {
+                    $('#Department1List').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please select !</span>');
+                    swal({
+                        title: "Warning",
+                        text: "Sorry, please select...",
+                        type: "warning"
+                    });
+                    isAllValid = false;
+                } else if (detailTable != 1 && Position1Id == undefined || Position1Id == "undefined") {
+                    $('#Position1List').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please select !</span>');
+                    swal({
+                        title: "Warning",
+                        text: "Sorry, please select...",
+                        type: "warning"
+                    });
+                    isAllValid = false;
+                } else if (detailTable != 1 && UserApprove1Id == undefined || UserApprove1Id == "undefined") {
+                    $('#UserApprove1List').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please select !</span>');
+                    swal({
+                        title: "Warning",
+                        text: "Sorry, please select...",
+                        type: "warning"
+                    });
+                    isAllValid = false;
+                } else if (detailTable != 1 && UnitLocationId == '') {
                     $('#UnitLocation').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please select !</span>');
-                    $('#RequestBy').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please select !</span>');
+                    swal({
+                        title: "Warning",
+                        text: "Sorry, please select...",
+                        type: "warning"
+                    });
+                    isAllValid = false;
+                } else if (detailTable != 1 && WarehouseLocationId == '') {
                     $('#WarehouseLocation').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please select !</span>');
-                    $('#WarehouseApproval').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please select !</span>');
-                    swal({
-                        title: "Warning",
-                        text: "Sorry, please select...",
-                        type: "warning"
-                    });
-                    isAllValid = false;
-                } else if (detailTable != 1 && UnitLocation == '' && RequestBy != '' && WarehouseLocation != '' && WarehouseApproval != '') {
-                    $('#UnitLocation').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please select !</span>');
-                    swal({
-                        title: "Warning",
-                        text: "Sorry, please select...",
-                        type: "warning"
-                    });
-                    isAllValid = false;
-                } else if (detailTable != 1 && UnitLocation != '' && RequestBy == '' && WarehouseLocation != '' && WarehouseApproval != '') {
-                    $('#RequestBy').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please select !</span>');
-                    swal({
-                        title: "Warning",
-                        text: "Sorry, please select...",
-                        type: "warning"
-                    });
-                    isAllValid = false;
-                } else if (detailTable != 1 && UnitLocation != '' && RequestBy != '' && WarehouseLocation == '' && WarehouseApproval != '') {
-                    $('#WarehouseLocation').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please select !</span>');
-                    swal({
-                        title: "Warning",
-                        text: "Sorry, please select...",
-                        type: "warning"
-                    });
-                    isAllValid = false;
-                } else if (detailTable != 1 && UnitLocation != '' && RequestBy != '' && WarehouseLocation != '' && WarehouseApproval == '') {
-                    $('#WarehouseApproval').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please select !</span>');
                     swal({
                         title: "Warning",
                         text: "Sorry, please select...",
@@ -607,9 +686,10 @@
                 } else {
                     //Sembunyikan pesan error
                     $('#UnitLocation').siblings('span.error').css('visibility', 'hidden')
-                    $('#RequestBy').siblings('span.error').css('visibility', 'hidden')
                     $('#WarehouseLocation').siblings('span.error').css('visibility', 'hidden')
-                    $('#WarehouseApproval').siblings('span.error').css('visibility', 'hidden')
+                    $('#Department1List').siblings('span.error').css('visibility', 'hidden')
+                    $('#Position1List').siblings('span.error').css('visibility', 'hidden')
+                    $('#UserApprove1List').siblings('span.error').css('visibility', 'hidden')
 
                     $("#tbldetailpr").find("tbody").children("tr").each(function (index, element) {
                         //***Penggunaan nama detail harus sesuai dengan nama pada table. Misal kodeproduk,namaproduk,dst harus sama.
@@ -625,9 +705,10 @@
                     var UnitRequestNumber = $('#UnitRequestNumber').val();
                     var UserAccessId = $('#UserAccessId').val();
                     var UnitLocationId = $('#UnitLocation').val();
-                    var UnitRequestManagerId = $('#RequestBy').val();
                     var WarehouseLocationId = $('#WarehouseLocation').val();
-                    var WarehouseApprovalId = $('#WarehouseApproval').val();
+                    var Department1Id = $('#Department1List').val();
+                    var Position1Id = $('#Position1List').val();
+                    var UserApprove1Id = $('#UserApprove1List').val();
                     var QtyTotal = $('.productTotalQty').text();
                     var Status = $('#Status').val();                    
                     var Note = $('#Note').val();
@@ -639,9 +720,10 @@
                     dataPost.UnitRequestNumber = UnitRequestNumber;
                     dataPost.UserAccessId = UserAccessId;
                     dataPost.UnitLocationId = UnitLocationId;
-                    dataPost.UnitRequestManagerId = UnitRequestManagerId;
                     dataPost.WarehouseLocationId = WarehouseLocationId;
-                    dataPost.WarehouseApprovalId = WarehouseApprovalId;
+                    dataPost.Department1Id = Department1Id;
+                    dataPost.Position1Id = Position1Id;
+                    dataPost.UserApprove1Id = UserApprove1Id;
                     dataPost.QtyTotal = QtyTotal;
                     dataPost.Status = Status;
                     dataPost.Note = Note;

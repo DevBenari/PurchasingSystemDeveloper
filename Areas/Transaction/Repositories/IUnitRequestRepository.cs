@@ -34,9 +34,10 @@ namespace PurchasingSystemDeveloper.Areas.Transaction.Repositories
                 .Include(d => d.UnitRequestDetails)
                 .Include(u => u.ApplicationUser)
                 .Include(z => z.UnitLocation)
-                .Include(a => a.UnitRequestManager)
                 .Include(t => t.WarehouseLocation)
-                .Include(w => w.WarehouseApproval)
+                .Include(d1 => d1.Department1)
+                .Include(p1 => p1.Position1)
+                .Include(a1 => a1.UserApprove1)
                 .FirstOrDefault(p => p.UnitRequestId == Id);
 
             if (UnitRequest != null)
@@ -46,18 +47,22 @@ namespace PurchasingSystemDeveloper.Areas.Transaction.Repositories
                     UnitRequestId = UnitRequest.UnitRequestId,
                     UnitRequestNumber = UnitRequest.UnitRequestNumber,
                     UserAccessId = UnitRequest.UserAccessId,
+                    Department1Id = UnitRequest.Department1Id,
+                    Department1 = UnitRequest.Department1,
+                    Position1Id = UnitRequest.Position1Id,
+                    Position1 = UnitRequest.Position1,
+                    UserApprove1Id = UnitRequest.UserApprove1Id,
+                    UserApprove1 = UnitRequest.UserApprove1,
+                    ApproveStatusUser1 = UnitRequest.ApproveStatusUser1,
                     ApplicationUser = UnitRequest.ApplicationUser,
                     UnitLocationId = UnitRequest.UnitLocationId,
-                    UnitLocation = UnitRequest.UnitLocation,
-                    UnitRequestManagerId = UnitRequest.UnitRequestManagerId,
-                    UnitRequestManager = UnitRequest.UnitRequestManager,
+                    UnitLocation = UnitRequest.UnitLocation,                   
                     WarehouseLocationId = UnitRequest.WarehouseLocationId,
-                    WarehouseLocation = UnitRequest.WarehouseLocation,
-                    WarehouseApprovalId = UnitRequest.WarehouseApprovalId,
-                    WarehouseApproval = UnitRequest.WarehouseApproval,
+                    WarehouseLocation = UnitRequest.WarehouseLocation,                    
                     QtyTotal = UnitRequest.QtyTotal,
                     Status = UnitRequest.Status,
                     Note = UnitRequest.Note,
+                    MessageApprove1 = UnitRequest.MessageApprove1,
                     UnitRequestDetails = UnitRequest.UnitRequestDetails,
                 };
                 return UnitRequestDetail;
@@ -77,18 +82,22 @@ namespace PurchasingSystemDeveloper.Areas.Transaction.Repositories
                 UnitRequestId = UnitRequest.UnitRequestId,
                 UnitRequestNumber = UnitRequest.UnitRequestNumber,
                 UserAccessId = UnitRequest.UserAccessId,
+                Department1Id = UnitRequest.Department1Id,
+                Department1 = UnitRequest.Department1,
+                Position1Id = UnitRequest.Position1Id,
+                Position1 = UnitRequest.Position1,
+                UserApprove1Id = UnitRequest.UserApprove1Id,
+                UserApprove1 = UnitRequest.UserApprove1,
+                ApproveStatusUser1 = UnitRequest.ApproveStatusUser1,
                 ApplicationUser = UnitRequest.ApplicationUser,
                 UnitLocationId = UnitRequest.UnitLocationId,
                 UnitLocation = UnitRequest.UnitLocation,
-                UnitRequestManagerId = UnitRequest.UnitRequestManagerId,
-                UnitRequestManager = UnitRequest.UnitRequestManager,
                 WarehouseLocationId = UnitRequest.WarehouseLocationId,
                 WarehouseLocation = UnitRequest.WarehouseLocation,
-                WarehouseApprovalId = UnitRequest.WarehouseApprovalId,
-                WarehouseApproval = UnitRequest.WarehouseApproval,
                 QtyTotal = UnitRequest.QtyTotal,
                 Status = UnitRequest.Status,
                 Note = UnitRequest.Note,
+                MessageApprove1 = UnitRequest.MessageApprove1,
                 UnitRequestDetails = UnitRequest.UnitRequestDetails,
             }).ToListAsync();
         }
@@ -99,9 +108,10 @@ namespace PurchasingSystemDeveloper.Areas.Transaction.Repositories
                 .Include(d => d.UnitRequestDetails)
                 .Include(u => u.ApplicationUser)
                 .Include(z => z.UnitLocation)
-                .Include(a => a.UnitRequestManager)
                 .Include(t => t.WarehouseLocation)
-                .Include(w => w.WarehouseApproval)
+                .Include(d1 => d1.Department1)
+                .Include(p1 => p1.Position1)
+                .Include(a1 => a1.UserApprove1)
                 .ToList();
         }
 
@@ -111,9 +121,10 @@ namespace PurchasingSystemDeveloper.Areas.Transaction.Repositories
                 .Include(d => d.UnitRequestDetails)
                 .Include(u => u.ApplicationUser)
                 .Include(z => z.UnitLocation)
-                .Include(a => a.UnitRequestManager)
                 .Include(t => t.WarehouseLocation)
-                .Include(w => w.WarehouseApproval)
+                .Include(d1 => d1.Department1)
+                .Include(p1 => p1.Position1)
+                .Include(a1 => a1.UserApprove1)
                 .ToList();
         }
 

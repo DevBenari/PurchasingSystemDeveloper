@@ -1,13 +1,13 @@
 ﻿@{
-    ViewData["Title"] = "List Approval Request";
-    Layout = "~/Views/Shared/_TopNavbarWarehouse.cshtml";
+    ViewData["Title"] = "List Unit Order";
+    Layout = "~/Views/Shared/_TopNavbarWarehouseUnitOrder.cshtml";
 }
 
 @using PurchasingSystemDeveloper.Areas.Warehouse.Models;
 @using PurchasingSystemDeveloper.Models;
 
 @inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
-@model IEnumerable<ApprovalRequest>
+@model IEnumerable<UnitOrder>
 
 <!-- Main content -->
 <section class="content">
@@ -19,8 +19,8 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
-                    <form enctype="multipart/form-data" asp-action="Index" asp-controller="DetailApprovalRequest" method="post" class="form-horizontal">
-                        <div class="row">                           
+                    <form enctype="multipart/form-data" asp-action="Index" asp-controller="UnitOrder" method="post" class="form-horizontal">
+                        <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group">
                                     <div class="input-group date" id="tglAwalPencarian" data-target-input="nearest">
@@ -61,32 +61,29 @@
                                         <th>No</th>
                                         <th>Create Date</th>
                                         <th>Create By</th>
+                                        <th>Approve 1</th>
                                         <th>Request Number</th>
-                                        <th>Warehouse Approve</th>
-                                        <th>Warehouse Approve By</th>
+                                        <th>Order Number</th>
                                         <th>Status</th>
+                                    </tr>
                                 </thead>
                                 <tbody>
                                     @foreach (var pr in Model)
                                     {
-                                        <tr data-href="@Url.Action("DetailApprovalRequest", "ApprovalRequest", new {id=pr.ApprovalRequestId})">
+                                        <tr data-href="@Url.Action("DetailUnitOrder", "UnitOrder", new {id=pr.UnitOrderId})">
                                             <th></th>
                                             <td>@pr.CreateDateTime.ToString("dd MMMM yyyy")</td>
                                             <td>@pr.ApplicationUser.NamaUser</td>
+                                            <td>@pr.UserApprove1.FullName</td>
                                             <td>@pr.UnitRequestNumber</td>
-                                            <td>@pr.WarehouseApproval.FullName</td>
-                                            <td>@pr.WarehouseApproveBy</td>
-                                            @if (pr.Status == "Request")
+                                            <td>@pr.UnitOrderNumber</td>
+                                            @if (pr.Status == "In Order")
                                             {
-                                                <td><div style="color:red"><b>@pr.Status</b></div></td>
-                                            }
-                                            else if (pr.Status == "Approved")
-                                            {
-                                                <td><div style="color:forestgreen"><b>@pr.Status</b></div></td>
+                                                <td><b>@pr.Status</b></td>
                                             }
                                             else
                                             {
-                                                <td><b>@pr.Status</b></td>
+                                                <td><div style="color:forestgreen"><b>@pr.Status</b></div></td>
                                             }
                                         </tr>
                                     }

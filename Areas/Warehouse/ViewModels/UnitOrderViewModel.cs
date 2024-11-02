@@ -2,19 +2,20 @@
 
 namespace PurchasingSystemDeveloper.Areas.Warehouse.ViewModels
 {
-    public class WarehouseRequestViewModel
+    public class UnitOrderViewModel
     {
-        public Guid WarehouseRequestId { get; set; }
-        public string WarehouseRequestNumber { get; set; }
+        public Guid UnitOrderId { get; set; }
+        public string UnitOrderNumber { get; set; }
         public Guid? UnitRequestId { get; set; }
         public string UnitRequestNumber { get; set; }
         public string UserAccessId { get; set; }
         public Guid? UnitLocationId { get; set; }
-        public Guid? UnitRequestManagerId { get; set; }
         public Guid? WarehouseLocationId { get; set; }
-        public Guid? WarehouseApprovalId { get; set; }
+        public Guid? UserApprove1Id { get; set; }
+        public string? ApproveStatusUser1 { get; set; }
         public string Status { get; set; }
         public int QtyTotal { get; set; }
-        public List<WarehouseRequestDetail> WarehouseRequestDetails { get; set; } = new List<WarehouseRequestDetail>();
+        public string? Note { get; set; }
+        public List<UnitOrderDetail> UnitOrderDetails { get; set; } = new List<UnitOrderDetail>();
     }
 }

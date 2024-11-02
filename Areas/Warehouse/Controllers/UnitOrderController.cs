@@ -20,12 +20,12 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
 {
     [Area("Warehouse")]
     [Route("Warehouse/[Controller]/[Action]")]
-    public class WarehouseRequestController : Controller
+    public class UnitOrderController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _applicationDbContext;
-        private readonly IWarehouseRequestRepository _warehouseRequestRepository;
+        private readonly IUnitOrderRepository _unitOrderRepository;
         private readonly IUserActiveRepository _userActiveRepository;
         private readonly IProductRepository _productRepository;
         private readonly ITermOfPaymentRepository _termOfPaymentRepository;
@@ -37,11 +37,11 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
         private readonly IWarehouseTransferRepository _warehouseTransferRepository;
 
 
-        public WarehouseRequestController(
+        public UnitOrderController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ApplicationDbContext applicationDbContext,
-            IWarehouseRequestRepository WarehouseRequestRepository,
+            IUnitOrderRepository UnitOrderRepository,
             IUserActiveRepository userActiveRepository,
             IProductRepository productRepository,
             ITermOfPaymentRepository termOfPaymentRepository,
@@ -56,7 +56,7 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
             _applicationDbContext = applicationDbContext;
-            _warehouseRequestRepository = WarehouseRequestRepository;
+            _unitOrderRepository = UnitOrderRepository;
             _userActiveRepository = userActiveRepository;
             _productRepository = productRepository;
             _termOfPaymentRepository = termOfPaymentRepository;
@@ -71,26 +71,26 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            ViewBag.Active = "Warehouse";
-            var data = _warehouseRequestRepository.GetAllWarehouseRequest();
+            ViewBag.Active = "UnitOrder";
+            var data = _unitOrderRepository.GetAllUnitOrder();
             return View(data);
         }
 
         [HttpPost]
         public async Task<IActionResult> Index(DateTime tglAwalPencarian, DateTime tglAkhirPencarian)
         {
-            ViewBag.Active = "Warehouse";
+            ViewBag.Active = "UnitOrder";
             ViewBag.tglAwalPencarian = tglAwalPencarian.ToString("dd MMMM yyyy");
             ViewBag.tglAkhirPencarian = tglAkhirPencarian.ToString("dd MMMM yyyy");
 
-            var data = _warehouseRequestRepository.GetAllWarehouseRequest().Where(r => r.CreateDateTime.Date >= tglAwalPencarian && r.CreateDateTime.Date <= tglAkhirPencarian).ToList();
+            var data = _unitOrderRepository.GetAllUnitOrder().Where(r => r.CreateDateTime.Date >= tglAwalPencarian && r.CreateDateTime.Date <= tglAkhirPencarian).ToList();
             return View(data);
         }
 
         [HttpGet]
-        public async Task<IActionResult> DetailWarehouseRequest(Guid Id)
+        public async Task<IActionResult> DetailUnitOrder(Guid Id)
         {
-            ViewBag.Active = "Warehouse";
+            ViewBag.Active = "UnitOrder";
 
             ViewBag.User = new SelectList(_userManager.Users, nameof(ApplicationUser.Id), nameof(ApplicationUser.NamaUser), SortOrder.Ascending);
             ViewBag.UnitLocation = new SelectList(await _unitLocationRepository.GetUnitLocations(), "UnitLocationId", "UnitLocationName", SortOrder.Ascending);
@@ -99,43 +99,43 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
             ViewBag.Approval = new SelectList(await _userActiveRepository.GetUserActives(), "UserActiveId", "FullName", SortOrder.Ascending);
             ViewBag.Product = new SelectList(await _productRepository.GetProducts(), "ProductId", "ProductName", SortOrder.Ascending);
 
-            //var WarehouseRequest = await _warehouseRequestRepository.GetWarehouseRequestById(Id);
+            //var UnitOrder = await _unitOrderRepository.GetUnitOrderById(Id);
 
-            WarehouseRequest WarehouseRequest = _applicationDbContext.WarehouseRequests
-                .Include(d => d.WarehouseRequestDetails)
+            UnitOrder UnitOrder = _applicationDbContext.UnitOrders
+                .Include(d => d.UnitOrderDetails)
                 .Include(u => u.ApplicationUser)
                 .Include(p => p.UnitLocation)
-                .Include(b => b.UnitRequestManager)
                 .Include(t => t.WarehouseLocation)
-                .Include(y => y.WarehouseApproval)
-                .Where(p => p.WarehouseRequestId == Id).FirstOrDefault();
+                .Include(y => y.UserApprove1)
+                .Where(p => p.UnitOrderId == Id).FirstOrDefault();
 
-            if (WarehouseRequest == null)
+            if (UnitOrder == null)
             {
                 Response.StatusCode = 404;
-                return View("WarehouseRequestNotFound", Id);
+                return View("UnitOrderNotFound", Id);
             }
 
-            WarehouseRequest model = new WarehouseRequest
+            UnitOrder model = new UnitOrder
             {
-                WarehouseRequestId = WarehouseRequest.WarehouseRequestId,
-                WarehouseRequestNumber = WarehouseRequest.WarehouseRequestNumber,
-                UnitRequestId = WarehouseRequest.UnitRequestId,
-                UnitRequestNumber = WarehouseRequest.UnitRequestNumber,
-                UserAccessId = WarehouseRequest.UserAccessId,
-                UnitLocationId = WarehouseRequest.UnitLocationId,
-                UnitRequestManagerId = WarehouseRequest.UnitRequestManagerId,
-                WarehouseLocationId = WarehouseRequest.WarehouseLocationId,
-                WarehouseApprovalId = WarehouseRequest.WarehouseApprovalId,
-                QtyTotal = WarehouseRequest.QtyTotal,
-                Status = WarehouseRequest.Status
+                UnitOrderId = UnitOrder.UnitOrderId,
+                UnitOrderNumber = UnitOrder.UnitOrderNumber,
+                UnitRequestId = UnitOrder.UnitRequestId,
+                UnitRequestNumber = UnitOrder.UnitRequestNumber,
+                UserAccessId = UnitOrder.UserAccessId,
+                UnitLocationId = UnitOrder.UnitLocationId,
+                WarehouseLocationId = UnitOrder.WarehouseLocationId,
+                UserApprove1Id = UnitOrder.UserApprove1Id,
+                ApproveStatusUser1 = UnitOrder.ApproveStatusUser1,
+                QtyTotal = UnitOrder.QtyTotal,
+                Status = UnitOrder.Status,
+                Note = UnitOrder.Note,
             };
 
-            var ItemsList = new List<WarehouseRequestDetail>();
+            var ItemsList = new List<UnitOrderDetail>();
 
-            foreach (var item in WarehouseRequest.WarehouseRequestDetails)
+            foreach (var item in UnitOrder.UnitOrderDetails)
             {
-                ItemsList.Add(new WarehouseRequestDetail
+                ItemsList.Add(new UnitOrderDetail
                 {
                     ProductNumber = item.ProductNumber,
                     ProductName = item.ProductName,
@@ -147,7 +147,7 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
                 });
             }
 
-            model.WarehouseRequestDetails = ItemsList;
+            model.UnitOrderDetails = ItemsList;
             return View(model);
         }
 
@@ -161,14 +161,13 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
             ViewBag.Approval = new SelectList(await _userActiveRepository.GetUserActives(), "UserActiveId", "FullName", SortOrder.Ascending);
             ViewBag.Product = new SelectList(await _productRepository.GetProducts(), "ProductId", "ProductName", SortOrder.Ascending);
 
-            WarehouseRequest WarehouseRequest = _applicationDbContext.WarehouseRequests
-                .Include(d => d.WarehouseRequestDetails)
+            UnitOrder UnitOrder = _applicationDbContext.UnitOrders
+                .Include(d => d.UnitOrderDetails)
                 .Include(u => u.ApplicationUser)
                 .Include(p => p.UnitLocation)
-                .Include(b => b.UnitRequestManager)
                 .Include(t => t.WarehouseLocation)
-                .Include(y => y.WarehouseApproval)
-                .Where(p => p.WarehouseRequestId == Id).FirstOrDefault();
+                .Include(y => y.UserApprove1)
+                .Where(p => p.UnitOrderId == Id).FirstOrDefault();
 
             _signInManager.IsSignedIn(User);
 
@@ -182,44 +181,45 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
             var lastCode = _warehouseTransferRepository.GetAllWarehouseTransfer().Where(d => d.CreateDateTime.ToString("yyMMdd") == dateNow.ToString("yyMMdd")).OrderByDescending(k => k.WarehouseTransferNumber).FirstOrDefault();
             if (lastCode == null)
             {
-                wtf.WarehouseTransferNumber = "WTF" + setDateNow + "0001";
+                wtf.WarehouseTransferNumber = "TR" + setDateNow + "0001";
             }
             else
             {
-                var lastCodeTrim = lastCode.WarehouseTransferNumber.Substring(3, 6);
+                var lastCodeTrim = lastCode.WarehouseTransferNumber.Substring(2, 6);
 
                 if (lastCodeTrim != setDateNow)
                 {
-                    wtf.WarehouseTransferNumber = "WTF" + setDateNow + "0001";
+                    wtf.WarehouseTransferNumber = "TR" + setDateNow + "0001";
                 }
                 else
                 {
-                    wtf.WarehouseTransferNumber = "WTF" + setDateNow + (Convert.ToInt32(lastCode.WarehouseTransferNumber.Substring(9, lastCode.WarehouseTransferNumber.Length - 9)) + 1).ToString("D4");
+                    wtf.WarehouseTransferNumber = "TR" + setDateNow + (Convert.ToInt32(lastCode.WarehouseTransferNumber.Substring(9, lastCode.WarehouseTransferNumber.Length - 9)) + 1).ToString("D4");
                 }
             }
 
             ViewBag.WarehouseTransferNumber = wtf.WarehouseTransferNumber;
 
-            var getWRQ = new WarehouseRequestViewModel()
+            var getWRQ = new UnitOrderViewModel()
             {
-                WarehouseRequestId = WarehouseRequest.WarehouseRequestId,
-                WarehouseRequestNumber = WarehouseRequest.WarehouseRequestNumber,
-                UnitRequestId = WarehouseRequest.UnitRequestId,
-                UnitRequestNumber = WarehouseRequest.UnitRequestNumber,
-                UserAccessId = WarehouseRequest.UserAccessId,
-                UnitLocationId = WarehouseRequest.UnitLocationId,
-                UnitRequestManagerId = WarehouseRequest.UnitRequestManagerId,
-                WarehouseLocationId = WarehouseRequest.WarehouseLocationId,
-                WarehouseApprovalId = WarehouseRequest.WarehouseApprovalId,
-                Status = WarehouseRequest.Status,
-                QtyTotal = WarehouseRequest.QtyTotal,
+                UnitOrderId = UnitOrder.UnitOrderId,
+                UnitOrderNumber = UnitOrder.UnitOrderNumber,
+                UnitRequestId = UnitOrder.UnitRequestId,
+                UnitRequestNumber = UnitOrder.UnitRequestNumber,
+                UserAccessId = UnitOrder.UserAccessId,
+                UnitLocationId = UnitOrder.UnitLocationId,                
+                WarehouseLocationId = UnitOrder.WarehouseLocationId,
+                UserApprove1Id = UnitOrder.UserApprove1Id,
+                ApproveStatusUser1 = UnitOrder.ApproveStatusUser1,
+                Status = UnitOrder.Status,
+                QtyTotal = UnitOrder.QtyTotal,
+                Note = UnitOrder.Note,
             };
 
-            var ItemsList = new List<WarehouseRequestDetail>();
+            var ItemsList = new List<UnitOrderDetail>();
 
-            foreach (var item in WarehouseRequest.WarehouseRequestDetails)
+            foreach (var item in UnitOrder.UnitOrderDetails)
             {
-                ItemsList.Add(new WarehouseRequestDetail
+                ItemsList.Add(new UnitOrderDetail
                 {
                     CreateDateTime = DateTime.Now,
                     CreateBy = new Guid(getUser.Id),
@@ -231,27 +231,27 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
                 });
             }
 
-            getWRQ.WarehouseRequestDetails = ItemsList;
+            getWRQ.UnitOrderDetails = ItemsList;
 
             return View(getWRQ);
         }
 
         [HttpPost]
-        public async Task<IActionResult> TransferUnit(WarehouseRequest model, WarehouseRequestViewModel vm)
+        public async Task<IActionResult> TransferUnit(UnitOrder model, UnitOrderViewModel vm)
         {
-            WarehouseRequest warehouseRequest = await _warehouseRequestRepository.GetWarehouseRequestByIdNoTracking(model.WarehouseRequestId);
+            UnitOrder UnitOrder = await _unitOrderRepository.GetUnitOrderByIdNoTracking(model.UnitOrderId);
 
             _signInManager.IsSignedIn(User);
 
             var getUser = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
 
-            string getWarehouseTransferNumber = Request.Form["WTFNumber"];
+            string getWarehouseTransferNumber = Request.Form["TRNumber"];
 
             var updateURequest = _unitRequestRepository.GetAllUnitRequest().Where(c => c.UnitRequestId == model.UnitRequestId).FirstOrDefault();
             if (updateURequest != null)
             {
                 {
-                    updateURequest.Status = warehouseRequest.WarehouseRequestNumber;
+                    updateURequest.Status = UnitOrder.UnitOrderNumber;
                 };
                 _applicationDbContext.Entry(updateURequest).State = EntityState.Modified;
             }            
@@ -260,33 +260,32 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
             {
                 CreateDateTime = DateTime.Now,
                 CreateBy = new Guid(getUser.Id),
-                WarehouseRequestId = warehouseRequest.WarehouseRequestId,
-                WarehouseRequestNumber = warehouseRequest.WarehouseRequestNumber,
+                UnitOrderId = UnitOrder.UnitOrderId,
+                UnitOrderNumber = UnitOrder.UnitOrderNumber,
                 UserAccessId = getUser.Id.ToString(),
-                UnitLocationId = warehouseRequest.UnitLocationId,
-                UnitRequestManagerId = warehouseRequest.UnitRequestManagerId,
-                WarehouseLocationId = warehouseRequest.WarehouseLocationId,
-                WarehouseApprovalId = warehouseRequest.WarehouseApprovalId,
-                Status = warehouseRequest.UnitRequestNumber,
-                QtyTotal = warehouseRequest.QtyTotal
+                UnitLocationId = UnitOrder.UnitLocationId,               
+                WarehouseLocationId = UnitOrder.WarehouseLocationId,
+                UserApprove1Id = UnitOrder.UserApprove1Id,
+                Status = UnitOrder.UnitRequestNumber,
+                QtyTotal = UnitOrder.QtyTotal,
             };
 
             newWarehouseTransfer.WarehouseTransferNumber = getWarehouseTransferNumber;
 
-            var updateWRQ = _warehouseRequestRepository.GetAllWarehouseRequest().Where(c => c.WarehouseRequestId == model.WarehouseRequestId).FirstOrDefault();
-            if (updateWRQ != null)
+            var updateStatusUO = _unitOrderRepository.GetAllUnitOrder().Where(c => c.UnitOrderId == model.UnitOrderId).FirstOrDefault();
+            if (updateStatusUO != null)
             {
                 {
-                    updateWRQ.Status = newWarehouseTransfer.WarehouseTransferNumber;
+                    updateStatusUO.Status = newWarehouseTransfer.WarehouseTransferNumber;
                 };
-                _applicationDbContext.Entry(updateWRQ).State = EntityState.Modified;
+                _applicationDbContext.Entry(updateStatusUO).State = EntityState.Modified;
             }
 
             var ItemsList = new List<WarehouseTransferDetail>();
 
-            foreach (var item in vm.WarehouseRequestDetails)
+            foreach (var item in vm.UnitOrderDetails)
             {
-                //Saat proses transfer stok barang di gudang akan berkurang
+                //Saat proses transfer, stok barang di gudang akan berkurang
                 var updateProduk = _productRepository.GetAllProduct().Where(c => c.ProductCode == item.ProductNumber).FirstOrDefault();
                 if (updateProduk != null)
                 {
@@ -314,7 +313,7 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
             _warehouseTransferRepository.Tambah(newWarehouseTransfer);            
 
             TempData["SuccessMessage"] = "Number " + newWarehouseTransfer.WarehouseTransferNumber + " Saved";
-            return RedirectToAction("Index", "WarehouseRequest");
+            return RedirectToAction("Index", "UnitOrder");
         }
     }
 }

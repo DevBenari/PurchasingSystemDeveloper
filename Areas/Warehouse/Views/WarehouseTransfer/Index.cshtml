@@ -1,6 +1,6 @@
-﻿@{
+﻿﻿@{
     ViewData["Title"] = "List Warehouse Transfer";
-    Layout = "~/Views/Shared/_TopNavbarWarehouse.cshtml";
+    Layout = "~/Views/Shared/_TopNavbarWarehouseUnitOrder.cshtml";
 }
 
 @using PurchasingSystemDeveloper.Areas.Warehouse.Models;
@@ -62,10 +62,10 @@
                                         <th>Create Date</th>
                                         <th>Create By</th>
                                         <th>Transfer Number</th>
-                                        <th>Request Number</th>
-                                        <th>Request By</th>
+                                        @*<th>Request Number</th>
+                                        <th>Request By</th>*@
                                         <th>Unit Location</th>
-                                        <th>Approve By</th>
+                                        @*<th>Approve By</th>*@
                                         <th>Warehouse Location</th>
                                         <th>Status</th>
                                     </tr>
@@ -78,10 +78,10 @@
                                             <td>@pr.CreateDateTime.ToString("dd MMMM yyyy")</td>
                                             <td>@pr.ApplicationUser.NamaUser</td>
                                             <td>@pr.WarehouseTransferNumber</td>
-                                            <td>@pr.WarehouseRequestNumber</td>
-                                            <td>@pr.UnitRequestManager.FullName</td>
+                                            @*<td>@pr.WarehouseRequestNumber</td>
+                                            <td>@pr.UnitRequestManager.FullName</td>*@
                                             <td>@pr.UnitLocation.UnitLocationName</td>
-                                            <td>@pr.WarehouseApproval.FullName</td>
+                                            @*<td>@pr.WarehouseApproval.FullName</td>*@
                                             <td>@pr.WarehouseLocation.WarehouseLocationName</td>
                                             @if (pr.Status != "")
                                             {

@@ -1,13 +1,13 @@
 ﻿@{
-    ViewData["Title"] = "List Qty Difference Request";
-    Layout = "~/Views/Shared/_TopNavbarPurchaseOrder.cshtml";
+    ViewData["Title"] = "List Approval Unit Request";
+    Layout = "~/Views/Shared/_TopNavbarWarehouseApprovalUnitRequest.cshtml";
 }
 
-@using PurchasingSystemDeveloper.Areas.Order.Models;
+@using PurchasingSystemDeveloper.Areas.Warehouse.Models;
 @using PurchasingSystemDeveloper.Models;
 
 @inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
-@model IEnumerable<QtyDifferenceRequest>
+@model IEnumerable<ApprovalUnitRequest>
 
 <!-- Main content -->
 <section class="content">
@@ -19,9 +19,9 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
-                    <form enctype="multipart/form-data" asp-action="Index" asp-controller="QtyDifferenceRequest" method="post" class="form-horizontal">
+                    <form enctype="multipart/form-data" asp-action="Index" asp-controller="DetailApprovalUnitRequest" method="post" class="form-horizontal">
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <div class="input-group date" id="tglAwalPencarian" data-target-input="nearest">
                                         <div class="input-group-append" data-target="#tglAwalPencarian" data-toggle="datetimepicker">
@@ -31,7 +31,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-5">
                                 <div class="form-group">
                                     <div class="input-group date" id="reservationdate" data-target-input="nearest">
                                         <div class="input-group date" id="tglAkhirPencarian" data-target-input="nearest">
@@ -46,10 +46,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-3">
                                 <div class="form-group">
-                                    <select class="form-control select2" style="width: 100%;" id="daterange-btn">
-                                        <option value="" hidden disabled selected>Pencarian Berdasarkan Waktu</option>
+                                    <select class="form-control select2bs4" style="width: 100%;" id="btnFilterBy" data-placeholder="--Filter by--">
+                                        <option value="" hidden disabled selected>--Filter by--</option>
+                                        <option value="Monthly">Monthly</option>
+                                        <option value="Weekly">Weekly</option>
+                                        <option value="Daily">Daily</option>
                                     </select>
                                 </div>
                             </div>
@@ -60,27 +63,37 @@
                                     <tr>
                                         <th>No</th>
                                         <th>Create Date</th>
-                                        <th>Create By</th>                                        
-                                        <th>Head Warehouse</th>
-                                        <th>Head Purchasing</th>
+                                        <th>Create By</th>
+                                        <th>Request Number</th>
+                                        <th>Location Name</th>
+                                        <th>Warehouse Name</th>
+                                        <th>Approve Name</th>
+                                        <th>Approval Time</th>
                                         <th>Status</th>
                                 </thead>
                                 <tbody>
                                     @foreach (var pr in Model)
                                     {
-                                        <tr data-href="@Url.Action("DetailQtyDifferenceRequest", "QtyDifferenceRequest", new {id=pr.QtyDifferenceRequestId})">
+                                        <tr data-href="@Url.Action("DetailApprovalUnitRequest", "ApprovalUnitRequest", new {id=pr.ApprovalUnitRequestId})">
                                             <th></th>
                                             <td>@pr.CreateDateTime.ToString("dd MMMM yyyy")</td>
                                             <td>@pr.ApplicationUser.NamaUser</td>
-                                            <td>@pr.HeadWarehouseManager.FullName</td>
-                                            <td>@pr.HeadPurchasingManager.FullName</td>                                            
+                                            <td>@pr.UnitRequestNumber</td>
+                                            <td>@pr.UnitLocation.UnitLocationName</td>
+                                            <td>@pr.WarehouseLocation.WarehouseLocationName</td>
+                                            <td>@pr.UserApprove.FullName</td>
+                                            <td>@pr.ApprovalTime</td>
                                             @if (pr.Status == "Waiting Approval")
                                             {
-                                                <td><div style="color:red"><b>@pr.Status</b></div></td>
-                                            }
-                                            else if (pr.Status == "Approved")
+                                                <td><span class="badge bg-yellow"><b>@pr.Status</b></span></td>
+                                            }                                           
+                                            else if (pr.Status == "Approve")
                                             {
-                                                <td><div style="color:forestgreen"><b>@pr.Status</b></div></td>
+                                                <td><span class="badge bg-success"><b>@pr.Status</b></span></td>
+                                            }
+                                            else if (pr.Status == "Reject")
+                                            {
+                                                <td><span class="badge bg-danger"><b>@pr.Status</b></span></td>
                                             }
                                         </tr>
                                     }
@@ -116,7 +129,16 @@
 <!-- /.content -->
 @section Scripts{
     <script src="~/scripts/tabletemplate.js"></script>
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
 
+            $("#btnFilterBy").data('placeholder');
+        })
+    </script>
     <script>
         $(function () {
             $('#tglAwalPencarian').datetimepicker({

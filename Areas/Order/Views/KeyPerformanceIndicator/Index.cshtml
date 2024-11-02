@@ -1,240 +1,1054 @@
-﻿@{
+﻿@using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
+
+@{
     ViewData["Title"] = "Key Perfomance Indikator";
     //Layout = "~/Views/Shared/_TopNavbarOrder.cshtml";
+    var photoPath = "~/UserPhoto/" + (Model.UserPhotoPath ?? "user.jpg");
 }
 
-@using PurchasingSystemDeveloper.Areas.Order.Models;
-@using PurchasingSystemDeveloper.Models;
-
 @inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model UserActiveViewModel
 
 <!-- Main content -->
-<section class="content">
-    <br />
+<section class="container-fluid">
     <div class="row">
         <div class="col-12">
-            <div class="card card-cyan">
-                <div class="card-header">
-                    <h3 class="card-title" style="color:#ffffff">@ViewBag.Title</h3>
+            <!-- Widget: user widget style 1 -->
+            <div class="card card-widget widget-user">
+                <!-- Add the bg color to the header using any of the bg-* classes -->
+                <div class="widget-user-header bg-info">
+                    <h1 class="widget-user-username"><b>@ViewBag.Title</b></h1>
                 </div>
             </div>
-            <!-- /.card -->
+            <!-- /.widget-user -->
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="info-box">
-                <span class="info-box-icon"> <i class="fa-solid fa-file-pen"></i> </span>
-                <div class="info-box-content">
-                    <span class="info-box-text">Your Data<b> Request</b> Created</span> <span class="info-box-number" id="data_requested"></span>
-                    <div class="progress mb-2" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                        <div class="progress-bar bg-warning requested"></div>
-                    </div>
-                    <span class="progress-description" id="desc-requested">
-
-                    </span>
-                </div> <!-- /.info-box-content -->
-            </div> <!-- /.info-box -->
-        </div> <!-- /.col -->
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="info-box">
-                <span class="info-box-icon"> <i class="fa-solid fa-file-circle-check"></i> </span>
-                <div class="info-box-content">
-                    <span class="info-box-text"> Process Your <b>Approval</b> PR</span> <span class="info-box-number" id="data_approved"></span>
-                    <div class="progress mb-2" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                        <div class="progress-bar bg-success approved"></div>
-                    </div>
-                    <span class="progress-description" id="desc-approved">
-                        Finish Your Obligation, Please!
-                    </span>
-                </div> <!-- /.info-box-content -->
-            </div> <!-- /.info-box -->
-        </div> <!-- /.col -->
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="info-box">
-                <span class="info-box-icon"> <i class="fa-solid fa-file-circle-xmark"></i> </span>
-                <div class="info-box-content">
-                    <span class="info-box-text">You has been <b>Rejected</b> PR</span> <span class="info-box-number" id="data_rejected"></span>
-                    <div class="progress mb-2" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                        <div class="progress-bar bg-danger rejected"></div>
-                    </div>
-                    <span class="progress-description">
-                        Dont Forget to Description Your Reason
-                    </span>
-                </div> <!-- /.info-box-content -->
-            </div> <!-- /.info-box -->
-        </div> <!-- /.col -->
-        <div class="col-md-3 col-sm-6 col-12">
-            <div class="info-box">
-                <span class="info-box-icon"> <i class="fa-solid fa-list"></i> </span>
-                <div class="info-box-content">
-                    <span class="info-box-text">Your PO <b>In Order </b>Status</span> <span class="info-box-number" id="data_completed"></span>
-                    <div class="progress mb-2" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                        <div class="progress-bar bg-info completed"></div>
-                    </div>
-                    <span class="progress-description" id="desc-completed">
-
-                    </span>
-                </div> <!-- /.info-box-content -->
-            </div> <!-- /.info-box -->
-        </div> <!-- /.col -->
-    </div>
-    <div class="row">
-        <div class="col-sm-6">
-            <div class="row">
-                <div class="col-sm-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <h4 class="border-bottom">KPIs Monthly</h4>
-                            <div id="chart"></div>
+    <div class="row"> 
+        <div class="col-md-3 d-flex align-items-stretch flex-column">
+            <div class="card bg-light d-flex flex-fill">
+                <div class="card-body pt-0">
+                    <div class="row">
+                        <div class="col-5 text-center" style="margin-top: 15px;">
+                           <img src="@photoPath" asp-append-version="true" width="100%" height="100%" alt="user-avatar" class="img-circle img-fluid" />
+                        </div>
+                        <div class="col-7" style="margin-top: 15px;">
+                            <h2 class="lead text-center" style="margin-top: 20px;"><b>@(User.FindFirst("UserNamaDepan").Value)</b></h2>
+                            <p class="text-center">Sofware Development</p>
+                            <button type="button" class="btn btn-block btn-warning text-center" style="margin-top: -5%;">IT Departement</button>
+                            <div class="form-group" style="margin-top: 3%;" id="formSelected">
+                                <select class="form-control select2" style="width: 100%;" id="selected">
+                                    <option selected="true" value="null" disabled="disabled">-- Performance By --</option>
+                                    <option value="year">Yearly</option>
+                                    <option value="month">Monthly</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="card progress-circle">
-                        <div class="progress">
-                            <span class="title timer" data-from="0" data-to="85" data-speed="1800">85</span>
-                            <div class="overlay"></div>
-                            <div class="left"></div>
-                            <div class="right"></div>
-                        </div>
+                @* <div class="card-footer">
+                    <div class="text-right">
+                        <a href="#" class="btn btn-sm bg-teal">
+                            <i class="fas fa-comments"></i>
+                        </a>
+                        <a href="#" class="btn btn-sm btn-primary">
+                            <i class="fas fa-user"></i> View Profile
+                        </a>
                     </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="card progress-circle">
-                        <div class="progress">
-                            <span class="title timer" data-from="0" data-to="85" data-speed="1800">85</span>
-                            <div class="overlay"></div>
-                            <div class="left"></div>
-                            <div class="right"></div>
-                        </div>
-                    </div>
-                </div>
-                @* <div class="col-sm-6">
-                <div class="info-box">
-                <span class="info-box-icon"> <i class="fa-solid fa-file-pen"></i> </span>
-                <div class="info-box-content">
-                <span class="info-box-text">Your Data<b> Requested</b></span> <span class="info-box-number" id="data_requested"></span>
-                <div class="progress mb-2" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                <div class="progress-bar bg-warning requested"></div>
-                </div>
-                <span class="progress-description" id="desc-requested">
-
-                </span>
-                </div> <!-- /.info-box-content -->
-                </div> <!-- /.info-box -->
-                </div>
-                <div class="col-sm-6">
-                <div class="info-box">
-                <span class="info-box-icon"> <i class="fa-solid fa-file-pen"></i> </span>
-                <div class="info-box-content">
-                <span class="info-box-text">Your Data<b> Requested</b></span> <span class="info-box-number" id="data_requested"></span>
-                <div class="progress mb-2" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                <div class="progress-bar bg-warning requested"></div>
-                </div>
-                <span class="progress-description" id="desc-requested">
-
-                </span>
-                </div> <!-- /.info-box-content -->
-                </div> <!-- /.info-box -->
                 </div> *@
             </div>
         </div>
-        <div class="col-sm-6">
+        <div class="col-md-9">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="border-bottom">Datatable</h4>
-                    <table id="tblTemplate" class="table table-hover table-bordered">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Create Date</th>
-                                <th>Create By</th>
-                                <th>UR Number</th>
-                                <th>Unit Location</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="show_data">
-                        </tbody>
-                    </table>
+                    <div class="col">
+                        <div class="container">
+                            <div class="inner">
+                                <div class="rating">
+                                    <span class="rating-num">4.0</span>
+                                    <div class="rating-stars">
+                                        <span><i class="fa-solid fa-star active"></i></span>
+                                        <span><i class="fa-solid fa-star active"></i></span>
+                                        <span><i class="fa-solid fa-star active"></i></span>
+                                        <span><i class="fa-solid fa-star active"></i></span>
+                                        <span><i class="fa-solid fa-star"></i></span>
+                                    </div>
+                                    <div class=" rating-users text-center">
+                                        <div class="justify-content-center">
+                                            <i class="fa-solid fa-file-signature"></i>&nbsp;<span id="total-task"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="histo">
+                                    <div class="five histo-rate">
+                                        <span class="histo-star">
+                                            <i class="fa-solid fa-star active"></i> 5
+                                        </span>
+                                        <span class="bar-block">
+                                            <span id="bar-five" class="bar">
+                                                <span class="text-absolute">566,784</span>&nbsp;
+                                            </span>
+                                        </span>
+                                    </div>
+
+                                    <div class="four histo-rate">
+                                        <span class="histo-star">
+                                            <i class="fa-solid fa-star active"></i> 4
+                                        </span>
+                                        <span class="bar-block">
+                                            <span id="bar-four" class="bar">
+                                                <span class="text-absolute">171,298</span>&nbsp;
+                                            </span>
+                                        </span>
+                                    </div>
+
+                                    <div class="three histo-rate">
+                                        <span class="histo-star">
+                                            <i class="fa-solid fa-star active"></i> 3
+                                        </span>
+                                        <span class="bar-block">
+                                            <span id="bar-three" class="bar">
+                                                <span class="text-absolute">94,940</span>&nbsp;
+                                            </span>
+                                        </span>
+                                    </div>
+
+                                    <div class="two histo-rate">
+                                        <span class="histo-star">
+                                            <i class="fa-solid fa-star active"></i> 2
+                                        </span>
+                                        <span class="bar-block">
+                                            <span id="bar-two" class="bar">
+                                                <span class="text-absolute">44,525</span>&nbsp;
+                                            </span>
+                                        </span>
+                                    </div>
+
+                                    <div class="one histo-rate">
+                                        <span class="histo-star">
+                                            <i class="fa-solid fa-star active"></i> 1
+                                        </span>
+                                        <span class="bar-block">
+                                            <span id="bar-one" class="bar">
+                                                <span class="text-absolute">136,457</span>&nbsp;
+                                            </span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+
+                    </div>
+                    @* <div class="row align-items-start">
+                        <div class="col text-center">
+                            <span class="rating-num">5.0</span>
+                            <div class="rating-stars">
+                                <span><i class="fa-solid fa-star Active"></i></span>
+                                <span><i class="fa-solid fa-star Active"></i></span>
+                                <span><i class="fa-solid fa-star Active"></i></span>
+                                <span><i class="fa-solid fa-star Active"></i></span>
+                                <span><i class="fa-solid fa-star Active"></i></span>
+                            </div>
+                            <div class="rating-users">
+                                <i class="icon-user"></i> 1,014,004 total
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="histo">
+                                <div class="five histo-rate">
+                                    <span class="histo-star">
+                                        <i class="fa-solid fa-star Active"></i> 5
+                                    </span>
+                                    <span class="bar-block">
+                                        <span id="bar-five" class="bar">
+                                            <span>566,784</span>&nbsp;
+                                        </span>
+                                    </span>
+                                </div>
+
+                                <div class="four histo-rate">
+                                    <span class="histo-star">
+                                        <i class="fa-solid fa-star Active"></i> 4
+                                    </span>
+                                    <span class="bar-block">
+                                        <span id="bar-four" class="bar">
+                                            <span>171,298</span>&nbsp;
+                                        </span>
+                                    </span>
+                                </div>
+
+                                <div class="three histo-rate">
+                                    <span class="histo-star">
+                                        <i class="fa-solid fa-star Active"></i> 3
+                                    </span>
+                                    <span class="bar-block">
+                                        <span id="bar-three" class="bar">
+                                            <span>94,940</span>&nbsp;
+                                        </span>
+                                    </span>
+                                </div>
+
+                                <div class="two histo-rate">
+                                    <span class="histo-star">
+                                        <i class="fa-solid fa-star Active"></i> 2
+                                    </span>
+                                    <span class="bar-block">
+                                        <span id="bar-two" class="bar">
+                                            <span style="display: inline-block;">44,525</span>&nbsp;
+                                        </span>
+                                    </span>
+                                </div>
+
+                                <div class="one histo-rate">
+                                    <span class="histo-star">
+                                        <i class="fa-solid fa-star Active"></i> 1
+                                    </span>
+                                    <span class="bar-block">
+                                        <span id="bar-one" class="bar">
+                                            <span>136,457</span>&nbsp;
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            One of three columns
+                        </div>
+                    </div> *@
+                    
                 </div>
             </div>
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-md-2 col-sm-4 col-12">
+            <div class="info-box">
+                <span class="info-box-icon"> <i class="fa-solid fa-file-pen"></i> </span>
+                <div class="info-box-content">
+                    <span class="info-box-text"><b>PR Created</b></span> <span class="info-box-number" id="data_created"></span>
+                    <div class="progress mb-2" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar bg-primary created"></div>
+                    </div>
+                    <span class="progress-description" id="desc_created">
+                        The PR You Was Created
+                    </span>
+                </div> <!-- /.info-box-content -->
+            </div> <!-- /.info-box -->
+        </div> <!-- /.col -->
+        <div class="col-md-2 col-sm-4 col-12">
+            <div class="info-box">
+                <span class="info-box-icon"> <i class="fa-solid fa-file-circle-question"></i> </span>
+                <div class="info-box-content">
+                    <span class="info-box-text"><b>Waiting Approval</b> </span> <span class="info-box-number" id="data_waiting"></span>
+                    <div class="progress mb-2" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar bg-warning waiting"></div>
+                    </div>
+                    <span class="progress-description" id="desc_waiting">
+
+                    </span>
+                </div> <!-- /.info-box-content -->
+            </div> <!-- /.info-box -->
+        </div> <!-- /.col -->
+        <div class="col-md-2 col-sm-4 col-12">
+            <div class="info-box">
+                <span class="info-box-icon"> <i class="fa-solid fa-file-circle-check"></i> </span>
+                <div class="info-box-content">
+                    <span class="info-box-text"><b>PR Approved</b></span> <span class="info-box-number" id="data_approved"></span>
+                    <div class="progress mb-2" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar bg-success approved"></div>
+                    </div>
+                    <span class="progress-description" id="desc_approved">
+
+                    </span>
+                </div> <!-- /.info-box-content -->
+            </div> <!-- /.info-box -->
+        </div> <!-- /.col -->
+        <div class="col-md-2 col-sm-4 col-12">
+            <div class="info-box">
+                <span class="info-box-icon"> <i class="fa-solid fa-file-circle-xmark"></i> </span>
+                <div class="info-box-content">
+                    <span class="info-box-text"><b>PR Rejected</b></span> <span class="info-box-number" id="data_rejected"></span>
+                    <div class="progress mb-2" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar bg-danger rejected"></div>
+                    </div>
+                    <span class="progress-description" id="desc_rejected">
+
+                    </span>
+                </div> <!-- /.info-box-content -->
+            </div> <!-- /.info-box -->
+        </div> <!-- /.col -->
+        <div class="col-md-2 col-sm-4 col-12">
+            <div class="info-box">
+                <span class="info-box-icon"><i class="fa-solid fa-box-archive"></i> </span>
+                <div class="info-box-content">
+                    <span class="info-box-text"><b>PO Created</b></span> <span class="info-box-number" id="data_po"></span>
+                    <div class="progress mb-2" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar bg-info po"></div>
+                    </div>
+                    <span class="progress-description" id="desc_po">
+
+                    </span>
+                </div> <!-- /.info-box-content -->
+            </div> <!-- /.info-box -->
+        </div> <!-- /.col -->
+        <div class="col-md-2 col-sm-4 col-12">
+            <div class="info-box">
+                <span class="info-box-icon"><i class="fa-solid fa-box-open"></i> </span>
+                <div class="info-box-content">
+                    <span class="info-box-text"><b>PO Received</b></span> <span class="info-box-number" id="data_completed"></span>
+                    <div class="progress mb-2" role="progressbar" aria-label="Success example" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                        <div class="progress-bar completed" style="background-color: darkblue"></div>
+                    </div>
+                    <span class="progress-description" id="desc_completed">
+
+                    </span>
+                </div> <!-- /.info-box-content -->
+            </div> <!-- /.info-box -->
+        </div> <!-- /.col -->
+    </div>
+    <div class="row">
+        <div class="col-sm-9">
+            <div class="card">
+                <div class="card-body">
+                    @*  <h4 class="border-bottom">Approved Performance Monthly</h4> *@
+                    <div id="chart"></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="card">
+                <div class="card-body">
+                    @*  <h4 class="border-bottom">Approved Performance Monthly</h4> *@
+                    <div id="chartCircle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- /.row -->
 </section>
+<style>
+<link media="screen" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400" />
+
+.card-body {
+  font-family: 'Roboto', Helvetica;
+  color: #737373;
+  font-weight: 300;
+}
+
+.container {
+  /* width: 400px; */
+  /* margin: 0 auto; */
+  /* margin-top: 3em; */
+  background-color: #EFEFEF;
+  padding: 4px;
+}
+
+.inner {
+  padding: 1em;
+  background-color: white;
+  overflow: hidden;
+  /* position: relative; */
+  /* -webkit-border-radius: 4px;  */
+  /* -moz-border-radius: 4px;  */
+  /* border-radius: 4px;  */
+}
+
+.rating {
+  float: left; /* menentukan posisi class rating */
+  width: 45%;
+  margin-right: 5%;
+  text-align: center;
+}
+
+.rating-num {
+  color: #333333;
+  font-size: 72px;
+  font-weight: 100;
+  line-height: 1em; 
+  
+}
+
+.rating-stars {
+  font-size: 20px;
+  color: #E3E3E3;
+  margin-bottom: .5em;
+  
+}
+.rating-stars .active {
+  color: #737373;
+}
+
+.rating-users {
+  font-size: 14px;
+}
+
+.histo {
+  float: right;
+  width: 50%;
+  font-size: 13px;
+  
+}
+
+.histo-star {
+  float: left;
+  padding: 3px;
+}
+
+.histo-rate {
+  width: 100%;
+  /* display: inline-block; */
+  clear: both;
+  
+}
+
+.bar-block {
+  margin-left: 5px;
+  /* color: black; */
+  /* display: block; */
+  float: left;
+  width: 75%;
+  /* position: relative; */
+}
+
+.bar {
+  padding: 4px;
+  display: block;
+}
+
+.text-absolute {
+    position: absolute;
+}
+
+#bar-five {
+  width: 0;
+  background-color: #9FC05A;
+}
+
+#bar-four {
+  width: 0;
+  background-color: #ADD633;
+}
+
+#bar-three {
+  width: 0;
+  background-color: #FFD834;
+}
+
+#bar-two {
+  width: 0;
+  background-color: #FFB234;
+}
+
+#bar-one {
+  width: 0;
+  background-color: #FF8B5A;
+}
+
+</style>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js" integrity="sha256-+vh8GkaU7C9/wbSLIcwq82tQ2wTf44aOHA8HlBMwRI8=" crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/2.1.7/js/dataTables.min.js"></script>
-<!-- /.content -->
 <script>
-    
+    $(document).ready(function () {
+        $('.bar span').hide();
+        $('#bar-five').animate({
+            width: '20%'
+        }, 1000);
+        $('#bar-four').animate({
+            width: '35%'
+        }, 1000);
+        $('#bar-three').animate({
+            width: '5%'
+        }, 1000);
+        $('#bar-two').animate({
+            width: '15%'
+        }, 1000);
+        $('#bar-one').animate({
+            width: '30%'
+        }, 1000);
+
+        setTimeout(function () {
+            $('.bar span').fadeIn('slow');
+        }, 1000);
+
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        let selected = $('.select2').val();
+        show_data(selected)
+
+        $('.select2').on('change', function () {
+            selected = $(this).val();
+            show_data(selected);
+        });
+    });
+
+    function show_data(selected) {
+        $.post('@Url.Action("PostData")', {FirstName: selected}, function (r) {
+
+            // CREATED CARD
+            let dataPurchaseRequest = r.dataPurchaseRequest;
+            let dataCreated = r.dataCreated;
+
+            let textCreated = dataCreated + "/" + dataPurchaseRequest;
+            const percentCreated = ((dataCreated / dataPurchaseRequest) * 100).toFixed() + "%";
+            $('#data_created').text(textCreated);
+            $('.created').width(percentCreated);
+            $('#desc_created').text(percentCreated + " PR Created");
+
+            // WAITING APPROVAL CARD
+            let dataWaiting = r.dataWaiting;
+            let dataCountApp = r.dataCountApproval;
+
+            let textWaiting = dataWaiting + "/" + dataCountApp;
+            const percentWaiting = ((dataWaiting / dataCountApp) * 100).toFixed() + "%";
+            $('#data_waiting').text(textWaiting);
+            $('.waiting').width(percentWaiting);
+            $('#desc_waiting').text(percentWaiting + " PR Waiting Approved");
+
+            // CARD APPROVED
+            let dataApproved = r.dataApproved;
+
+            let textApproved = dataApproved + "/" + dataCountApp;
+            const percentApproved = ((dataApproved / dataCountApp) * 100).toFixed() + "%";
+            $('#data_approved').text(textApproved);
+            $('.approved').width(percentApproved);
+            $('#desc_approved').text(percentApproved + " PR Was Approved");
+
+            // CARD REJECTED
+            let dataRejected = r.dataRejected;
+
+            let textRejected = dataRejected + "/" + dataCountApp;
+            const percentRejected = ((dataRejected / dataCountApp) * 100).toFixed() + "%";
+            $('#data_rejected').text(textRejected);
+            $('.rejected').width(percentRejected);
+            $('#desc_rejected').text(percentRejected + " PR Was Rejected");
+
+            // CARD PR BECOME PO
+            let dataPurchaseOrder = r.dataPurchaseOrder;
+
+            let textPO = dataPurchaseOrder + "/" + dataCountApp;
+            const percentPO = ((dataPurchaseOrder / dataCountApp) * 100).toFixed() + "%";
+            $('#data_po').text(textPO);
+            $('.po').width(percentPO);
+            $('#desc_po').text(percentPO + " PR Has Been PO");
+
+            // CARD PO COMPLETED
+            let dataCompleted = r.dataCompleted;
+
+            let textCompleted = dataCompleted + "/" + dataCountApp;
+            const percentCompleted = ((dataCompleted / dataCountApp) * 100).toFixed() + "%";
+            $('#data_completed').text(textCompleted);
+            $('.completed').width(percentCompleted);
+            $('#desc_completed').text(percentCompleted + " PO Completed");
+
+            let total_task = dataCreated + " Created PO dan " + dataCountApp + " Approval Terkoneksi dari " + dataPurchaseRequest + " Total Data";
+            $('#total-task').text(total_task);
+
+            var options = {
+                series: [dataCreated, dataWaiting, dataApproved, dataRejected],
+                chart: {
+                    height: 397,
+                    type: 'pie',
+                },
+                labels: ["Created PR", "Waiting Approval", "Approved", "Rejected"],
+                colors: ["#007bff", "#ffe35f", "#28a745", "#FF0000"],
+                // colors: ["#1ab7ea", "#0084ff", "#39539E", "#0077B5"],
+                legend: {
+                    show: true,
+                    showForSingleSeries: false,
+                    showForNullSeries: true,
+                    showForZeroSeries: true,
+                    position: 'bottom',
+                    horizontalAlign: 'center',
+                    fontSize: '13px',
+                    fontFamily: 'Helvetica, Arial',
+                    fontWeight: 200,
+                    itemMargin: {
+                        horizontal: 15,
+                        vertical: 0
+                    },
+                },
+                responsive: [{
+                    breakpoint: 397,
+                    options: {
+                        chart: {
+                            width: 200
+                        },
+                    }
+                }]
+            };
+            var chart = new ApexCharts(document.querySelector("#chartCircle"), options);
+            chart.render();
+
+            // let a = r.beforeExpired;
+            // let b = r.moreThanExpired;
+            // let merged = [];
+            // let theMonths = [];
+            // let beforeExpired = [];
+            // let afterExpired = [];
+            
+
+            // for (let i = 0; i < a.length; i++) {
+            //     merged.push({
+            //         ...a[i],
+            //         ...(b.find((itmInner) => itmInner.months === a[i].months))
+            //     }
+            //     );
+            // }
+
+            // for (let i = 0; i < merged.length; i++) {
+            //     theMonths.push(merged[i].months);
+            //     beforeExpired.push((merged[i].beforeExpired === undefined) ? 0 : merged[i].beforeExpired);
+            //     afterExpired.push((merged[i].afterExpired === undefined) ? 0 : merged[i].afterExpired);
+
+            // }
+
+            // let valueMonths = (theMonths.length > 1) ? theMonths : [theMonths[0]];
+            // let valueUnexpired = (beforeExpired.length > 1)? beforeExpired : [b]
+            // var options = {
+            //     series: [{
+            //         name: 'Sebelum Expired Date',
+            //         type: 'column',
+            //         data: [beforeExpired[0]]
+            //     }, {
+            //         name: 'Sesudah Expired Date',
+            //         type: 'line',
+            //         data: [afterExpired[0]],
+            //         color: '#FF0000'
+            //     }],
+            //     chart: {
+            //         height: 350,
+            //         type: 'line',
+            //     },
+            //     stroke: {
+            //         width: [0, 4]
+            //     },
+            //     title: {
+            //         text: 'Traffic Sources'
+            //     },
+            //     dataLabels: {
+            //         enabled: true,
+            //         enabledOnSeries: [1]
+            //     },
+            //     labels: [theMonths[0]],
+            //     yaxis: [{
+            //         title: {
+            //             text: 'Sebelum Expired Date',
+            //         },
+
+            //     }, {
+            //         opposite: true,
+            //         title: {
+            //             text: 'Sesudah Expired Date'
+            //         }
+            //     }]
+            // };
+
+            // console.log(options);
+            // var chart = new ApexCharts(document.querySelector("#chart"), options);
+            // chart.render();
+        });
+    }
+</script>
+<script>
     $.ajax({
         type: "POST",
-        url: '@Url.Action("Json")',
+        url: '@Url.Action("ChartJson")',
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (r) {
-            //console.log(r);
-            let dataRequested = r.dataRequest;
-            let dataApproval = r.dataApproval;
-            let dataOrder = r.dataOrder;
-            let id   = r.userId;
-            let purchaseId = [];
-            let purchaseProcess = [];
-            let purchaseReject = [];
+            console.log(r);
+            let a = r.beforeExpired;
+            let b = r.moreThanExpired;
+            let merged = [];
+            let theMonths = [];
+            let beforeExpired = [];
+            let AfterExpired = [];
 
-            const totalRequest = dataRequested.length;
-            dataRequested.forEach(function (e) {
-                let getId = e.applicationUser["id"];
-                if (getId == id) {
-                    purchaseId.push(e.purchaseRequestId);
+            for (let i = 0; i < a.length; i++) {
+                merged.push({
+                    ...a[i],
+                    ...(b.find((itmInner) => itmInner.months === a[i].months))
                 }
-            });
+                );
+            }
 
-            const totalApproval = dataApproval.length;
-            //console.log(totalApproval);
-            dataApproval.forEach(function (e) {
-                if (e.status == 'Approve') {
-                    purchaseProcess.push(e.purchaseRequestId);
-                } else if (e.status == 'Reject') {
-                    purchaseReject.push(e.purchaseRequestId);
+            for (let i = 0; i < merged.length; i++) {
+                let afterEx = merged[i].afterExpired;
+                let beforeEx = merged[i].beforeExpired;
+
+                if (afterEx == undefined) {
+                    afterEx = 0;
                 }
-            });
 
-            //Data PR
-            let dataPr = purchaseId.length
-            let dataRequest = dataPr + "/" + totalRequest;
-            const intDataPr = parseInt(dataPr);
-            const intTotalPr = parseInt(totalRequest);
-            const percentPr = ((intDataPr / intTotalPr) * 100).toFixed() + "%";
-            $('#data_requested').text(dataRequest);
-            $(".requested").width(percentPr);
-            $("#desc-requested").text(percentPr + " From All Unit Request Data");
+                if (beforeEx == undefined) {
+                    beforeEx = 0;
+                }
 
-            //Data Approval
-            let dataApp = purchaseProcess.length;
-            let dataRej = purchaseReject.length;
-            let lengthCompleted = dataOrder.length;
-            let dataApproved = dataApp + "/" + totalApproval;
-            let dataRejected = dataRej + "/" + totalApproval;
-            let dataCompleted = lengthCompleted + "/" + totalApproval;
-            let intTotalApp = parseInt(totalApproval);
-            let intDataApp = parseInt(dataApp);
-            let intDataRej = parseInt(dataRej);
-            let intDataCompleted = parseInt(dataCompleted);
-            $('#data_approved').text(dataApproved);
-            $('#data_rejected').text(dataRejected);
-            $('#data_completed').text(dataCompleted);
-            const percentApp = ((intDataApp / intTotalApp) * 100).toFixed() + "%";
-            $(".approved").width(percentApp);
-            const percentRejected = ((intDataRej / intTotalApp) * 100).toFixed() + "%";
-            $(".rejected").width(percentRejected);
-            const percentCompleted = ((intDataCompleted / intTotalApp) * 100).toFixed() + "%";
-            $(".completed").width(percentCompleted);
+                theMonths.push(merged[i].months);
+                beforeExpired.push(beforeEx);
+                AfterExpired.push(afterEx);
+
+            }
+
+            var options = {
+                series: [{
+                    name: 'Sebelum Expired Date',
+                    type: 'column',
+                    data: beforeExpired
+                }, {
+                    name: 'Sesudah Expired Date',
+                    type: 'line',
+                    data: AfterExpired,
+                    color: '#FF0000'
+                }],
+                chart: {
+                    height: 350,
+                    type: 'line',
+                },
+                stroke: {
+                    width: [0, 4]
+                },
+                title: {
+                    text: 'Approval Performances'
+                },
+                dataLabels: {
+                    enabled: true,
+                    enabledOnSeries: [1]
+                },
+                labels: theMonths,
+                yaxis: [{
+                    title: {
+                        text: 'Sebelum Expired Date',
+                    },
+
+                }, {
+                    opposite: true,
+                    title: {
+                        text: 'Sesudah Expired Date'
+                    }
+                }]
+            };
+
+            var chart = new ApexCharts(document.querySelector("#chart"), options);
+            chart.render();
         }
     });
+
+           
+            
+            // function groupBy(collection, property) {
+            //     var i = 0, val, index,
+            //         values = [], result = [];
+            //     for (; i < collection.length; i++) {
+            //         val = collection[i][property];
+            //         index = values.indexOf(val);
+            //         if (index > -1)
+            //             result[index].push(collection[i]);
+            //         else {
+            //             values.push(val);
+            //             result.push([collection[i]]);
+            //         }
+            //     }
+            //     return result;
+            // }
+
+            
+            // r.forEach(function (e) { 
+            //     let months = new Array(12);
+            //     months[0] = "Jan";
+            //     months[1] = "Feb";
+            //     months[2] = "Mar";
+            //     months[3] = "Apr";
+            //     months[4] = "May";
+            //     months[5] = "Jun";
+            //     months[6] = "Jul";
+            //     months[7] = "Aug";
+            //     months[8] = "Sep";
+            //     months[9] = "Oct";
+            //     months[10] = "Nov";
+            //     months[11] = "Dec";
+
+            //     let current_date = new Date(e.createDateTime);
+            //     current_date.setDate(current_date.getDate() + 15);
+            //     this_month = current_date.getMonth();
+            //     last_month = current_date.getMonth() - 1;
+            //     day_value = current_date.getDate();
+            //     year_value = current_date.getFullYear();
+
+            //     var obj = groupBy(e.expiredDate, "group");
+            //     console.log(obj);
+            // })
+            // let data = r.allData;
+            // let dataBeforeExpired = [];
+            // let dataOnExpired = [];
+            // let dataMoreThanExpired = [];
+
+            // data.forEach(function (e) {
+            //     //FORMAT DATE
+            //     let months = new Array(12);
+            //     months[0] = "Jan";
+            //     months[1] = "Feb";
+            //     months[2] = "Mar";
+            //     months[3] = "Apr";
+            //     months[4] = "May";
+            //     months[5] = "Jun";
+            //     months[6] = "Jul";
+            //     months[7] = "Aug";
+            //     months[8] = "Sep";
+            //     months[9] = "Oct";
+            //     months[10] = "Nov";
+            //     months[11] = "Dec";
+
+            //     let current_date = new Date(e.createDateTime);
+            //     current_date.setDate(current_date.getDate() + 15);
+            //     this_month = current_date.getMonth();
+            //     last_month = current_date.getMonth() - 1;
+            //     day_value = current_date.getDate();
+            //     year_value = current_date.getFullYear();
+            // });
+
+            
+    //     }
+    // })
+
+
+            // if (months[month_value] == months[0]) {
+            //     if (e.remainingDay > 0) {
+            //         dataBeforeExpired.push(getCount.length)
+            //     } else if (e.remainingDay == 0) {
+            //         dataOnExpired.push(getCount.length);
+            //     } else if (e.remainingDay < 0) {
+            //         dataMoreThanExpired.push(getCount.length);
+            //     }
+            // } else if (months[month_value] == months[1]) {
+            //     if (e.remainingDay > 0) {
+            //         dataBeforeExpired.push(getCount.length)
+            //     } else if (e.remainingDay == 0) {
+            //         dataOnExpired.push(getCount.length);
+            //     } else if (e.remainingDay < 0) {
+            //         dataMoreThanExpired.push(getCount.length);
+            //     }
+            // } else if (months[month_value] == months[2]) {
+            //     if (e.remainingDay > 0) {
+            //         dataBeforeExpired.push(getCount.length)
+            //     } else if (e.remainingDay == 0) {
+            //         dataOnExpired.push(getCount.length);
+            //     } else if (e.remainingDay < 0) {
+            //         dataMoreThanExpired.push(getCount.length);
+            //     }
+            // } else if (months[month_value] == months[2]) {
+            //     if (e.remainingDay > 0) {
+            //         dataBeforeExpired.push(getCount.length)
+            //     } else if (e.remainingDay == 0) {
+            //         dataOnExpired.push(getCount.length);
+            //     } else if (e.remainingDay < 0) {
+            //         dataMoreThanExpired.push(getCount.length);
+            //     }
+            // } else if (months[month_value] == months[3]) {
+            //     if (e.remainingDay > 0) {
+            //         dataBeforeExpired.push(getCount.length)
+            //     } else if (e.remainingDay == 0) {
+            //         dataOnExpired.push(getCount.length);
+            //     } else if (e.remainingDay < 0) {
+            //         dataMoreThanExpired.push(getCount.length);
+            //     }
+            // } else if (months[month_value] == months[4]) {
+            //     if (e.remainingDay > 0) {
+            //         dataBeforeExpired.push(getCount.length)
+            //     } else if (e.remainingDay == 0) {
+            //         dataOnExpired.push(getCount.length);
+            //     } else if (e.remainingDay < 0) {
+            //         dataMoreThanExpired.push(getCount.length);
+            //     }
+            // } else if (months[month_value] == months[5]) {
+            //     if (e.remainingDay > 0) {
+            //         dataBeforeExpired.push(getCount.length)
+            //     } else if (e.remainingDay == 0) {
+            //         dataOnExpired.push(getCount.length);
+            //     } else if (e.remainingDay < 0) {
+            //         dataMoreThanExpired.push(getCount.length);
+            //     }
+            // } else if (months[month_value] == months[6]) {
+            //     if (e.remainingDay > 0) {
+            //         dataBeforeExpired.push(getCount.length)
+            //     } else if (e.remainingDay == 0) {
+            //         dataOnExpired.push(getCount.length);
+            //     } else if (e.remainingDay < 0) {
+            //         dataMoreThanExpired.push(getCount.length);
+            //     }
+            // } else if (months[month_value] == months[7]) {
+            //     if (e.remainingDay > 0) {
+            //         dataBeforeExpired.push(getCount.length)
+            //     } else if (e.remainingDay == 0) {
+            //         dataOnExpired.push(getCount.length);
+            //     } else if (e.remainingDay < 0) {
+            //         dataMoreThanExpired.push(getCount.length);
+            //     }
+            // } else if (months[month_value] == months[8]) {
+            //     if (e.remainingDay > 0) {
+            //         dataBeforeExpired.push(getCount.length)
+            //     } else if (e.remainingDay == 0) {
+            //         dataOnExpired.push(getCount.length);
+            //     } else if (e.remainingDay < 0) {
+            //         dataMoreThanExpired.push(getCount.length);
+            //     }
+            // } else if (months[month_value] == months[9]) {
+            //     if (e.remainingDay > 0) {
+            //         dataBeforeExpired.push(getCount.length)
+            //     } else if (e.remainingDay == 0) {
+            //         dataOnExpired.push(getCount.length);
+            //     } else if (e.remainingDay < 0) {
+            //         dataMoreThanExpired.push(getCount.length);
+            //     }
+            // } else if (months[month_value] == months[10]) {
+            //     if (e.remainingDay > 0) {
+            //         dataBeforeExpired.push(getCount.length)
+            //     } else if (e.remainingDay == 0) {
+            //         dataOnExpired.push(getCount.length);
+            //     } else if (e.remainingDay < 0) {
+            //         dataMoreThanExpired.push(getCount.length);
+            //     }
+            // } else if (months[month_value] == months[11]) {
+            //     if (e.remainingDay > 0) {
+            //         dataBeforeExpired.push(getCount.length)
+            //     } else if (e.remainingDay == 0) {
+            //         dataOnExpired.push(getCount.length);
+            //     } else if (e.remainingDay < 0) {
+            //         dataMoreThanExpired.push(getCount.length);
+            //     }
+            // }
+
+            // console.log(dataBeforeExpired);
+            // var options = {
+
+            //     series: [{
+            //         name: "Desktops",
+            //         data: [0, 0, 0, 0, 0, 0, 0, 91, 148]
+            //     }, {
+            //         name: "Monitor",
+            //         data: [13, 21, 95, 51, 0, 62, 49, 93, 147]
+            //     }],
+            //     colors: ['#4d3a96', '#4576b5'],
+            //     chart: {
+            //         height: 350,
+            //         type: 'line',
+
+            //         zoom: {
+            //             enabled: false
+            //         }
+            //     },
+            //     dataLabels: {
+            //         enabled: false
+            //     },
+            //     stroke: {
+            //         curve: 'straight'
+            //     },
+            //     title: {
+            //         text: 'Approved Performance Line',
+            //         align: 'left'
+            //     },
+            //     grid: {
+            //         row: {
+            //             colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+            //             opacity: 0.5
+            //         },
+            //     },
+            //     xaxis: {
+            //         categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+            //     }
+            // };
+
+            // var chart = new ApexCharts(document.querySelector("#chartAja"), options);
+            // chart.render();
+
+            // var options = {
+            //     series: [{
+            //         name: 'series1',
+            //         data: [31, 40, 28, 51, 42, 109, 100, 0, 24, 44, 30, 59]
+            //     }, {
+            //         name: 'series2',
+            //         data: [11, 32, 45, 32, 34, 52, 41, 100, 0, 98, 77, 87]
+            //     }],
+            //     chart: {
+            //         height: 140,
+            //         type: 'area'
+            //     },
+            //     dataLabels: {
+            //         enabled: false
+            //     },
+            //     stroke: {
+            //         curve: 'smooth'
+            //     },
+            //     xaxis: {
+            //         categories: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Des"]
+            //     }
+            // };
+
+            
+            // var options = {
+            //     series: [44, 55, 67, 83],
+            //     colors: ['#1ab7ea', '#0084ff', '#39539E', '#0077B5'],
+            //     chart: {
+            //         height: 390,
+            //         type: 'radialBar',
+            //     },
+            //     plotOptions: {
+            //         radialBar: {
+            //             dataLabels: {
+            //                 name: {
+            //                     fontSize: '22px',
+            //                 },
+            //                 value: {
+            //                     fontSize: '16px',
+            //                 },
+            //                 total: {
+            //                     show: true,
+            //                     label: 'Total',
+            //                     formatter: function (w) {
+            //                         // By default this function returns the average of all series. The below is just an example to show the use of custom formatter function
+            //                         return 249
+            //                     }
+            //                 }
+            //             }
+            //         }
+            //     },
+            //     labels: ['Apples', 'Oranges', 'Bananas', 'Berries'],
+            // };
+
+            // var chart = new ApexCharts(document.querySelector("#chartCircle"), options);
+            // chart.render();
+
+            
+
+        // const dataRemaining = [];
+        // const dataExpired = [];
+        // const dataMoreThanExpired = [];
+
+        // r.forEach(function (e) {
+        //     let remaining = e.remainingDay;
+        //     let expired = e.expiredDay;
+        //     let dataApprovalTime = e.approvalTime;
+        //     let splitApprovalTime = dataApprovalTime.split(" ");
+        //     let getDay = splitApprovalTime[0];
+
+        //     if (getDay <= remaining || getDay == remaining) {
+        //         dataRemaining.push(e.purchaseRequestNumber);
+        //     } else if (getDay == dataExpired) {
+        //         dataExpired.push(e.purchaseRequestNumber);
+        //     } else if (getDay >= expired) {
+        //         dataMoreThanExpired.push(e.purchaseRequestNumber);
+        //     }
+        // });
+
+        // const intRemaining = dataRemaining.length;
+        // const intExpired = dataExpired.length;
+        // const intMoreThanExpired = dataMoreThanExpired.length;
+
+
+    // })
+
 </script>

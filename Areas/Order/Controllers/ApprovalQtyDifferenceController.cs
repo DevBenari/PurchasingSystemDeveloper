@@ -29,7 +29,6 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly IUserActiveRepository _userActiveRepository;
-        private readonly IQtyDifferenceRequestRepository _qtyDifferenceRequestRepository;
         private readonly IProductRepository _productRepository;
         private readonly IPurchaseOrderRepository _purchaseOrderRepository;
         private readonly IPurchaseRequestRepository _purchaseRequestRepository;
@@ -47,7 +46,6 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ApplicationDbContext applicationDbContext,
-            IQtyDifferenceRequestRepository qtyDifferenceRequestRepository,
             IUserActiveRepository userActiveRepository,
             IProductRepository productRepository,
             IPurchaseOrderRepository purchaseOrderRepository,
@@ -66,7 +64,6 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
             _applicationDbContext = applicationDbContext;
-            _qtyDifferenceRequestRepository = qtyDifferenceRequestRepository;
             _userActiveRepository = userActiveRepository;
             _productRepository = productRepository;
             _purchaseOrderRepository = purchaseOrderRepository;
@@ -120,7 +117,6 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
             else if (getUser1 != null)
             {
                 itemList.AddRange(getUser1);
-
                 itemList.AddRange(getUser1Approve);
 
                 return View(itemList);
@@ -294,21 +290,6 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
                         _applicationDbContext.Entry(checkQtyDiff).State = EntityState.Modified;
                         _applicationDbContext.SaveChanges();
                     }
-                    
-                    //Signal R
-
-                    //var getUserId = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
-                    //var getUserActiveId = _userActiveRepository.GetAllUser().Where(u => u.UserActiveCode == getUserId.KodeUser).FirstOrDefault().UserActiveId;
-                    //var data2 = _qtyDifferenceRepository.GetAllQtyDifference()
-                    //                .Where(p => (p.UserApprove1Id == getUserActiveId && p.ApproveStatusUser1 == null)
-                    //                || (p.UserApprove2Id == getUserActiveId && p.ApproveStatusUser1 == "Approve" && p.ApproveStatusUser2 == null))
-                    //                .ToList();
-
-                    //int totalKaryawan = data2.Count();
-                    //ViewBag.TotalKaryawan = totalKaryawan;
-                    //await _hubContext.Clients.All.SendAsync("UpdateDataCount", totalKaryawan);
-
-                    //End Signal R
 
                     //Jika semua sudah Approve langsung Generate Purchase Order
                     if (checkQtyDiff.ApproveStatusUser1 == "Approve" && checkQtyDiff.ApproveStatusUser2 == "Approve")

@@ -9,6 +9,7 @@ using PurchasingSystemDeveloper.Areas.MasterData.Repositories;
 using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
 using PurchasingSystemDeveloper.Areas.Order.Models;
 using PurchasingSystemDeveloper.Areas.Order.Repositories;
+using PurchasingSystemDeveloper.Areas.Transaction.Repositories;
 using PurchasingSystemDeveloper.Areas.Warehouse.Repositories;
 using PurchasingSystemDeveloper.Data;
 using PurchasingSystemDeveloper.Hubs;
@@ -39,6 +40,8 @@ namespace PurchasingSystemDeveloper.Controllers
         private readonly IApprovalRepository _approvalRepository;
         private readonly IQtyDifferenceRepository _qtyDifferenceRepository;
         private readonly IApprovalQtyDifferenceRepository _approvalQtyDifferenceRepository;
+        private readonly IUnitRequestRepository _unitRequestRepository;
+        private readonly IApprovalUnitRequestRepository _approvalUnitRequestRepository;
 
         private readonly IHostingEnvironment _hostingEnvironment;
 
@@ -55,7 +58,11 @@ namespace PurchasingSystemDeveloper.Controllers
             IApprovalRepository approvalRepository,
             IQtyDifferenceRepository qtyDifferenceRepository,
             IApprovalQtyDifferenceRepository approvalQtyDifferenceRepository,
+            
             IHostingEnvironment hostingEnvironment)
+            
+            IUnitRequestRepository unitRequestRepository,
+            IApprovalUnitRequestRepository approvalUnitRequestRepository)
         {
             _logger = logger;
             _applicationDbContext = context;
@@ -70,7 +77,12 @@ namespace PurchasingSystemDeveloper.Controllers
             _approvalRepository = approvalRepository;
             _qtyDifferenceRepository = qtyDifferenceRepository;
             _approvalQtyDifferenceRepository = approvalQtyDifferenceRepository;
+
             _hostingEnvironment = hostingEnvironment;
+
+            _unitRequestRepository = unitRequestRepository;
+            _approvalUnitRequestRepository = approvalUnitRequestRepository;
+
         }
 
         public async Task<IActionResult> Index()
@@ -121,7 +133,7 @@ namespace PurchasingSystemDeveloper.Controllers
             }).ToList();
             ViewBag.CountReceiveOrder = countReceiveOrder.Count;
 
-            var countApprovalUnitRequest = _applicationDbContext.ApprovalRequests.Where(u => u.CreateBy == new Guid(checkUserLogin.Id)).GroupBy(u => u.ApprovalRequestId).Select(y => new
+            var countApprovalUnitRequest = _applicationDbContext.ApprovalUnitRequests.Where(u => u.CreateBy == new Guid(checkUserLogin.Id)).GroupBy(u => u.ApprovalUnitRequestId).Select(y => new
             {
                 ApprovalRequestId = y.Key,
                 CountOfApprovalUnitRequests = y.Count()
@@ -353,6 +365,7 @@ namespace PurchasingSystemDeveloper.Controllers
             var getUserActiveId = _userActiveRepository.GetAllUser().Where(u => u.UserActiveCode == getUserId.KodeUser).FirstOrDefault().UserActiveId;
             var loggerDataPR = new List<object>();
             var loggerDataQtyDiff = new List<object>();
+            var loggerDataUnitReq = new List<object>();
 
             var DataPR = _purchaseRequestRepository.GetAllPurchaseRequest()
                             .Where(p => (p.UserApprove1Id == getUserActiveId && p.ApproveStatusUser1 == null)
@@ -364,6 +377,11 @@ namespace PurchasingSystemDeveloper.Controllers
             var DataQtyDiff = _qtyDifferenceRepository.GetAllQtyDifference()
                             .Where(p => (p.UserApprove1Id == getUserActiveId && p.ApproveStatusUser1 == null)
                             || (p.UserApprove2Id == getUserActiveId && p.ApproveStatusUser1 == "Approve" && p.ApproveStatusUser2 == null))
+                            .OrderByDescending(a => a.CreateDateTime)
+                            .ToList();
+
+            var DataUnitReq = _unitRequestRepository.GetAllUnitRequest()
+                            .Where(p => (p.UserApprove1Id == getUserActiveId && p.ApproveStatusUser1 == null))
                             .OrderByDescending(a => a.CreateDateTime)
                             .ToList();
 
@@ -441,9 +459,26 @@ namespace PurchasingSystemDeveloper.Controllers
                 }
             }
 
-            var totalNotification = DataPR.Count + DataQtyDiff.Count;
+            foreach (var logger in DataUnitReq)
+            {
+                if (logger.ApproveStatusUser1 == null)
+                {
+                    var getUserApproveId = _approvalUnitRequestRepository.GetAllApprovalRequest().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User1" && u.UnitRequestId == logger.UnitRequestId).FirstOrDefault().ApprovalUnitRequestId;
 
-            return Json(new { success = true, totalJsonAllNotification = totalNotification, loggerDataJsonPR = loggerDataPR, loggerDataJsonQtyDiff = loggerDataQtyDiff });
+                    var detail = new
+                    {
+                        approvalId = getUserApproveId,
+                        createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
+                        unitRequestNumber = logger.UnitRequestNumber,
+                        createdDate = logger.CreateDateTime
+                    };
+                    loggerDataUnitReq.Add(detail);
+                }                
+            }
+
+            var totalNotification = DataPR.Count + DataQtyDiff.Count + DataUnitReq.Count;
+
+            return Json(new { success = true, totalJsonAllNotification = totalNotification, loggerDataJsonPR = loggerDataPR, loggerDataJsonQtyDiff = loggerDataQtyDiff, loggerDataJsonUnitReq = loggerDataUnitReq });
 
         }
 

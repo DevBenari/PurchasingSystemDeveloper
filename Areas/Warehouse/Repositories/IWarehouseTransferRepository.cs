@@ -33,9 +33,8 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Repositories
                 .Include(d => d.WarehouseTransferDetails)
                 .Include(u => u.ApplicationUser)
                 .Include(p => p.UnitLocation)
-                .Include(b => b.UnitRequestManager)
                 .Include(t => t.WarehouseLocation)
-                .Include(y => y.WarehouseApproval)
+                .Include(y => y.UserApprove1Id)
                 .FirstOrDefault(p => p.WarehouseTransferId == Id);
 
             if (WarehouseTransfer != null)
@@ -44,18 +43,16 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Repositories
                 {
                     WarehouseTransferId = WarehouseTransfer.WarehouseTransferId,
                     WarehouseTransferNumber = WarehouseTransfer.WarehouseTransferNumber,
-                    WarehouseRequestId = WarehouseTransfer.WarehouseRequestId,
-                    WarehouseRequestNumber = WarehouseTransfer.WarehouseRequestNumber,
+                    UnitOrderId = WarehouseTransfer.UnitOrderId,
+                    UnitOrderNumber = WarehouseTransfer.UnitOrderNumber,
                     UserAccessId = WarehouseTransfer.UserAccessId,
                     ApplicationUser = WarehouseTransfer.ApplicationUser,
                     UnitLocationId = WarehouseTransfer.UnitLocationId,
-                    UnitLocation = WarehouseTransfer.UnitLocation,
-                    UnitRequestManagerId = WarehouseTransfer.UnitRequestManagerId,
-                    UnitRequestManager = WarehouseTransfer.UnitRequestManager,
+                    UnitLocation = WarehouseTransfer.UnitLocation,                    
                     WarehouseLocationId = WarehouseTransfer.WarehouseLocationId,
                     WarehouseLocation = WarehouseTransfer.WarehouseLocation,
-                    WarehouseApprovalId = WarehouseTransfer.WarehouseApprovalId,
-                    WarehouseApproval = WarehouseTransfer.WarehouseApproval,
+                    UserApprove1Id = WarehouseTransfer.UserApprove1Id,
+                    UserApprove1 = WarehouseTransfer.UserApprove1,
                     Status = WarehouseTransfer.Status,
                     QtyTotal = WarehouseTransfer.QtyTotal,
                     WarehouseTransferDetails = WarehouseTransfer.WarehouseTransferDetails
@@ -76,18 +73,16 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Repositories
             {
                 WarehouseTransferId = WarehouseTransfer.WarehouseTransferId,
                 WarehouseTransferNumber = WarehouseTransfer.WarehouseTransferNumber,
-                WarehouseRequestId = WarehouseTransfer.WarehouseRequestId,
-                WarehouseRequestNumber = WarehouseTransfer.WarehouseRequestNumber,
+                UnitOrderId = WarehouseTransfer.UnitOrderId,
+                UnitOrderNumber = WarehouseTransfer.UnitOrderNumber,
                 UserAccessId = WarehouseTransfer.UserAccessId,
                 ApplicationUser = WarehouseTransfer.ApplicationUser,
                 UnitLocationId = WarehouseTransfer.UnitLocationId,
                 UnitLocation = WarehouseTransfer.UnitLocation,
-                UnitRequestManagerId = WarehouseTransfer.UnitRequestManagerId,
-                UnitRequestManager = WarehouseTransfer.UnitRequestManager,
                 WarehouseLocationId = WarehouseTransfer.WarehouseLocationId,
                 WarehouseLocation = WarehouseTransfer.WarehouseLocation,
-                WarehouseApprovalId = WarehouseTransfer.WarehouseApprovalId,
-                WarehouseApproval = WarehouseTransfer.WarehouseApproval,
+                UserApprove1Id = WarehouseTransfer.UserApprove1Id,
+                UserApprove1 = WarehouseTransfer.UserApprove1,
                 Status = WarehouseTransfer.Status,
                 QtyTotal = WarehouseTransfer.QtyTotal,
                 WarehouseTransferDetails = WarehouseTransfer.WarehouseTransferDetails
@@ -100,18 +95,16 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Repositories
             {
                 WarehouseTransferId = WarehouseTransfer.WarehouseTransferId,
                 WarehouseTransferNumber = WarehouseTransfer.WarehouseTransferNumber,
-                WarehouseRequestId = WarehouseTransfer.WarehouseRequestId,
-                WarehouseRequestNumber = WarehouseTransfer.WarehouseRequestNumber,
+                UnitOrderId = WarehouseTransfer.UnitOrderId,
+                UnitOrderNumber = WarehouseTransfer.UnitOrderNumber,
                 UserAccessId = WarehouseTransfer.UserAccessId,
                 ApplicationUser = WarehouseTransfer.ApplicationUser,
                 UnitLocationId = WarehouseTransfer.UnitLocationId,
                 UnitLocation = WarehouseTransfer.UnitLocation,
-                UnitRequestManagerId = WarehouseTransfer.UnitRequestManagerId,
-                UnitRequestManager = WarehouseTransfer.UnitRequestManager,
                 WarehouseLocationId = WarehouseTransfer.WarehouseLocationId,
                 WarehouseLocation = WarehouseTransfer.WarehouseLocation,
-                WarehouseApprovalId = WarehouseTransfer.WarehouseApprovalId,
-                WarehouseApproval = WarehouseTransfer.WarehouseApproval,
+                UserApprove1Id = WarehouseTransfer.UserApprove1Id,
+                UserApprove1 = WarehouseTransfer.UserApprove1,
                 Status = WarehouseTransfer.Status,
                 QtyTotal = WarehouseTransfer.QtyTotal,
                 WarehouseTransferDetails = WarehouseTransfer.WarehouseTransferDetails
@@ -124,9 +117,8 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Repositories
                 .Include(d => d.WarehouseTransferDetails)
                 .Include(u => u.ApplicationUser)
                 .Include(p => p.UnitLocation)
-                .Include(b => b.UnitRequestManager)
                 .Include(t => t.WarehouseLocation)
-                .Include(y => y.WarehouseApproval)
+                .Include(y => y.UserApprove1)
                 .ToList();
         }
 

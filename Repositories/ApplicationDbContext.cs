@@ -38,15 +38,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Approval> Approvals { get; set; }
     public DbSet<PurchaseOrder> PurchaseOrders { get; set; }
     public DbSet<PurchaseOrderDetail> PurchaseOrderDetails { get; set; }
-    public DbSet<QtyDifferenceRequest> QtyDifferenceRequests { get; set; }
     public DbSet<ApprovalQtyDifference> ApprovalQtyDifferences { get; set; }
     public DbSet<Email> Emails { get; set; }
     #endregion
 
     #region Areas Warehouse
     public DbSet<ReceiveOrder> ReceiveOrders { get; set; }
-    public DbSet<WarehouseRequest> WarehouseRequests { get; set; }
-    public DbSet<WarehouseRequestDetail> WarehouseRequestDetails { get; set; }
+    public DbSet<UnitOrder> UnitOrders { get; set; }
+    public DbSet<UnitOrderDetail> UnitOrderDetails { get; set; }
     public DbSet<WarehouseTransfer> WarehouseTransfers { get; set; }
     public DbSet<WarehouseTransferDetail> WarehouseTransferDetails { get; set; }
     public DbSet<QtyDifference> QtyDifferences { get; set; }
@@ -56,7 +55,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     #region Areas Unit Request
     public DbSet<UnitRequest> UnitRequests { get; set; }
     public DbSet<UnitRequestDetail> UnitRequestDetails { get; set; }
-    public DbSet<ApprovalRequest> ApprovalRequests { get; set; }
+    public DbSet<ApprovalUnitRequest> ApprovalUnitRequests { get; set; }
     #endregion
 
     protected override void OnModelCreating(ModelBuilder builder)

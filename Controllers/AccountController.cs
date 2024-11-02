@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -101,13 +102,29 @@ namespace PurchasingSystemDeveloper.Controllers
                 }
                 else if (user.IsActive == true) 
                 {
-                    var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
+                    var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, true);
                     if (result.Succeeded)
                     {
                         var claims = new List<Claim>
-                    {
+                        {
                         new Claim("amr", "pwd"),
-                    };
+                        };
+
+                        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                        //Membuat sesi pengguna
+                        HttpContext.Session.SetString("Username", user.Email);
+
+                        //Membuat cookies
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity));
+
+                        var authProperties = new AuthenticationProperties
+                        {
+                            IsPersistent = false, // Set ke true jika ingin session bertahan setelah browser ditutup
+                        };
+
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                            new ClaimsPrincipal(claimsIdentity), authProperties);
 
                         var roles = await _signInManager.UserManager.GetRolesAsync(user);
 
@@ -119,9 +136,8 @@ namespace PurchasingSystemDeveloper.Controllers
 
                         await _signInManager.SignInWithClaimsAsync(user, model.RememberMe, claims);
                         // menyimpan data user yang sedang login berdasarkan NamaUser dan KodeUser
-                        HttpContext.Session.SetString("FullName", user.NamaUser);
-                        HttpContext.Session.SetString("KodeUser", user.KodeUser);
-                        
+                        HttpContext.Session.SetString("FullName", user.NamaUser);                       
+
                         user.IsOnline = true;
 
                         await _userManager.UpdateAsync(user);
@@ -129,40 +145,39 @@ namespace PurchasingSystemDeveloper.Controllers
                         _logger.LogInformation("User logged in.");
                         return RedirectToAction("Index", "Home");
                     }
-                    else if (result.RequiresTwoFactor)
+                    
+                    if (result.RequiresTwoFactor)
                     {
                         return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, model.RememberMe });
                     }
 
-                    else if (result.IsLockedOut)
+                    if (result.IsLockedOut)
                     {
                         _logger.LogWarning("User account locked out.");
                         // HttpContext.session.Clear untuk menghapus session data pengguna tidak lagi tersimpan
                         HttpContext.Session.Clear();
-                        return RedirectToPage("./Lockout");
-                    }
-                    else
-                    {
-                        ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                        TempData["WarningMessage"] = "Sorry, Wrong Password !";
+
+                        // Hitung waktu yang tersisa
+                        var lockTime = await _userManager.GetLockoutEndDateAsync(user);
+                        var timeRemaining = lockTime.Value - DateTimeOffset.UtcNow;                        
+
+                        TempData["UserLockOut"] = "Sorry, your account is locked in " + timeRemaining.Minutes + " minutes " + timeRemaining.Seconds + " seconds";
                         return View(model);
                     }
+
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    TempData["WarningMessage"] = "Sorry, Wrong Password !";
+                    //return View(model);
                 }
                 else
                 {
-                    TempData["UserActiveMessage"] = "Sorry, your user is not active !";
+                    TempData["UserActiveMessage"] = "Sorry, your account is not active !";
                     return View(model);
-                }
-                
-                //if (result.Succeeded)
-                //{
-                //    _logger.LogInformation("User Loggin in.");
-                //    return RedirectToAction("Index", "Home");
-                //}                
+                }             
             }
             return View(model);
         }
-
+        
         [HttpGet]
         public async Task<IActionResult> ResetPassword(string token, string email)
         {
@@ -197,7 +212,19 @@ namespace PurchasingSystemDeveloper.Controllers
             return View(model);
         }
 
+        public async Task<IActionResult> Logout()
+        {
+            var getUser = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+            var user = await _signInManager.UserManager.FindByNameAsync(getUser.Email);
 
+            if (user != null)
+            {
+                user.IsOnline = false;
+                await _userManager.UpdateAsync(user);
+            }
 
+            await _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿@{
     ViewData["Title"] = "List Qty Difference";
-    Layout = "~/Views/Shared/_TopNavbarWarehouse.cshtml";
+    Layout = "~/Views/Shared/_TopNavbarWarehouseQtyDifference.cshtml";
 }
 
 @using PurchasingSystemDeveloper.Areas.Warehouse.Models;
@@ -99,6 +99,7 @@
                                             {
                                                 <td><span class="badge"><b>@ro.UserApprove1.FullName</b></span></td>
                                             }
+
                                             @if (ro.ApproveStatusUser2 == "Approve")
                                             {
                                                 <td><span class="badge bg-success"><b>@ro.UserApprove2.FullName</b></span></td>
@@ -113,12 +114,18 @@
                                             }
                                             <td>@ro.QtyDifferenceNumber</td>
                                             <td>@ro.PurchaseOrder.PurchaseOrderNumber</td>
-                                            @if (ro.Status == "Approved")
+
+                                            @if (ro.Status == "Waiting Approval")
                                             {
-                                                <td><div style="color:forestgreen"><b>@ro.Status</b></div></td>
-                                            } else
+                                                <td><span class="badge bg-danger"><b>@ro.Status</b></span></td>
+                                            }
+                                            else if (ro.Status == "Approve")
                                             {
-                                                <td>@ro.Status</td>
+                                                <td><span class="badge bg-success"><b>@ro.Status</b></span></td>
+                                            }
+                                            else
+                                            {
+                                                <td><b>@ro.Status</b></td>
                                             }
                                         </tr>
                                     }

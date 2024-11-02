@@ -2,11 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Data.SqlClient;
 using PurchasingSystemDeveloper.Areas.MasterData.Models;
 using PurchasingSystemDeveloper.Areas.MasterData.Repositories;
 using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
 using PurchasingSystemDeveloper.Areas.Order.Models;
 using PurchasingSystemDeveloper.Areas.Order.Repositories;
+using PurchasingSystemDeveloper.Areas.Transaction.Repositories;
 using PurchasingSystemDeveloper.Areas.Warehouse.Repositories;
 using PurchasingSystemDeveloper.Data;
 using PurchasingSystemDeveloper.Hubs;
@@ -17,6 +20,8 @@ using System.Diagnostics;
 using System.Net;
 using System.Security.Claims;
 using System.Web.Helpers;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using System.Text.RegularExpressions;
 
 namespace PurchasingSystemDeveloper.Controllers
 {
@@ -27,12 +32,18 @@ namespace PurchasingSystemDeveloper.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly IUserActiveRepository _userActiveRepository;
+        private readonly IDepartmentRepository _departmentRepository;
+        private readonly IPositionRepository _positionRepository;
         private readonly IHubContext<ChatHub> _hubContext;
         private readonly IPurchaseRequestRepository _purchaseRequestRepository;
         private readonly IProductRepository _productRepository;
         private readonly IApprovalRepository _approvalRepository;
         private readonly IQtyDifferenceRepository _qtyDifferenceRepository;
         private readonly IApprovalQtyDifferenceRepository _approvalQtyDifferenceRepository;
+        private readonly IUnitRequestRepository _unitRequestRepository;
+        private readonly IApprovalUnitRequestRepository _approvalUnitRequestRepository;
+
+        private readonly IHostingEnvironment _hostingEnvironment;
 
         public HomeController(ILogger<HomeController> logger,
             UserManager<ApplicationUser> userManager,
@@ -41,10 +52,17 @@ namespace PurchasingSystemDeveloper.Controllers
             IHubContext<ChatHub> hubContext,
             IPurchaseRequestRepository purchaseRequestRepository,
             IUserActiveRepository userActiveRepository,
+            IDepartmentRepository departmentRepository,
+            IPositionRepository positionRepository,
             IProductRepository productRepository,
             IApprovalRepository approvalRepository,
             IQtyDifferenceRepository qtyDifferenceRepository,
-            IApprovalQtyDifferenceRepository approvalQtyDifferenceRepository)
+            IApprovalQtyDifferenceRepository approvalQtyDifferenceRepository,
+            
+            IHostingEnvironment hostingEnvironment)
+            
+            IUnitRequestRepository unitRequestRepository,
+            IApprovalUnitRequestRepository approvalUnitRequestRepository)
         {
             _logger = logger;
             _applicationDbContext = context;
@@ -52,11 +70,19 @@ namespace PurchasingSystemDeveloper.Controllers
             _signInManager = signInManager;
             _hubContext = hubContext;
             _userActiveRepository = userActiveRepository;
+            _departmentRepository = departmentRepository;
+            _positionRepository = positionRepository;
             _purchaseRequestRepository = purchaseRequestRepository;
             _productRepository = productRepository;
             _approvalRepository = approvalRepository;
             _qtyDifferenceRepository = qtyDifferenceRepository;
             _approvalQtyDifferenceRepository = approvalQtyDifferenceRepository;
+
+            _hostingEnvironment = hostingEnvironment;
+
+            _unitRequestRepository = unitRequestRepository;
+            _approvalUnitRequestRepository = approvalUnitRequestRepository;
+
         }
 
         public async Task<IActionResult> Index()
@@ -107,7 +133,7 @@ namespace PurchasingSystemDeveloper.Controllers
             }).ToList();
             ViewBag.CountReceiveOrder = countReceiveOrder.Count;
 
-            var countApprovalUnitRequest = _applicationDbContext.ApprovalRequests.Where(u => u.CreateBy == new Guid(checkUserLogin.Id)).GroupBy(u => u.ApprovalRequestId).Select(y => new
+            var countApprovalUnitRequest = _applicationDbContext.ApprovalUnitRequests.Where(u => u.CreateBy == new Guid(checkUserLogin.Id)).GroupBy(u => u.ApprovalUnitRequestId).Select(y => new
             {
                 ApprovalRequestId = y.Key,
                 CountOfApprovalUnitRequests = y.Count()
@@ -179,6 +205,7 @@ namespace PurchasingSystemDeveloper.Controllers
             return View();
         }
 
+        [HttpGet]
         public IActionResult MyProfile()
         {
             ViewBag.Active = "Dashboard";
@@ -245,7 +272,8 @@ namespace PurchasingSystemDeveloper.Controllers
                     Address = user.Address,
                     Handphone = user.Handphone,
                     Email = user.Email,
-                    UserPhotoPath = user.Foto
+                    UserPhotoPath = user.Foto,
+                    IsActive = user.IsActive
                 };
                 return View(viewModel);
             }
@@ -263,7 +291,41 @@ namespace PurchasingSystemDeveloper.Controllers
         }
 
         [HttpPost]
+        public IActionResult MyProfile(UserActiveViewModel model)
+        {
+            if (model.Foto != null)
+            {
+                // Proses unggah gambar menggunakan fungsi ProcessUploadFile
+                var newPhotoPath = ProcessUploadFile(model);
 
+                // Cari user yang sedang login
+                var checkUserLogin = _userActiveRepository.GetAllUserLogin()
+                    .FirstOrDefault(u => u.UserName == User.Identity.Name);
+                var user = _userActiveRepository.GetAllUser()
+                    .FirstOrDefault(u => u.FullName == checkUserLogin.NamaUser);
+
+                if (user != null)
+                {
+                    // Update path foto di database
+                    user.Foto = newPhotoPath;
+                    _userActiveRepository.Update(user);
+                    _applicationDbContext.SaveChanges();
+                }
+                TempData["Message"] = "Profile photo updated successfully!";
+            }
+            else
+            {
+                TempData["ErrorMessage"] = "Please select a valid image file.";
+            }
+
+            // Kembali ke halaman profil setelah upload
+            return RedirectToAction("MyProfile");
+        }
+
+
+
+
+        [HttpPost]
         public async Task<IActionResult> GetProfile()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -303,6 +365,7 @@ namespace PurchasingSystemDeveloper.Controllers
             var getUserActiveId = _userActiveRepository.GetAllUser().Where(u => u.UserActiveCode == getUserId.KodeUser).FirstOrDefault().UserActiveId;
             var loggerDataPR = new List<object>();
             var loggerDataQtyDiff = new List<object>();
+            var loggerDataUnitReq = new List<object>();
 
             var DataPR = _purchaseRequestRepository.GetAllPurchaseRequest()
                             .Where(p => (p.UserApprove1Id == getUserActiveId && p.ApproveStatusUser1 == null)
@@ -314,6 +377,11 @@ namespace PurchasingSystemDeveloper.Controllers
             var DataQtyDiff = _qtyDifferenceRepository.GetAllQtyDifference()
                             .Where(p => (p.UserApprove1Id == getUserActiveId && p.ApproveStatusUser1 == null)
                             || (p.UserApprove2Id == getUserActiveId && p.ApproveStatusUser1 == "Approve" && p.ApproveStatusUser2 == null))
+                            .OrderByDescending(a => a.CreateDateTime)
+                            .ToList();
+
+            var DataUnitReq = _unitRequestRepository.GetAllUnitRequest()
+                            .Where(p => (p.UserApprove1Id == getUserActiveId && p.ApproveStatusUser1 == null))
                             .OrderByDescending(a => a.CreateDateTime)
                             .ToList();
 
@@ -391,10 +459,68 @@ namespace PurchasingSystemDeveloper.Controllers
                 }
             }
 
-            var totalNotification = DataPR.Count + DataQtyDiff.Count;
+            foreach (var logger in DataUnitReq)
+            {
+                if (logger.ApproveStatusUser1 == null)
+                {
+                    var getUserApproveId = _approvalUnitRequestRepository.GetAllApprovalRequest().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User1" && u.UnitRequestId == logger.UnitRequestId).FirstOrDefault().ApprovalUnitRequestId;
 
-            return Json(new { success = true, totalJsonAllNotification = totalNotification, loggerDataJsonPR = loggerDataPR, loggerDataJsonQtyDiff = loggerDataQtyDiff });
+                    var detail = new
+                    {
+                        approvalId = getUserApproveId,
+                        createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
+                        unitRequestNumber = logger.UnitRequestNumber,
+                        createdDate = logger.CreateDateTime
+                    };
+                    loggerDataUnitReq.Add(detail);
+                }                
+            }
 
+            var totalNotification = DataPR.Count + DataQtyDiff.Count + DataUnitReq.Count;
+
+            return Json(new { success = true, totalJsonAllNotification = totalNotification, loggerDataJsonPR = loggerDataPR, loggerDataJsonQtyDiff = loggerDataQtyDiff, loggerDataJsonUnitReq = loggerDataUnitReq });
+
+        }
+
+        private string ProcessUploadFile(UserActiveViewModel model)
+        {
+            if(model.Foto == null)
+            {
+                return null;
+            }
+
+            string[] FileAkses = { ".jpg", ".jepg", ".png", ".gif" };
+            string fileExtensions = Path.GetExtension(model.Foto.FileName).ToLowerInvariant();
+
+            if (!FileAkses.Contains(fileExtensions))
+            {
+                throw new InvalidOperationException("format file harus png, jpg, jepg, gif");
+            }
+
+            if (model.Foto.Length > 2 * 1024 * 1024)
+            {
+                throw new InvalidOperationException("ukuran file telah melebihi batas maksimum 2MB");
+            }
+
+            string safeFileName = Path.GetFileNameWithoutExtension(model.Foto.FileName);
+            safeFileName = Regex.Replace(safeFileName, @"[^a-zA-Z0-9-_]", "");
+
+            var uniqueFileName = $"{Guid.NewGuid()}_{safeFileName}_{DateTime.Now.Ticks}{fileExtensions}";
+            string uploadFolder = Path.Combine(_hostingEnvironment.WebRootPath, "UserPhoto");
+
+            if (!Directory.Exists(uploadFolder))
+            {
+                Directory.CreateDirectory(uploadFolder);
+            }
+
+            string filePath = Path.Combine(uploadFolder, uniqueFileName);
+
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                model.Foto.CopyTo(fileStream);
+            }
+
+            return uniqueFileName;
         }
 
     }

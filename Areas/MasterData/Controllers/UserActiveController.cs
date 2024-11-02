@@ -12,6 +12,7 @@ using PurchasingSystemDeveloper.Models;
 using PurchasingSystemDeveloper.Repositories;
 using System.Data;
 using System.Text.RegularExpressions;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
@@ -30,6 +31,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
         private readonly IPurchaseRequestRepository _purchaseRequestRepository;
         private readonly IPurchaseOrderRepository _purchaseOrderRepository;
 
+        private readonly ILogger<UserActiveController> _logger;
         private readonly IHostingEnvironment _hostingEnvironment;
 
         public UserActiveController(
@@ -43,6 +45,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             IPurchaseRequestRepository purchaseRequestRepository,
             IPurchaseOrderRepository purchaseOrderRepository,
 
+            ILogger<UserActiveController> logger,
             IHostingEnvironment hostingEnvironment
         )
         {
@@ -56,6 +59,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             _purchaseRequestRepository = purchaseRequestRepository;
             _purchaseOrderRepository = purchaseOrderRepository;
 
+            _logger = logger;   
             _hostingEnvironment = hostingEnvironment;
         }
 
@@ -120,26 +124,6 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                     default:
                         break;
                 }
-            }
-
-            var users = data.OrderByDescending(u => u.CreateDateTime).ToList();
-
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                return Json(new
-                {
-                    data = users.Select(user => new {
-                        foto = "/UserPhoto/" + (user.Foto ?? "user.jpg"),
-                        createDate = user.CreateDateTime.ToString("dd MMMM yyyy"),
-                        userActiveId = user.UserActiveId,  // tetap kirim untuk rowCallback
-                        userCode = user.UserActiveCode ?? string.Empty,
-                        fullName = user.FullName ?? string.Empty,
-                        department = user.Department?.DepartmentName ?? string.Empty,
-                        position = user.Position?.PositionName ?? string.Empty,
-                        dateOfBirth = user.DateOfBirth.ToString("dd MMMM yyyy"),
-                        address = user.Address ?? string.Empty
-                    }).ToList()
-                });
             }
 
             ViewBag.tglAwalPencarian = tglAwalPencarian?.ToString("dd MMMM yyyy");
@@ -214,6 +198,21 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
 
             if (ModelState.IsValid)
             {
+
+                if(vm.Foto != null)
+                {
+                    long fileSize = vm.Foto.Length;
+                    long maxSize = 2 * 1024 * 1024;
+
+                    if(fileSize> maxSize)
+                    {
+                        TempData["ErrorMessage"] = "Ukuran file tidak boleh lebih dari 2Mb";
+                        ViewBag.Department = new SelectList(await _departmentRepository.GetDepartments(), "DepartmentId", "DepartmentName", SortOrder.Ascending);
+                        ViewBag.Position = new SelectList(await _positionRepository.GetPositions(), "PositionId", "PositionName", SortOrder.Ascending);
+                        return View(vm);
+                    }
+                }
+
                 string uniqueFileName = ProcessUploadFile(vm);
 
                 var userLogin = new ApplicationUser
@@ -247,6 +246,8 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
 
                 var passTglLahir = vm.DateOfBirth.ToString("ddMMMyyyy");                
                 var resultLogin = await _userManager.CreateAsync(userLogin, passTglLahir);
+
+                _logger.LogInformation($"add a user to the create user page on : {DateTime.Now.TimeOfDay}");
 
                 var checkDuplicatePengguna = _userActiveRepository.GetAllUser().Where(c => c.FullName == vm.FullName && c.DepartmentId == vm.DepartmentId).ToList();
 
@@ -373,6 +374,21 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                                         "UserPhoto", viewModel.UserPhotoPath);
                                     System.IO.File.Delete(filePath);
                                 }
+
+                                if (viewModel.Foto != null)
+                                {
+                                    long fileSize = viewModel.Foto.Length;
+                                    long maxSize = 2 * 1024 * 1024;
+
+                                    if (fileSize > maxSize)
+                                    {
+                                        TempData["ErrorMessage"] = "Ukuran file tidak boleh lebih dari 2Mb";
+                                        ViewBag.Department = new SelectList(await _departmentRepository.GetDepartments(), "DepartmentId", "DepartmentName", SortOrder.Ascending);
+                                        ViewBag.Position = new SelectList(await _positionRepository.GetPositions(), "PositionId", "PositionName", SortOrder.Ascending);
+                                        return View(viewModel);
+                                    }
+                                }
+
                                 user.Foto = ProcessUploadFile(viewModel);
                             }
 
@@ -427,6 +443,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             ViewBag.Position = new SelectList(await _positionRepository.GetPositions(), "PositionId", "PositionName", SortOrder.Ascending);
             return View(viewModel);
         }
+
 
         [HttpGet]
         public async Task<IActionResult> DeleteUserActive(Guid Id)

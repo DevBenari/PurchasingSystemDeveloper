@@ -1774,87 +1774,15 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.ToTable("OrdPurchaseRequestDetail", "dbo");
                 });
 
-            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Order.Models.QtyDifferenceRequest", b =>
-                {
-                    b.Property<Guid>("QtyDifferenceRequestId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CreateBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("CreateDateTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid>("DeleteBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("DeleteDateTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<Guid?>("HeadPurchasingManagerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("HeadWarehouseManagerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<bool>("IsCancel")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDelete")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Note")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("PurchaseOrderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("QtyDifferenceApproveBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("QtyDifferenceApproveDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("QtyDifferenceId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid>("UpdateBy")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTimeOffset>("UpdateDateTime")
-                        .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("UserAccessId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("QtyDifferenceRequestId");
-
-                    b.HasIndex("HeadPurchasingManagerId");
-
-                    b.HasIndex("HeadWarehouseManagerId");
-
-                    b.HasIndex("PurchaseOrderId");
-
-                    b.HasIndex("QtyDifferenceId");
-
-                    b.HasIndex("UserAccessId");
-
-                    b.ToTable("OrdQtyDifferenceRequest", "dbo");
-                });
-
             modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Transaction.Models.UnitRequest", b =>
                 {
                     b.Property<Guid>("UnitRequestId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("ApproveStatusUser1")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid>("CreateBy")
                         .HasColumnType("uniqueidentifier");
 
@@ -1867,14 +1795,23 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.Property<DateTimeOffset>("DeleteDateTime")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<Guid?>("Department1Id")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<bool>("IsCancel")
                         .HasColumnType("bit");
 
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
+                    b.Property<string>("MessageApprove1")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("Position1Id")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("QtyTotal")
                         .HasColumnType("int");
@@ -1884,9 +1821,6 @@ namespace PurchasingSystemDeveloper.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("UnitLocationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("UnitRequestManagerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UnitRequestNumber")
@@ -1903,7 +1837,7 @@ namespace PurchasingSystemDeveloper.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid?>("WarehouseApprovalId")
+                    b.Property<Guid?>("UserApprove1Id")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("WarehouseLocationId")
@@ -1911,13 +1845,15 @@ namespace PurchasingSystemDeveloper.Migrations
 
                     b.HasKey("UnitRequestId");
 
-                    b.HasIndex("UnitLocationId");
+                    b.HasIndex("Department1Id");
 
-                    b.HasIndex("UnitRequestManagerId");
+                    b.HasIndex("Position1Id");
+
+                    b.HasIndex("UnitLocationId");
 
                     b.HasIndex("UserAccessId");
 
-                    b.HasIndex("WarehouseApprovalId");
+                    b.HasIndex("UserApprove1Id");
 
                     b.HasIndex("WarehouseLocationId");
 
@@ -1986,14 +1922,24 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.ToTable("TscUnitRequestDetail", "dbo");
                 });
 
-            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.ApprovalRequest", b =>
+            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.ApprovalUnitRequest", b =>
                 {
-                    b.Property<Guid>("ApprovalRequestId")
+                    b.Property<Guid>("ApprovalUnitRequestId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("ApproveDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("ApprovalDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ApprovalStatusUser")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ApprovalTime")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ApproveBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CreateBy")
                         .HasColumnType("uniqueidentifier");
@@ -2013,6 +1959,9 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Note")
                         .HasColumnType("nvarchar(max)");
 
@@ -2024,9 +1973,6 @@ namespace PurchasingSystemDeveloper.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("UnitRequestId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("UnitRequestManagerId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UnitRequestNumber")
@@ -2043,26 +1989,25 @@ namespace PurchasingSystemDeveloper.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid?>("WarehouseApprovalId")
+                    b.Property<Guid?>("UserApproveId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("WarehouseApproveBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid?>("WarehouseLocationId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.HasKey("ApprovalRequestId");
+                    b.HasKey("ApprovalUnitRequestId");
 
                     b.HasIndex("UnitLocationId");
 
                     b.HasIndex("UnitRequestId");
 
-                    b.HasIndex("UnitRequestManagerId");
-
                     b.HasIndex("UserAccessId");
 
-                    b.HasIndex("WarehouseApprovalId");
+                    b.HasIndex("UserApproveId");
 
-                    b.ToTable("WrhApprovalRequest", "dbo");
+                    b.HasIndex("WarehouseLocationId");
+
+                    b.ToTable("WrhApprovalUnitRequest", "dbo");
                 });
 
             modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.QtyDifference", b =>
@@ -2351,11 +2296,14 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.ToTable("WrhReceiveOrderDetail", "dbo");
                 });
 
-            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.WarehouseRequest", b =>
+            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.UnitOrder", b =>
                 {
-                    b.Property<Guid>("WarehouseRequestId")
+                    b.Property<Guid>("UnitOrderId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ApproveStatusUser1")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CreateBy")
                         .HasColumnType("uniqueidentifier");
@@ -2375,6 +2323,9 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.Property<bool>("IsDelete")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("QtyTotal")
                         .HasColumnType("int");
 
@@ -2385,10 +2336,11 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.Property<Guid?>("UnitLocationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UnitRequestId")
-                        .HasColumnType("uniqueidentifier");
+                    b.Property<string>("UnitOrderNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid?>("UnitRequestManagerId")
+                    b.Property<Guid?>("UnitRequestId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("UnitRequestNumber")
@@ -2405,36 +2357,30 @@ namespace PurchasingSystemDeveloper.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid?>("WarehouseApprovalId")
+                    b.Property<Guid?>("UserApprove1Id")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("WarehouseLocationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("WarehouseRequestNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("WarehouseRequestId");
+                    b.HasKey("UnitOrderId");
 
                     b.HasIndex("UnitLocationId");
 
                     b.HasIndex("UnitRequestId");
 
-                    b.HasIndex("UnitRequestManagerId");
-
                     b.HasIndex("UserAccessId");
 
-                    b.HasIndex("WarehouseApprovalId");
+                    b.HasIndex("UserApprove1Id");
 
                     b.HasIndex("WarehouseLocationId");
 
-                    b.ToTable("WrhWarehouseRequest", "dbo");
+                    b.ToTable("WrhUnitOrder", "dbo");
                 });
 
-            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.WarehouseRequestDetail", b =>
+            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.UnitOrderDetail", b =>
                 {
-                    b.Property<Guid>("WarehouseRequestDetailId")
+                    b.Property<Guid>("UnitOrderDetailId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
@@ -2481,20 +2427,20 @@ namespace PurchasingSystemDeveloper.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid?>("UnitOrderId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("UpdateBy")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTimeOffset>("UpdateDateTime")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<Guid?>("WarehouseRequestId")
-                        .HasColumnType("uniqueidentifier");
+                    b.HasKey("UnitOrderDetailId");
 
-                    b.HasKey("WarehouseRequestDetailId");
+                    b.HasIndex("UnitOrderId");
 
-                    b.HasIndex("WarehouseRequestId");
-
-                    b.ToTable("WrhWarehouseRequestDetail", "dbo");
+                    b.ToTable("WrhUnitOrderDetail", "dbo");
                 });
 
             modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.WarehouseTransfer", b =>
@@ -2531,8 +2477,12 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.Property<Guid?>("UnitLocationId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("UnitRequestManagerId")
+                    b.Property<Guid?>("UnitOrderId")
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("UnitOrderNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("UpdateBy")
                         .HasColumnType("uniqueidentifier");
@@ -2544,7 +2494,7 @@ namespace PurchasingSystemDeveloper.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<Guid?>("WarehouseApprovalId")
+                    b.Property<Guid?>("UserApprove1Id")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<Guid?>("WarehouseLocationId")
@@ -2552,10 +2502,6 @@ namespace PurchasingSystemDeveloper.Migrations
 
                     b.Property<Guid?>("WarehouseRequestId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("WarehouseRequestNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("WarehouseTransferNumber")
                         .IsRequired()
@@ -2565,11 +2511,9 @@ namespace PurchasingSystemDeveloper.Migrations
 
                     b.HasIndex("UnitLocationId");
 
-                    b.HasIndex("UnitRequestManagerId");
-
                     b.HasIndex("UserAccessId");
 
-                    b.HasIndex("WarehouseApprovalId");
+                    b.HasIndex("UserApprove1Id");
 
                     b.HasIndex("WarehouseLocationId");
 
@@ -3108,67 +3052,32 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.Navigation("PurchaseRequest");
                 });
 
-            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Order.Models.QtyDifferenceRequest", b =>
-                {
-                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UserActive", "HeadPurchasingManager")
-                        .WithMany()
-                        .HasForeignKey("HeadPurchasingManagerId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UserActive", "HeadWarehouseManager")
-                        .WithMany()
-                        .HasForeignKey("HeadWarehouseManagerId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PurchasingSystemDeveloper.Areas.Order.Models.PurchaseOrder", "PurchaseOrder")
-                        .WithMany()
-                        .HasForeignKey("PurchaseOrderId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("PurchasingSystemDeveloper.Areas.Warehouse.Models.QtyDifference", "QtyDifference")
-                        .WithMany()
-                        .HasForeignKey("QtyDifferenceId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("PurchasingSystemDeveloper.Models.ApplicationUser", "ApplicationUser")
-                        .WithMany()
-                        .HasForeignKey("UserAccessId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("ApplicationUser");
-
-                    b.Navigation("HeadPurchasingManager");
-
-                    b.Navigation("HeadWarehouseManager");
-
-                    b.Navigation("PurchaseOrder");
-
-                    b.Navigation("QtyDifference");
-                });
-
             modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Transaction.Models.UnitRequest", b =>
                 {
+                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.Department", "Department1")
+                        .WithMany()
+                        .HasForeignKey("Department1Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.Position", "Position1")
+                        .WithMany()
+                        .HasForeignKey("Position1Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UnitLocation", "UnitLocation")
                         .WithMany()
                         .HasForeignKey("UnitLocationId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UserActive", "UnitRequestManager")
-                        .WithMany()
-                        .HasForeignKey("UnitRequestManagerId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("PurchasingSystemDeveloper.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserAccessId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UserActive", "WarehouseApproval")
+                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UserActive", "UserApprove1")
                         .WithMany()
-                        .HasForeignKey("WarehouseApprovalId")
+                        .HasForeignKey("UserApprove1Id")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.WarehouseLocation", "WarehouseLocation")
@@ -3178,11 +3087,13 @@ namespace PurchasingSystemDeveloper.Migrations
 
                     b.Navigation("ApplicationUser");
 
+                    b.Navigation("Department1");
+
+                    b.Navigation("Position1");
+
                     b.Navigation("UnitLocation");
 
-                    b.Navigation("UnitRequestManager");
-
-                    b.Navigation("WarehouseApproval");
+                    b.Navigation("UserApprove1");
 
                     b.Navigation("WarehouseLocation");
                 });
@@ -3197,7 +3108,7 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.Navigation("UnitRequest");
                 });
 
-            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.ApprovalRequest", b =>
+            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.ApprovalUnitRequest", b =>
                 {
                     b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UnitLocation", "UnitLocation")
                         .WithMany()
@@ -3209,20 +3120,20 @@ namespace PurchasingSystemDeveloper.Migrations
                         .HasForeignKey("UnitRequestId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UserActive", "UnitRequestManager")
-                        .WithMany()
-                        .HasForeignKey("UnitRequestManagerId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("PurchasingSystemDeveloper.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserAccessId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UserActive", "WarehouseApproval")
+                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UserActive", "UserApprove")
                         .WithMany()
-                        .HasForeignKey("WarehouseApprovalId")
+                        .HasForeignKey("UserApproveId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.WarehouseLocation", "WarehouseLocation")
+                        .WithMany()
+                        .HasForeignKey("WarehouseLocationId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("ApplicationUser");
@@ -3231,9 +3142,9 @@ namespace PurchasingSystemDeveloper.Migrations
 
                     b.Navigation("UnitRequest");
 
-                    b.Navigation("UnitRequestManager");
+                    b.Navigation("UserApprove");
 
-                    b.Navigation("WarehouseApproval");
+                    b.Navigation("WarehouseLocation");
                 });
 
             modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.QtyDifference", b =>
@@ -3334,7 +3245,7 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.Navigation("ReceiveOrder");
                 });
 
-            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.WarehouseRequest", b =>
+            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.UnitOrder", b =>
                 {
                     b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UnitLocation", "UnitLocation")
                         .WithMany()
@@ -3346,20 +3257,15 @@ namespace PurchasingSystemDeveloper.Migrations
                         .HasForeignKey("UnitRequestId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UserActive", "UnitRequestManager")
-                        .WithMany()
-                        .HasForeignKey("UnitRequestManagerId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("PurchasingSystemDeveloper.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserAccessId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UserActive", "WarehouseApproval")
+                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UserActive", "UserApprove1")
                         .WithMany()
-                        .HasForeignKey("WarehouseApprovalId")
+                        .HasForeignKey("UserApprove1Id")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.WarehouseLocation", "WarehouseLocation")
@@ -3373,21 +3279,19 @@ namespace PurchasingSystemDeveloper.Migrations
 
                     b.Navigation("UnitRequest");
 
-                    b.Navigation("UnitRequestManager");
-
-                    b.Navigation("WarehouseApproval");
+                    b.Navigation("UserApprove1");
 
                     b.Navigation("WarehouseLocation");
                 });
 
-            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.WarehouseRequestDetail", b =>
+            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.UnitOrderDetail", b =>
                 {
-                    b.HasOne("PurchasingSystemDeveloper.Areas.Warehouse.Models.WarehouseRequest", "WarehouseRequest")
-                        .WithMany("WarehouseRequestDetails")
-                        .HasForeignKey("WarehouseRequestId")
+                    b.HasOne("PurchasingSystemDeveloper.Areas.Warehouse.Models.UnitOrder", "UnitOrder")
+                        .WithMany("UnitOrderDetails")
+                        .HasForeignKey("UnitOrderId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("WarehouseRequest");
+                    b.Navigation("UnitOrder");
                 });
 
             modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.WarehouseTransfer", b =>
@@ -3397,20 +3301,15 @@ namespace PurchasingSystemDeveloper.Migrations
                         .HasForeignKey("UnitLocationId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UserActive", "UnitRequestManager")
-                        .WithMany()
-                        .HasForeignKey("UnitRequestManagerId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("PurchasingSystemDeveloper.Models.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserAccessId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UserActive", "WarehouseApproval")
+                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UserActive", "UserApprove1")
                         .WithMany()
-                        .HasForeignKey("WarehouseApprovalId")
+                        .HasForeignKey("UserApprove1Id")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.WarehouseLocation", "WarehouseLocation")
@@ -3418,7 +3317,7 @@ namespace PurchasingSystemDeveloper.Migrations
                         .HasForeignKey("WarehouseLocationId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.HasOne("PurchasingSystemDeveloper.Areas.Warehouse.Models.WarehouseRequest", "WarehouseRequest")
+                    b.HasOne("PurchasingSystemDeveloper.Areas.Warehouse.Models.UnitOrder", "WarehouseRequest")
                         .WithMany()
                         .HasForeignKey("WarehouseRequestId")
                         .OnDelete(DeleteBehavior.Restrict);
@@ -3427,9 +3326,7 @@ namespace PurchasingSystemDeveloper.Migrations
 
                     b.Navigation("UnitLocation");
 
-                    b.Navigation("UnitRequestManager");
-
-                    b.Navigation("WarehouseApproval");
+                    b.Navigation("UserApprove1");
 
                     b.Navigation("WarehouseLocation");
 
@@ -3480,9 +3377,9 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.Navigation("ReceiveOrderDetails");
                 });
 
-            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.WarehouseRequest", b =>
+            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.UnitOrder", b =>
                 {
-                    b.Navigation("WarehouseRequestDetails");
+                    b.Navigation("UnitOrderDetails");
                 });
 
             modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.WarehouseTransfer", b =>

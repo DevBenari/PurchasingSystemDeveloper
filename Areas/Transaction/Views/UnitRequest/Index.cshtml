@@ -73,39 +73,47 @@
                                         <th>No</th>
                                         <th>Create Date</th>
                                         <th>Create By</th>
+                                        <th>Approve 1</th>
                                         <th>UR Number</th>
                                         <th>Unit Location</th>
-                                        <th>Unit Request By</th>
-                                        <th>Warehouse Approve By</th>                                        
+                                        <th>Warehouse Location</th>
                                         <th>Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var pr in Model)
+                                    @foreach (var ur in Model)
                                     {
-                                        <tr data-href="@Url.Action("DetailUnitRequest", "UnitRequest", new {id=pr.UnitRequestId})">
+                                        <tr data-href="@Url.Action("DetailUnitRequest", "UnitRequest", new {id=ur.UnitRequestId})">
                                             <th></th>
-                                            <td>@pr.CreateDateTime.ToString("dd MMMM yyyy")</td>
-                                            <td>@pr.ApplicationUser.NamaUser</td>
-                                            <td>@pr.UnitRequestNumber</td>
-                                            <td>@pr.UnitLocation.UnitLocationName</td>
-                                            <td>@pr.UnitRequestManager.FullName</td>
-                                            <td>@pr.WarehouseApproval.FullName</td>                                            
-                                            @if (pr.Status == "Request")
+                                            <td>@ur.CreateDateTime.ToString("dd MMMM yyyy")</td>
+                                            <td>@ur.ApplicationUser.NamaUser</td>
+                                            @if (ur.ApproveStatusUser1 == "Approve")
                                             {
-                                                <td>@pr.Status</td>
+                                                <td><span class="badge bg-success"><b>@ur.UserApprove1.FullName</b></span></td>
                                             }
-                                            else if (pr.Status == "Approved")
+                                            else if (ur.ApproveStatusUser1 == "Reject")
                                             {
-                                                <td><div style="color:blue"><b>@pr.Status</b></div></td>
-                                            }
-                                            else if (pr.Status == "InProcess")
-                                            {
-                                                <td><div style="color:orangered"><b>@pr.Status</b></div></td>
+                                                <td><span class="badge bg-danger"><b>@ur.UserApprove1.FullName</b></span></td>
                                             }
                                             else
                                             {
-                                                <td><div style="color:forestgreen"><b>@pr.Status</b></div></td>
+                                                <td><span class="badge"><b>@ur.UserApprove1.FullName</b></span></td>
+                                            }
+                                            <td>@ur.UnitRequestNumber</td>
+                                            <td>@ur.UnitLocation.UnitLocationName</td>
+                                            <td>@ur.WarehouseLocation.WarehouseLocationName</td>
+
+                                            @if (ur.Status == "Waiting Approval")
+                                            {
+                                                <td><span class="badge bg-danger"><b>@ur.Status</b></span></td>
+                                            }
+                                            else if (ur.Status == "Approve")
+                                            {
+                                                <td><span class="badge bg-success"><b>@ur.Status</b></span></td>
+                                            }
+                                            else
+                                            {
+                                                <td><b>@ur.Status</b></td>
                                             }
                                         </tr>
                                     }

@@ -74,7 +74,7 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            ViewBag.Active = "Warehouse";
+            ViewBag.Active = "ReceiveOrder";
             var data = _receiveOrderRepository.GetAllReceiveOrder();
             return View(data);
         }
@@ -82,7 +82,7 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
         [HttpPost]
         public async Task<IActionResult> Index(DateTime tglAwalPencarian, DateTime tglAkhirPencarian)
         {
-            ViewBag.Active = "Warehouse";
+            ViewBag.Active = "ReceiveOrder";
             ViewBag.tglAwalPencarian = tglAwalPencarian.ToString("dd MMMM yyyy");
             ViewBag.tglAkhirPencarian = tglAkhirPencarian.ToString("dd MMMM yyyy");
 

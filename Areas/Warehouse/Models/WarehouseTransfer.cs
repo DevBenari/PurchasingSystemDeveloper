@@ -13,30 +13,27 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Models
         [Key]
         public Guid WarehouseTransferId { get; set; }
         public string WarehouseTransferNumber { get; set; }
-        public Guid? WarehouseRequestId { get; set; }
-        public string WarehouseRequestNumber { get; set; }
+        public Guid? UnitOrderId { get; set; }
+        public string UnitOrderNumber { get; set; }
         public string UserAccessId { get; set; }
         public Guid? UnitLocationId { get; set; }
-        public Guid? UnitRequestManagerId { get; set; }
         public Guid? WarehouseLocationId { get; set; }
-        public Guid? WarehouseApprovalId { get; set; }
+        public Guid? UserApprove1Id { get; set; }
         public string Status { get; set; }
         public int QtyTotal { get; set; }
         public List<WarehouseTransferDetail> WarehouseTransferDetails { get; set; } = new List<WarehouseTransferDetail>();
 
         //Relationship
         [ForeignKey("WarehouseRequestId")]
-        public WarehouseRequest? WarehouseRequest { get; set; }
+        public UnitOrder? WarehouseRequest { get; set; }
         [ForeignKey("UserAccessId")]
         public ApplicationUser? ApplicationUser { get; set; }
         [ForeignKey("UnitLocationId")]
         public UnitLocation? UnitLocation { get; set; }
-        [ForeignKey("UnitRequestManagerId")]
-        public UserActive? UnitRequestManager { get; set; }
         [ForeignKey("WarehouseLocationId")]
         public WarehouseLocation? WarehouseLocation { get; set; }
-        [ForeignKey("WarehouseApprovalId")]
-        public UserActive? WarehouseApproval { get; set; }
+        [ForeignKey("UserApprove1Id")]
+        public UserActive? UserApprove1 { get; set; }
     }
 
     [Table("WrhWarehouseTransferDetail", Schema = "dbo")]

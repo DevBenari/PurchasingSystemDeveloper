@@ -36,7 +36,6 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
         private readonly ITermOfPaymentRepository _termOfPaymentRepository;
         private readonly IPurchaseOrderRepository _purchaseOrderRepository;
         private readonly IPurchaseRequestRepository _purchaseRequestRepository;
-        private readonly IQtyDifferenceRequestRepository _qtyDifferenceRequestRepository;
         private readonly IApprovalQtyDifferenceRepository _approvalQtyDifferenceRepository;
         private readonly IDepartmentRepository _departmentRepository;
         private readonly IPositionRepository _positionRepository;
@@ -57,7 +56,6 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
             ITermOfPaymentRepository termOfPaymentRepository,
             IPurchaseOrderRepository purchaseOrderRepository,
             IPurchaseRequestRepository purchaseRequestRepository,
-            IQtyDifferenceRequestRepository qtyDifferenceRequestRepository,
             IApprovalQtyDifferenceRepository approvalQtyDifferenceRepository,
             IDepartmentRepository departmentRepository,
             IPositionRepository positionRepository,
@@ -77,7 +75,6 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
             _termOfPaymentRepository = termOfPaymentRepository;
             _purchaseOrderRepository = purchaseOrderRepository;
             _purchaseRequestRepository = purchaseRequestRepository;
-            _qtyDifferenceRequestRepository = qtyDifferenceRequestRepository;
             _approvalQtyDifferenceRepository = approvalQtyDifferenceRepository;
             _departmentRepository = departmentRepository;
             _positionRepository = positionRepository;
@@ -266,9 +263,9 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
                 }
 
                 //Signal R
-                var data2 = _QtyDifferenceRepository.GetAllQtyDifference();
-                int totalKaryawan = data2.Count();
-                await _hubContext.Clients.All.SendAsync("UpdateDataCount", totalKaryawan);
+                //var data2 = _QtyDifferenceRepository.GetAllQtyDifference();
+                //int totalKaryawan = data2.Count();
+                //await _hubContext.Clients.All.SendAsync("UpdateDataCount", totalKaryawan);
                 //End Signal R     
 
                 if (model.UserApprove1Id != null)

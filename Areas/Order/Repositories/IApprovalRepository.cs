@@ -97,6 +97,47 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
                 .Include(a1 => a1.UserApprove)
                 .ToList();
         }
+        
+        public IEnumerable<Approval> GetAllApprovalById(Guid Id)
+        {
+            return _context.Approvals
+                .Where(i => i.UserApproveId == Id)
+                .OrderByDescending(c => c.CreateDateTime)
+                .Include(u => u.ApplicationUser)
+                .Include(t => t.PurchaseRequest)
+                .Include(a1 => a1.UserApprove)
+                .ToList();
+        }
+
+        public IEnumerable<Approval> GetChartBeforeExpired(Guid Id)
+        {
+            return _context.Approvals
+                .Where(i => i.UserApproveId == Id && i.RemainingDay > 0)
+                .Include(u => u.ApplicationUser)
+                .Include(t => t.PurchaseRequest)
+                .Include(a1 => a1.UserApprove)
+                .ToList();
+        }
+
+        public IEnumerable<Approval> GetChartOnExpired(Guid Id)
+        {
+            return _context.Approvals
+                .Where(i => i.UserApproveId == Id && i.RemainingDay == 0)
+                .Include(u => u.ApplicationUser)
+                .Include(t => t.PurchaseRequest)
+                .Include(a1 => a1.UserApprove)
+                .ToList();
+        }
+
+        public IEnumerable<Approval> GetChartMoreThanExpired(Guid Id)
+        {
+            return _context.Approvals
+                .Where(i => i.UserApproveId == Id && i.RemainingDay < 0)
+                .Include(u => u.ApplicationUser)
+                .Include(t => t.PurchaseRequest)
+                .Include(a1 => a1.UserApprove)
+                .ToList();
+        }
 
         public async Task<Approval> Update(Approval update)
         {          

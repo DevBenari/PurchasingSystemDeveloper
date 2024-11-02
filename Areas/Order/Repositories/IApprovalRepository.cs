@@ -97,7 +97,7 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
                 .Include(a1 => a1.UserApprove)
                 .ToList();
         }
-
+        
         public IEnumerable<Approval> GetAllApprovalById(Guid Id)
         {
             return _context.Approvals

@@ -449,7 +449,7 @@
 </style>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts@3.37.1/dist/apexcharts.min.js" integrity="sha256-+vh8GkaU7C9/wbSLIcwq82tQ2wTf44aOHA8HlBMwRI8=" crossorigin="anonymous"></script>
 <script src="https://cdn.datatables.net/2.1.7/js/dataTables.min.js"></script>
-<script>
+@* <script>
     $(document).ready(function () {
         $('.bar span').hide();
         $('#bar-five').animate({
@@ -473,11 +473,12 @@
         }, 1000);
 
     });
-</script>
+</script> *@
 <script>
     $(document).ready(function () {
         let selected = $('.select2').val();
-        show_data(selected)
+        show_data(selected);
+        show_rate(selected);
 
         $('.select2').on('change', function () {
             selected = $(this).val();
@@ -583,75 +584,95 @@
             var chart = new ApexCharts(document.querySelector("#chartCircle"), options);
             chart.render();
 
-            // let a = r.beforeExpired;
-            // let b = r.moreThanExpired;
-            // let merged = [];
-            // let theMonths = [];
-            // let beforeExpired = [];
-            // let afterExpired = [];
             
-
-            // for (let i = 0; i < a.length; i++) {
-            //     merged.push({
-            //         ...a[i],
-            //         ...(b.find((itmInner) => itmInner.months === a[i].months))
-            //     }
-            //     );
-            // }
-
-            // for (let i = 0; i < merged.length; i++) {
-            //     theMonths.push(merged[i].months);
-            //     beforeExpired.push((merged[i].beforeExpired === undefined) ? 0 : merged[i].beforeExpired);
-            //     afterExpired.push((merged[i].afterExpired === undefined) ? 0 : merged[i].afterExpired);
-
-            // }
-
-            // let valueMonths = (theMonths.length > 1) ? theMonths : [theMonths[0]];
-            // let valueUnexpired = (beforeExpired.length > 1)? beforeExpired : [b]
-            // var options = {
-            //     series: [{
-            //         name: 'Sebelum Expired Date',
-            //         type: 'column',
-            //         data: [beforeExpired[0]]
-            //     }, {
-            //         name: 'Sesudah Expired Date',
-            //         type: 'line',
-            //         data: [afterExpired[0]],
-            //         color: '#FF0000'
-            //     }],
-            //     chart: {
-            //         height: 350,
-            //         type: 'line',
-            //     },
-            //     stroke: {
-            //         width: [0, 4]
-            //     },
-            //     title: {
-            //         text: 'Traffic Sources'
-            //     },
-            //     dataLabels: {
-            //         enabled: true,
-            //         enabledOnSeries: [1]
-            //     },
-            //     labels: [theMonths[0]],
-            //     yaxis: [{
-            //         title: {
-            //             text: 'Sebelum Expired Date',
-            //         },
-
-            //     }, {
-            //         opposite: true,
-            //         title: {
-            //             text: 'Sesudah Expired Date'
-            //         }
-            //     }]
-            // };
-
-            // console.log(options);
-            // var chart = new ApexCharts(document.querySelector("#chart"), options);
-            // chart.render();
         });
     }
+
+    function show_rate(selected) {
+        $.post('@Url.Action("KpiJson")', { FirstName: selected }, function (r) {
+            let data = r.data;
+            let fiveStar = r.fiveStar;
+            let fourStar = r.fourStar;
+            let threeStar = r.threeStar;
+            let twoStar = r.twoStar;
+            let oneStar = r.oneStar;
+            let starClass = "";
+
+            const percentFiveStar = ((fiveStar / data) * 100) + '%';
+            const percentFourStar = ((fourStar / data) * 100) + '%';
+            const percentThreeStar = ((threeStar / data) * 100) + '%';
+            const percentTwoStar = ((twoStar / data) * 100) + '%';
+            const percentOneStar = ((oneStar / data) * 100) + '%';
+
+            const paramFiveStar = (fiveStar * 5); 
+            const paramFourStar = (fourStar * 4);
+            const paramThreeStar = (threeStar * 3);
+            const paramTwoStar = (twoStar * 2);
+            const paramOneStar = (oneStar * 1);
+            const grandTotalParam = (paramFiveStar + paramFourStar + paramThreeStar + paramTwoStar + paramOneStar);
+            const totalParam = (fiveStar + fourStar + threeStar + twoStar + oneStar);
+            const paramResult = Math.round(grandTotalParam / totalParam) + '.0';
+            
+            $('#text-5').text('Approve Sebelum Expired: ' + fiveStar);
+            $('#text-4').text('Approve Saat Expired: ' + fourStar);
+            $('#text-3').text('PO yang Selesai: ' + threeStar);
+            $('#text-2').text('Approve Lebih dari 14 Hari: ' + twoStar);
+            $('#text-1').text('Approve Lebih dari sebulan: ' + oneStar);
+            $('#rating-num').text(paramResult);
+            if (paramResult == '5.0') {
+                starClass += '<span><i class="fa-solid fa-star active"></i></span>' +
+                    '<span> <i class="fa-solid fa-star active"></i></span>' +
+                    '<span><i class="fa-solid fa-star active"></i></span>' +
+                    '<span><i class="fa-solid fa-star active"></i></span>' +
+                    '<span><i class="fa-solid fa-star active"></i></span>';
+                $('#star-class').html(starClass);
+            } else if (paramResult == '4.0') {
+                starClass += '<span><i class="fa-solid fa-star active"></i></span>' +
+                    '<span> <i class="fa-solid fa-star active"></i></span>' +
+                    '<span><i class="fa-solid fa-star active"></i></span>' +
+                    '<span><i class="fa-solid fa-star active"></i></span>' +
+                    '<span><i class="fa-solid fa-star"></i></span>';
+                $('#star-class').html(starClass);
+            } else if (paramResult == '3.0') {
+                starClass += '<span><i class="fa-solid fa-star active"></i></span>' +
+                    '<span> <i class="fa-solid fa-star active"></i></span>' +
+                    '<span><i class="fa-solid fa-star active"></i></span>' +
+                    '<span><i class="fa-solid fa-star"></i></span>' +
+                    '<span><i class="fa-solid fa-star"></i></span>';
+                $('#star-class').html(starClass);
+            } else if (paramResult == '2.0') {
+                starClass += '<span><i class="fa-solid fa-star active"></i></span>' +
+                    '<span> <i class="fa-solid fa-star active"></i></span>' +
+                    '<span><i class="fa-solid fa-star"></i></span>' +
+                    '<span><i class="fa-solid fa-star"></i></span>' +
+                    '<span><i class="fa-solid fa-star"></i></span>';
+                $('#star-class').html(starClass);
+            } else {
+                starClass += '<span><i class="fa-solid fa-star active"></i></span>' +
+                    '<span> <i class="fa-solid fa-star"></i></span>' +
+                    '<span><i class="fa-solid fa-star"></i></span>' +
+                    '<span><i class="fa-solid fa-star"></i></span>' +
+                    '<span><i class="fa-solid fa-star"></i></span>';
+                $('#star-class').html(starClass);
+            }
+        });
+    }
+            // let data = r.data;
+            // let fiveStar = r.fiveStar;
+            // let fourStar = r.fourStar;
+            // let threeStar = r.treeStar;
+            // let twoStar = r.twoStar;
+            // let oneStar = r.oneStar;
+
+            // const percentFiveStar = ((fiveStar / data) * 100).toFixed() + "%";
+            // const percentFourStar = ((fourStar / data) * 100).toFixed() + "%";
+            // const percentThereeStar = ((threeStar / data) * 100).toFixed() + "%";
+            // const percentTwoStar = ((twoStar / data) * 100).toFixed() + "%";
+            // const percentOneStar = ((oneStar / data) * 100).toFixed() + "%";
+
+    //         console.log(r.data);
+    //     })
+    // };
 </script>
 <script>
     $.ajax({
@@ -672,7 +693,7 @@
                 merged.push({
                     ...a[i],
                     ...(b.find((itmInner) => itmInner.months === a[i].months))
-                }
+                  }
                 );
             }
 
@@ -1052,3 +1073,4 @@
     // })
 
 </script>
+<!-- /.content -->

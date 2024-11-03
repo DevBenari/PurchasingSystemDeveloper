@@ -58,7 +58,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 // konfigurasi session 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.IdleTimeout = TimeSpan.FromMinutes(2);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
@@ -68,6 +68,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 {
     options.ExpireTimeSpan = TimeSpan.FromMinutes(2);
     options.SlidingExpiration = true;
+    options.LogoutPath = "/Account/Logout";
 
 });
 
@@ -154,7 +155,18 @@ app.Use(async (context, next) =>
     if (!context.User.Identity?.IsAuthenticated ?? true)
     {
         context.Response.Redirect("/Account/Logout");
-        return ;
+        return;
+    }
+
+    if (string.IsNullOrEmpty(context.Session.GetString("Username")))
+    {
+        // Cek apakah cookie masih ada
+        if (context.Request.Cookies["Username"] == null)
+        {
+            // Jika session dan cookie keduanya hilang, arahkan ke halaman logout
+            context.Response.Redirect("/Account/Logout");
+            return;
+        }
     }
     await next();
 });

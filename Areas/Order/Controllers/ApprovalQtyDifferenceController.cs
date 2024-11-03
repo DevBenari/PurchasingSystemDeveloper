@@ -85,57 +85,58 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
             ViewBag.Active = "ApprovalQtyDifference";
 
             var getUserLogin = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
-            var getUserActive = _userActiveRepository.GetAllUser().Where(c => c.UserActiveCode == getUserLogin.KodeUser).FirstOrDefault();
-            var getUser1 = _approvalQtyDifferenceRepository.GetAllApproval().Where(a => a.ApprovalStatusUser == "User1" && a.UserApproveId == getUserActive.UserActiveId && a.Status == "Waiting Approval").ToList();
-            var getUser2 = _approvalQtyDifferenceRepository.GetAllApproval().Where(a => a.ApprovalStatusUser == "User2" && a.UserApproveId == getUserActive.UserActiveId && a.Status == "User1Approve").ToList();            
 
-            var getUser1Approve = _approvalQtyDifferenceRepository.GetAllApproval().Where(a => a.ApprovalStatusUser == "User1" && a.UserApproveId == getUserActive.UserActiveId && a.Status == "Approve").ToList();
-            var getUser2Approve = _approvalQtyDifferenceRepository.GetAllApproval().Where(a => a.ApprovalStatusUser == "User2" && a.UserApproveId == getUserActive.UserActiveId && a.Status == "Approve").ToList();            
-
-            var itemList = new List<ApprovalQtyDifference>();
-
-            if (getUser1 != null && getUser2 != null)
+            if (getUserLogin.Email == "superadmin@admin.com")
             {
-                itemList.AddRange(getUser1);
-                itemList.AddRange(getUser2);
+                var data = _approvalQtyDifferenceRepository.GetAllApproval();
 
-                itemList.AddRange(getUser1Approve);
-                itemList.AddRange(getUser2Approve);
+                foreach (var item in data)
+                {
+                    var remainingDay = DateTimeOffset.Now.Date - item.CreateDateTime.Date;                    
+                }
 
-                return View(itemList);
-            }
-            else if (getUser1 != null && getUser2 != null)
-            {
-                itemList.AddRange(getUser1);
-                itemList.AddRange(getUser2);
-
-                itemList.AddRange(getUser1Approve);
-                itemList.AddRange(getUser2Approve);
-
-                return View(itemList);
-            }
-            else if (getUser1 != null)
-            {
-                itemList.AddRange(getUser1);
-                itemList.AddRange(getUser1Approve);
-
-                return View(itemList);
+                return View(data);
             }
             else
             {
-                if (getUserLogin.Id == "5f734880-f3d9-4736-8421-65a66d48020e")
-                {
-                    var data = _approvalQtyDifferenceRepository.GetAllApproval();
+                var getUserActive = _userActiveRepository.GetAllUser().Where(c => c.UserActiveCode == getUserLogin.KodeUser).FirstOrDefault();
+                var getUser1 = _approvalQtyDifferenceRepository.GetAllApproval().Where(a => a.ApprovalStatusUser == "User1" && a.UserApproveId == getUserActive.UserActiveId && a.Status == "Waiting Approval").ToList();
+                var getUser2 = _approvalQtyDifferenceRepository.GetAllApproval().Where(a => a.ApprovalStatusUser == "User2" && a.UserApproveId == getUserActive.UserActiveId && a.Status == "User1Approve").ToList();
 
-                    return View(data);
+                var getUser1Approve = _approvalQtyDifferenceRepository.GetAllApproval().Where(a => a.ApprovalStatusUser == "User1" && a.UserApproveId == getUserActive.UserActiveId && a.Status == "Approve").ToList();
+                var getUser2Approve = _approvalQtyDifferenceRepository.GetAllApproval().Where(a => a.ApprovalStatusUser == "User2" && a.UserApproveId == getUserActive.UserActiveId && a.Status == "Approve").ToList();
+
+                var itemList = new List<ApprovalQtyDifference>();
+
+                if (getUser1 != null && getUser2 != null)
+                {
+                    itemList.AddRange(getUser1);
+                    itemList.AddRange(getUser2);
+
+                    itemList.AddRange(getUser1Approve);
+                    itemList.AddRange(getUser2Approve);
+
+                    return View(itemList);
                 }
-                else
+                else if (getUser1 != null && getUser2 != null)
                 {
-                    var data = _approvalQtyDifferenceRepository.GetAllApproval().Where(u => u.UserApproveId == getUserActive.UserActiveId && u.Status != "Waiting Approval" && u.Status != "Reject").ToList();
+                    itemList.AddRange(getUser1);
+                    itemList.AddRange(getUser2);
 
-                    return View(data);
+                    itemList.AddRange(getUser1Approve);
+                    itemList.AddRange(getUser2Approve);
+
+                    return View(itemList);
+                }
+                else if (getUser1 != null)
+                {
+                    itemList.AddRange(getUser1);
+                    itemList.AddRange(getUser1Approve);
+
+                    return View(itemList);
                 }
             }
+            return View();
         }
 
         [HttpPost]

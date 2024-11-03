@@ -78,34 +78,35 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
             ViewBag.Active = "ApprovalUnitRequest";
 
             var getUserLogin = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
-            var getUserActive = _userActiveRepository.GetAllUser().Where(c => c.UserActiveCode == getUserLogin.KodeUser).FirstOrDefault();
-            var getUser1 = _approvalUnitRequestRepository.GetAllApprovalRequest().Where(a => a.ApprovalStatusUser == "User1" && a.UserApproveId == getUserActive.UserActiveId && a.Status == "Waiting Approval").ToList();
-            var getUser1Approve = _approvalUnitRequestRepository.GetAllApprovalRequest().Where(a => a.ApprovalStatusUser == "User1" && a.UserApproveId == getUserActive.UserActiveId && a.Status == "Approve").ToList();
 
-            var itemList = new List<ApprovalUnitRequest>();
-
-            if (getUser1 != null)
+            if (getUserLogin.Email == "superadmin@admin.com")
             {
-                itemList.AddRange(getUser1);
-                itemList.AddRange(getUser1Approve);
-                
-                return View(itemList);
-            }            
+                var data = _approvalUnitRequestRepository.GetAllApprovalRequest();
+
+                foreach (var item in data)
+                {
+                    var remainingDay = DateTimeOffset.Now.Date - item.CreateDateTime.Date;
+                }
+
+                return View(data);
+            }
             else
             {
-                if (getUserLogin.Id == "5f734880-f3d9-4736-8421-65a66d48020e")
-                {
-                    var data = _approvalUnitRequestRepository.GetAllApprovalRequest();                    
+                var getUserActive = _userActiveRepository.GetAllUser().Where(c => c.UserActiveCode == getUserLogin.KodeUser).FirstOrDefault();
+                var getUser1 = _approvalUnitRequestRepository.GetAllApprovalRequest().Where(a => a.ApprovalStatusUser == "User1" && a.UserApproveId == getUserActive.UserActiveId && a.Status == "Waiting Approval").ToList();
+                var getUser1Approve = _approvalUnitRequestRepository.GetAllApprovalRequest().Where(a => a.ApprovalStatusUser == "User1" && a.UserApproveId == getUserActive.UserActiveId && a.Status == "Approve").ToList();
 
-                    return View(data);
-                }
-                else
-                {
-                    var data = _approvalUnitRequestRepository.GetAllApprovalRequest().Where(u => u.UserApproveId == getUserActive.UserActiveId && u.Status != "Waiting Approval" && u.Status != "Reject").ToList();                    
+                var itemList = new List<ApprovalUnitRequest>();
 
-                    return View(data);
+                if (getUser1 != null)
+                {
+                    itemList.AddRange(getUser1);
+                    itemList.AddRange(getUser1Approve);
+
+                    return View(itemList);
                 }
             }
+            return View();
         }
 
         [HttpPost]

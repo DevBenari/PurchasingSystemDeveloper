@@ -52,7 +52,7 @@
                                                 <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                             </div>
                                             <input autocomplete="off" value="@ViewBag.tglAkhirPencarian" name="tglAkhirPencarian" type="text" class="form-control datetimepicker-input" placeholder="Search end date..." readonly />
-                                            <button type="submit" class="btn btn-default">
+                                            <button type="submit" class="btn btn-default" id="btn-search">
                                                 <i class="fa fa-search"></i>
                                             </button>
                                             <a class="btn bg-indigo" asp-action="Index" asp-controller="UserActive" asp-area="MasterData">
@@ -64,9 +64,9 @@
                             </div>
                             <div class="form-group col-md-3">
                                 <div class="form-group">
-                                    <select class="form-control select2bs4" style="width: 100%;" id="btnFilterBy" data-placeholder="--Filter by--" onchange="filterUsers()">
+                                    <select class="form-control" name="filterOptions" id="btnFilterBy">
                                         <option value="" hidden disabled selected>--Filter by--</option>
-                                        <option value="Today"  selected=@(ViewBag.SelectedFilter == "Today")>Today</option>
+                                        <option value="Today" selected=@(ViewBag.SelectedFilter == "Today")>Today</option>
                                         <option value="Last Day" selected=@(ViewBag.SelectedFilter == "Last Day")>Last Day</option>
                                         <option value="Last 7 Days" selected=@(ViewBag.SelectedFilter == "Last 7 Days")>Last 7 Days</option>
                                         <option value="Last 30 Days" selected=@(ViewBag.SelectedFilter == "Last 30 Days")>Last 30 Days</option>
@@ -138,10 +138,10 @@
     <script>
         // Add this script at the bottom of your view or in a separate JS file
         $(document).ready(function () {
-            // Destroy existing DataTable if it exists
-            if ($.fn.DataTable.isDataTable('#tblTemplate')) {
-                $('#tblTemplate').DataTable().destroy();
-            }
+            $('#btnFilterBy').on('change', function () {
+                $('.datetimepicker-input').val('');
+                $(this).closest('form').submit();
+            });
 
             // Initialize date pickers
             $('#tglAwalPencarian').datetimepicker({
@@ -167,11 +167,15 @@
                 mask: true
 
             })
+
+            $('#btn-search').on('click', function() {
+                $('#btnFilterBy').val('');
+            }) 
+
             $('.datetimepicker-input').on('keydown paste ', function (e) {
                 e.preventDefault();
                 return false;
             });
-
 
             $('.datetimepicker-input').on('focus', function () {
                 $(this).closest('.input-group').find('.input-group-append').click();

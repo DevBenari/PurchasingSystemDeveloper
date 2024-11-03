@@ -17,7 +17,7 @@
 <section class="content">
     <div class="row">
         <div class="col-md-12 bg-white">
-            <form enctype="multipart/form-data" asp-controller="UserActive" asp-action="CreateUserActive" method="post" class="form-horizontal">
+            <form enctype="multipart/form-data" asp-controller="UserActive" asp-action="CreateUserActive" method="post" class="form-horizontal" id="uploadForm">
                 <div class="card-header bg-cyan">
                     <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
                 </div>
@@ -125,10 +125,19 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="Foto">Upload Photo</label>
-                                        <div class="custom-file">
-                                            <input asp-for="Foto" class="form-control custom-file-input">
-                                            <label class="custom-file-label">Choose Photos...</label>
+                                        <label asp-for="Foto">Upload Foto</label>
+                                        <div class="custom-file mt-1">
+                                            <input asp-for="Foto"
+                                                   class="form-control custom-file-input mt-1"
+                                                   accept=".jpg, .jpeg, .png, .gif"
+                                                   id="photoInput"
+                                                   onchange="validateAndPreviewImage(this)"
+                                                   placeholder="Choose Photos...">
+                                            <label class="custom-file-label" for="photoInput">Choose Photos...</label>
+                                            <small class="form-text text-muted">
+                                                <i class="fas fa-info-circle"></i>
+                                                Maksimum ukuran: 2MB | Format: .jpg, .jpeg, .png, .gif
+                                            </small>
                                         </div>
                                         <span asp-validation-for="Foto" class="text-danger"></span>
                                     </div>
@@ -191,6 +200,45 @@
                         })
                     </script>
 
+                    <!-- membuat swal untuk warning size file and format file -->
+                    <script>
+                        function validateAndPreviewImage(input) {
+                            const file = input.files[0];
+                            const fileSize = file.size / 1024 / 1024; // Size in MB
+                            const allowedSize = 2; // Maximum allowed size in MB
+
+                            if (fileSize > allowedSize) {
+                                swal({
+                                    title: "Ukuran file melebihi 2MB !!",
+                                    text: " Silakan unggah file yang lebih kecil.",
+                                    type: "warning",
+                                    dangerMode: true,
+                                });
+                                input.value = '';
+                            }
+                        }
+
+                        function validateFileSize(event) {
+                            const input = document.getElementById("photoInput");
+                            const file = input.files[0];
+
+                            if (file) {
+                                const fileSize = file.size / 1024 / 1024; // Size in MB
+                                const allowedSize = 2; // Maximum allowed size in MB
+
+                                if (fileSize > allowedSize) {
+                                    swal({
+                                        title: "Ukuran file melebihi 2MB !!",
+                                        text: " Silakan unggah file yang lebih kecil.",
+                                        type: "warning",
+                                        dangerMode: true,
+                                    });
+                                    input.value = '';
+                                }
+                            }
+                        }
+                    </script>
+                    <!--end swal file photo -->
                     <script>
                         $(document).ready(function () {
                             $("#PositionList").empty();

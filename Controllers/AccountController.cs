@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PurchasingSystemDeveloper.Areas.MasterData.Repositories;
 using PurchasingSystemDeveloper.Data;
 using PurchasingSystemDeveloper.Models;
+using PurchasingSystemDeveloper.Repositories;
 using PurchasingSystemDeveloper.ViewModels;
 using System.Security.Claims;
 
@@ -18,12 +21,16 @@ namespace PurchasingSystemDeveloper.Controllers
         private ILogger<AccountController> _logger;
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly IUserActiveRepository _userActiveRepository;
+        private readonly IRoleRepository _roleRepository;
+        private readonly IGroupRoleRepository _groupRoleRepository;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ApplicationDbContext applicationDbContext,
             IUserActiveRepository userActiveRepository,
+            IRoleRepository roleRepository,
+            IGroupRoleRepository groupRoleRepository,
             ILogger<AccountController> logger)
         {
             _applicationDbContext = applicationDbContext;
@@ -31,6 +38,8 @@ namespace PurchasingSystemDeveloper.Controllers
             _userManager = userManager;
             _userActiveRepository = userActiveRepository;
             _logger = logger;
+            _roleRepository = roleRepository;
+            _groupRoleRepository = groupRoleRepository;
         }
 
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
@@ -135,8 +144,39 @@ namespace PurchasingSystemDeveloper.Controllers
                         }
 
                         await _signInManager.SignInWithClaimsAsync(user, model.RememberMe, claims);
+                        
                         // menyimpan data user yang sedang login berdasarkan NamaUser dan KodeUser
-                        HttpContext.Session.SetString("FullName", user.NamaUser);                       
+                        HttpContext.Session.SetString("FullName", user.NamaUser);
+                        HttpContext.Session.SetString("KodeUser", user.KodeUser);
+
+                        // Role
+                        List<string> roleNames; // Deklarasikan di luar
+
+                        if (model.Email == "superadmin@admin.com")
+                        {
+                            roleNames = _roleRepository.GetRoles().Select(role => role.Name).ToList();
+                        }
+                        else
+                        {
+                            var userId = _userActiveRepository.GetAllUserLogin()
+                                .FirstOrDefault(u => u.UserName == model.Email)?.Id;
+
+                            if (userId != null) // Pastikan userId tidak null
+                            {
+                                roleNames = (from role in _roleRepository.GetRoles()
+                                             join userRole in _groupRoleRepository.GetAllGroupRole()
+                                             on role.Id equals userRole.RoleId
+                                             where userRole.DepartemenId == userId // Gunakan userId langsung
+                                             select role.Name).ToList();
+                            }
+                            else
+                            {
+                                roleNames = new List<string>(); // Jika userId tidak ditemukan, set roleNames ke list kosong
+                            }
+                        }
+
+                        // Menyimpan daftar roleNames ke dalam session
+                        HttpContext.Session.SetString("ListRole", string.Join(",", roleNames));
 
                         user.IsOnline = true;
 
@@ -177,9 +217,49 @@ namespace PurchasingSystemDeveloper.Controllers
             }
             return View(model);
         }
+        
+        [HttpGet]
+        public async Task<IActionResult> ResetPassword(string token, string email)
+        {
+            if(token == null || email == null)
+            {
+                ModelState.AddModelError("", "Invalid password reset token");
+            }
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if(ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if(user != null)
+                {
+                    var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+                    if (result.Succeeded)
+                    {
+                        return View("ResetPasswordConfirmPasswordConfiguration");
+                    }
+                    foreach(var error in result.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                    return View(model);
+                }
+                return View("ResetPasswordConfirmation");
+            }
+            return View(model);
+        }
 
         public async Task<IActionResult> Logout()
         {
+            // Hapus semua session
+            HttpContext.Session.Clear();
+
+            // Hapus cookie UserName
+            Response.Cookies.Delete("Username");
+
             var getUser = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
             var user = await _signInManager.UserManager.FindByNameAsync(getUser.Email);
 

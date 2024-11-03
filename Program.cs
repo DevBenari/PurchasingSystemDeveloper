@@ -58,7 +58,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 // konfigurasi session 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.IdleTimeout = TimeSpan.FromMinutes(2);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
@@ -68,6 +68,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 {
     options.ExpireTimeSpan = TimeSpan.FromMinutes(2);
     options.SlidingExpiration = true;
+    options.LogoutPath = "/Account/Logout";
 
 });
 
@@ -89,6 +90,7 @@ builder.Services.AddScoped<IWarehouseLocationRepository>();
 builder.Services.AddScoped<IUnitLocationRepository>();
 builder.Services.AddScoped<IDepartmentRepository>();
 builder.Services.AddScoped<IPositionRepository>();
+builder.Services.AddScoped<IGroupRoleRepository>();
 builder.Services.AddSignalR();
 #endregion
 
@@ -153,7 +155,18 @@ app.Use(async (context, next) =>
     if (!context.User.Identity?.IsAuthenticated ?? true)
     {
         context.Response.Redirect("/Account/Logout");
-        return ;
+        return;
+    }
+
+    if (string.IsNullOrEmpty(context.Session.GetString("Username")))
+    {
+        // Cek apakah cookie masih ada
+        if (context.Request.Cookies["Username"] == null)
+        {
+            // Jika session dan cookie keduanya hilang, arahkan ke halaman logout
+            context.Response.Redirect("/Account/Logout");
+            return;
+        }
     }
     await next();
 });
@@ -167,18 +180,18 @@ using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    var roles = new[] {
-        #region Area Master Data Menu Role Pengguna
-        "Role", "IndexRole", "CreateRole", "DetailRole", "DeleteRole",
-        #endregion
+    //var roles = new[] {
+    //    #region Area Master Data Menu Role Pengguna
+    //    "Role", "IndexRole", "CreateRole", "DetailRole", "DeleteRole",
+    //    #endregion
         
-    };
+    //};
 
-    foreach (var role in roles)
-    {
-        if (!await roleManager.RoleExistsAsync(role))
-            await roleManager.CreateAsync(new IdentityRole(role));
-    }
+    //foreach (var role in roles)
+    //{
+    //    if (!await roleManager.RoleExistsAsync(role))
+    //        await roleManager.CreateAsync(new IdentityRole(role));
+    //}
 }
 
 app.Run();

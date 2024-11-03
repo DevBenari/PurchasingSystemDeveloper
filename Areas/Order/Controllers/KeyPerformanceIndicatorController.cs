@@ -57,7 +57,6 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public IActionResult Index()
         {
             ViewBag.Active = "KeyPerformanceIndikator";
@@ -176,45 +175,53 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
         public async Task<IActionResult> KpiJson(Selected model)
         {
             var getUserLogin = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
-            var getUserActive = _userActiveRepository.GetAllUser().Where(c => c.UserActiveCode == getUserLogin.KodeUser).FirstOrDefault();
-            var user = await _userManager.GetUserAsync(User);
-            var userId = new Guid(user.Id);
-            var change = model.FirstName;
-            var current = "";
-            var formatDate = "";
 
-            if (change == null || change == "month")
+            if (getUserLogin.Email == "superadmin@admin.com")
             {
-                DateTime dateTime = DateTime.Now;
-                current = dateTime.ToString("MMMM yyyy");
-                formatDate = "MMMM yyyy";
+                return View();
             }
             else
             {
-                DateTime dateTime = DateTime.Now;
-                current = dateTime.ToString("yyyy");
-                formatDate = "yyyy";
-            }
+                var getUserActive = _userActiveRepository.GetAllUser().Where(c => c.UserActiveCode == getUserLogin.KodeUser).FirstOrDefault();
+                var user = await _userManager.GetUserAsync(User);
+                var userId = new Guid(user.Id);
+                var change = model.FirstName;
+                var current = "";
+                var formatDate = "";
 
-            var getApproval = _approvalRepository.GetAllApproval().Where(a => a.UserApproveId == getUserActive.UserActiveId && a.CreateDateTime.ToString(formatDate) == current);
-            var getPurchaseOrder = _purchaseOrderRepository.GetAllPurchaseOrder().Where(a => a.UserApprove1Id == getUserActive.UserActiveId || a.UserApprove2Id == getUserActive.UserActiveId || a.UserApprove3Id == getUserActive.UserActiveId && a.CreateDateTime.ToString(formatDate) == current);
-            var fiveStar = getApproval.Count(x => x.RemainingDay > 0);
-            var fourStar = getApproval.Count(x => x.RemainingDay == 0);
-            var threeStar = getPurchaseOrder.Count(x => x.Status != "In Order");
-            var twoStar = getApproval.Count(x => x.RemainingDay == -14);
-            var oneStar = getApproval.Count(x => x.RemainingDay < -30);
-            var data = getApproval.Count();
+                if (change == null || change == "month")
+                {
+                    DateTime dateTime = DateTime.Now;
+                    current = dateTime.ToString("MMMM yyyy");
+                    formatDate = "MMMM yyyy";
+                }
+                else
+                {
+                    DateTime dateTime = DateTime.Now;
+                    current = dateTime.ToString("yyyy");
+                    formatDate = "yyyy";
+                }
 
-            var kpiRate = new
-            {
-                Data = data,
-                FiveStart = fiveStar,
-                FourStar = fourStar,
-                ThreeStar = threeStar,
-                TwoStar = twoStar,
-                OneStar = oneStar
-            };
-            return Json(kpiRate);
+                var getApproval = _approvalRepository.GetAllApproval().Where(a => a.UserApproveId == getUserActive.UserActiveId && a.CreateDateTime.ToString(formatDate) == current);
+                var getPurchaseOrder = _purchaseOrderRepository.GetAllPurchaseOrder().Where(a => a.UserApprove1Id == getUserActive.UserActiveId || a.UserApprove2Id == getUserActive.UserActiveId || a.UserApprove3Id == getUserActive.UserActiveId && a.CreateDateTime.ToString(formatDate) == current);
+                var fiveStar = getApproval.Count(x => x.RemainingDay > 0);
+                var fourStar = getApproval.Count(x => x.RemainingDay == 0);
+                var threeStar = getPurchaseOrder.Count(x => x.Status != "In Order");
+                var twoStar = getApproval.Count(x => x.RemainingDay == -14);
+                var oneStar = getApproval.Count(x => x.RemainingDay < -30);
+                var data = getApproval.Count();
+
+                var kpiRate = new
+                {
+                    Data = data,
+                    FiveStart = fiveStar,
+                    FourStar = fourStar,
+                    ThreeStar = threeStar,
+                    TwoStar = twoStar,
+                    OneStar = oneStar
+                };
+                return Json(kpiRate);
+            }            
         }
 
             public async Task<IActionResult> ChartJson()

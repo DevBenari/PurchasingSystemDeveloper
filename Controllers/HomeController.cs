@@ -58,8 +58,8 @@ namespace PurchasingSystemDeveloper.Controllers
             IApprovalRepository approvalRepository,
             IQtyDifferenceRepository qtyDifferenceRepository,
             IApprovalQtyDifferenceRepository approvalQtyDifferenceRepository,
-            
-            IHostingEnvironment hostingEnvironment)
+
+            IHostingEnvironment hostingEnvironment,
             
             IUnitRequestRepository unitRequestRepository,
             IApprovalUnitRequestRepository approvalUnitRequestRepository)
@@ -95,75 +95,26 @@ namespace PurchasingSystemDeveloper.Controllers
             var user = _userActiveRepository.GetAllUser().Where(u => u.FullName == checkUserLogin.NamaUser).FirstOrDefault();
             var product = _productRepository.GetAllProduct().Where(p => p.Stock < p.MinStock).ToList();
 
-            var userOnline = _userActiveRepository.GetAllUserLogin().Where(u => u.IsOnline == true).GroupBy(u => u.Id).Select(y => new
+            if (user == null && checkUserLogin.Email == "superadmin@admin.com")
             {
-                Id = y.Key,
-                CountOfUsers = y.Count()
-            }).ToList();
-            ViewBag.UserOnline = userOnline.Count;
+                UserActiveViewModel viewModel = new UserActiveViewModel
+                {
+                    UserActiveCode = checkUserLogin.KodeUser,
+                    FullName = checkUserLogin.NamaUser,
+                    Email = checkUserLogin.Email
+                };
 
-            var countPurchaseRequest = _applicationDbContext.PurchaseRequests.Where(u => u.CreateBy == new Guid(checkUserLogin.Id)).GroupBy(u => u.PurchaseRequestId).Select(y => new
+                var dashboard = new Dashboard();
+                {
+                    dashboard.UserActiveViewModels = viewModel;
+                    dashboard.UserOnlines = userLogin;
+                    dashboard.Products = product;
+                }
+
+                return View(dashboard);
+            }
+            else
             {
-                PurchaseRequestId = y.Key,
-                CountOfPurchaseRequests = y.Count()
-            }).ToList();
-            ViewBag.CountPurchaseRequest = countPurchaseRequest.Count;
-
-            var countPurchaseOrder = _applicationDbContext.PurchaseOrders.Where(u => u.CreateBy == new Guid(checkUserLogin.Id)).GroupBy(u => u.PurchaseOrderId).Select(y => new
-            {
-                PurchaseOrderId = y.Key,
-                CountOfPurchaseOrders = y.Count()
-            }).ToList();
-            ViewBag.CountPurchaseOrder = countPurchaseOrder.Count;
-
-            var countApproval = _applicationDbContext.Approvals.Where(u => u.UserApproveId == getUserActive.UserActiveId && u.Status == "Approve").ToList();
-            ViewBag.CountApproval = countApproval.Count;
-
-            var countUnitRequest = _applicationDbContext.UnitRequests.Where(u => u.CreateBy == new Guid(checkUserLogin.Id)).GroupBy(u => u.UnitRequestId).Select(y => new
-            {
-                UnitRequestId = y.Key,
-                CountOfUnitRequests = y.Count()
-            }).ToList();
-            ViewBag.CountUnitRequest = countUnitRequest.Count;
-
-            var countReceiveOrder = _applicationDbContext.ReceiveOrders.Where(u => u.CreateBy == new Guid(checkUserLogin.Id)).GroupBy(u => u.ReceiveOrderId).Select(y => new
-            {
-                ReceiveOrderId = y.Key,
-                CountOfReceiveOrders = y.Count()
-            }).ToList();
-            ViewBag.CountReceiveOrder = countReceiveOrder.Count;
-
-            var countApprovalUnitRequest = _applicationDbContext.ApprovalUnitRequests.Where(u => u.CreateBy == new Guid(checkUserLogin.Id)).GroupBy(u => u.ApprovalUnitRequestId).Select(y => new
-            {
-                ApprovalRequestId = y.Key,
-                CountOfApprovalUnitRequests = y.Count()
-            }).ToList();
-            ViewBag.CountApprovalUnitRequest = countApprovalUnitRequest.Count;
-
-            var countWarehouseTransfer = _applicationDbContext.WarehouseTransfers.Where(u => u.CreateBy == new Guid(checkUserLogin.Id)).GroupBy(u => u.WarehouseTransferId).Select(y => new
-            {
-                WarehouseTransferId = y.Key,
-                CountOfWarehouseTransfers = y.Count()
-            }).ToList();
-            ViewBag.CountWarehouseTransfer = countWarehouseTransfer.Count;
-
-            //Signal R
-
-            //var getUserId = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
-            //var getUserActiveId = _userActiveRepository.GetAllUser().Where(u => u.UserActiveCode == getUserId.KodeUser).FirstOrDefault().UserActiveId;
-            //var DataPR = _purchaseRequestRepository.GetAllPurchaseRequest()
-            //                .Where(p => (p.UserApprove1Id == getUserActiveId && p.ApproveStatusUser1 == null) 
-            //                || (p.UserApprove2Id == getUserActiveId && p.ApproveStatusUser1 == "Approve" && p.ApproveStatusUser2 == null) 
-            //                || (p.UserApprove3Id == getUserActiveId && p.ApproveStatusUser1 == "Approve" && p.ApproveStatusUser2 == "Approve" && p.ApproveStatusUser3 == null))
-            //                .ToList();
-
-            //int totalApprovalPR = DataPR.Count();
-            //ViewBag.totalApprovalPR = totalApprovalPR;
-            //await _hubContext.Clients.All.SendAsync("UpdateDataCount", totalApprovalPR);
-
-            //End Signal R
-
-            if (user != null) {
                 UserActiveViewModel viewModel = new UserActiveViewModel
                 {
                     UserActiveId = user.UserActiveId,
@@ -181,28 +132,69 @@ namespace PurchasingSystemDeveloper.Controllers
                     Handphone = user.Handphone,
                     Email = user.Email,
                     UserPhotoPath = user.Foto
-                };                
+                };
 
                 var dashboard = new Dashboard();
                 {
                     dashboard.UserActiveViewModels = viewModel;
                     dashboard.UserOnlines = userLogin;
                     dashboard.Products = product;
-                }
+                }                
+
+                var userOnline = _userActiveRepository.GetAllUserLogin().Where(u => u.IsOnline == true).GroupBy(u => u.Id).Select(y => new
+                {
+                    Id = y.Key,
+                    CountOfUsers = y.Count()
+                }).ToList();
+                ViewBag.UserOnline = userOnline.Count;
+
+                var countPurchaseRequest = _applicationDbContext.PurchaseRequests.Where(u => u.CreateBy == new Guid(checkUserLogin.Id)).GroupBy(u => u.PurchaseRequestId).Select(y => new
+                {
+                    PurchaseRequestId = y.Key,
+                    CountOfPurchaseRequests = y.Count()
+                }).ToList();
+                ViewBag.CountPurchaseRequest = countPurchaseRequest.Count;
+
+                var countPurchaseOrder = _applicationDbContext.PurchaseOrders.Where(u => u.CreateBy == new Guid(checkUserLogin.Id)).GroupBy(u => u.PurchaseOrderId).Select(y => new
+                {
+                    PurchaseOrderId = y.Key,
+                    CountOfPurchaseOrders = y.Count()
+                }).ToList();
+                ViewBag.CountPurchaseOrder = countPurchaseOrder.Count;
+
+                var countApproval = _applicationDbContext.Approvals.Where(u => u.UserApproveId == getUserActive.UserActiveId && u.Status == "Approve").ToList();
+                ViewBag.CountApproval = countApproval.Count;
+
+                var countUnitRequest = _applicationDbContext.UnitRequests.Where(u => u.CreateBy == new Guid(checkUserLogin.Id)).GroupBy(u => u.UnitRequestId).Select(y => new
+                {
+                    UnitRequestId = y.Key,
+                    CountOfUnitRequests = y.Count()
+                }).ToList();
+                ViewBag.CountUnitRequest = countUnitRequest.Count;
+
+                var countReceiveOrder = _applicationDbContext.ReceiveOrders.Where(u => u.CreateBy == new Guid(checkUserLogin.Id)).GroupBy(u => u.ReceiveOrderId).Select(y => new
+                {
+                    ReceiveOrderId = y.Key,
+                    CountOfReceiveOrders = y.Count()
+                }).ToList();
+                ViewBag.CountReceiveOrder = countReceiveOrder.Count;
+
+                var countApprovalUnitRequest = _applicationDbContext.ApprovalUnitRequests.Where(u => u.CreateBy == new Guid(checkUserLogin.Id)).GroupBy(u => u.ApprovalUnitRequestId).Select(y => new
+                {
+                    ApprovalRequestId = y.Key,
+                    CountOfApprovalUnitRequests = y.Count()
+                }).ToList();
+                ViewBag.CountApprovalUnitRequest = countApprovalUnitRequest.Count;
+
+                var countWarehouseTransfer = _applicationDbContext.WarehouseTransfers.Where(u => u.CreateBy == new Guid(checkUserLogin.Id)).GroupBy(u => u.WarehouseTransferId).Select(y => new
+                {
+                    WarehouseTransferId = y.Key,
+                    CountOfWarehouseTransfers = y.Count()
+                }).ToList();
+                ViewBag.CountWarehouseTransfer = countWarehouseTransfer.Count;
 
                 return View(dashboard);
-            } 
-            else if (user == null && checkUserLogin.NamaUser == "SuperAdmin")
-            {
-                UserActiveViewModel viewModel = new UserActiveViewModel
-                {
-                    UserActiveCode = checkUserLogin.KodeUser,
-                    FullName = checkUserLogin.NamaUser,
-                    Email = checkUserLogin.Email
-                };
-                return View(viewModel);
             }
-            return View();
         }
 
         [HttpGet]
@@ -362,124 +354,131 @@ namespace PurchasingSystemDeveloper.Controllers
         public IActionResult CountNotifikasi()
         {
             var getUserId = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
-            var getUserActiveId = _userActiveRepository.GetAllUser().Where(u => u.UserActiveCode == getUserId.KodeUser).FirstOrDefault().UserActiveId;
-            var loggerDataPR = new List<object>();
-            var loggerDataQtyDiff = new List<object>();
-            var loggerDataUnitReq = new List<object>();
 
-            var DataPR = _purchaseRequestRepository.GetAllPurchaseRequest()
-                            .Where(p => (p.UserApprove1Id == getUserActiveId && p.ApproveStatusUser1 == null)
-                            || (p.UserApprove2Id == getUserActiveId && p.ApproveStatusUser1 == "Approve" && p.ApproveStatusUser2 == null)
-                            || (p.UserApprove3Id == getUserActiveId && p.ApproveStatusUser1 == "Approve" && p.ApproveStatusUser2 == "Approve" && p.ApproveStatusUser3 == null))
-                            .OrderByDescending(a => a.CreateDateTime)
-                            .ToList();
-
-            var DataQtyDiff = _qtyDifferenceRepository.GetAllQtyDifference()
-                            .Where(p => (p.UserApprove1Id == getUserActiveId && p.ApproveStatusUser1 == null)
-                            || (p.UserApprove2Id == getUserActiveId && p.ApproveStatusUser1 == "Approve" && p.ApproveStatusUser2 == null))
-                            .OrderByDescending(a => a.CreateDateTime)
-                            .ToList();
-
-            var DataUnitReq = _unitRequestRepository.GetAllUnitRequest()
-                            .Where(p => (p.UserApprove1Id == getUserActiveId && p.ApproveStatusUser1 == null))
-                            .OrderByDescending(a => a.CreateDateTime)
-                            .ToList();
-
-
-            foreach (var logger in DataPR)
+            if (getUserId.Email == "superadmin@admin.com")
             {
-                if (logger.ApproveStatusUser1 == null)
-                {
-                    var getUserApproveId = _approvalRepository.GetAllApproval().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User1" && u.PurchaseRequestNumber == logger.PurchaseRequestNumber).FirstOrDefault().ApprovalId;
-
-                    var detail = new
-                    {
-                        approvalId = getUserApproveId,
-                        createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
-                        purchaseRequestNumber = logger.PurchaseRequestNumber,
-                        createdDate = logger.CreateDateTime
-                    };
-                    loggerDataPR.Add(detail);
-                }
-                else if (logger.ApproveStatusUser1 == "Approve" && logger.ApproveStatusUser2 == null)
-                {
-                    var getUserApproveId = _approvalRepository.GetAllApproval().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User2" && u.PurchaseRequestNumber == logger.PurchaseRequestNumber).FirstOrDefault().ApprovalId;
-
-                    var detail = new
-                    {
-                        approvalId = getUserApproveId,
-                        createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
-                        purchaseRequestNumber = logger.PurchaseRequestNumber,
-                        createdDate = logger.CreateDateTime.ToString("dd/MM/yyyy HH:mm")
-                    };
-                    loggerDataPR.Add(detail);
-                }
-                else if (logger.ApproveStatusUser1 == "Approve" && logger.ApproveStatusUser2 == "Approve" && logger.ApproveStatusUser3 == null)
-                {
-                    var getUserApproveId = _approvalRepository.GetAllApproval().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User3" && u.PurchaseRequestNumber == logger.PurchaseRequestNumber).FirstOrDefault().ApprovalId;
-
-                    var detail = new
-                    {
-                        approvalId = getUserApproveId,
-                        createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
-                        purchaseRequestNumber = logger.PurchaseRequestNumber,
-                        createdDate = logger.CreateDateTime
-                    };
-                    loggerDataPR.Add(detail);
-                }
-            }            
-
-            foreach (var logger in DataQtyDiff)
+                return Json(new { success = true });
+            } 
+            else 
             {
-                if (logger.ApproveStatusUser1 == null)
-                {
-                    var getUserApproveId = _approvalQtyDifferenceRepository.GetAllApproval().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User1" && u.QtyDifferenceId == logger.QtyDifferenceId).FirstOrDefault().ApprovalQtyDifferenceId;
+                var getUserActiveId = _userActiveRepository.GetAllUser().Where(u => u.UserActiveCode == getUserId.KodeUser).FirstOrDefault().UserActiveId;
+                var loggerDataPR = new List<object>();
+                var loggerDataQtyDiff = new List<object>();
+                var loggerDataUnitReq = new List<object>();
 
-                    var detail = new
+                var DataPR = _purchaseRequestRepository.GetAllPurchaseRequest()
+                                .Where(p => (p.UserApprove1Id == getUserActiveId && p.ApproveStatusUser1 == null)
+                                || (p.UserApprove2Id == getUserActiveId && p.ApproveStatusUser1 == "Approve" && p.ApproveStatusUser2 == null)
+                                || (p.UserApprove3Id == getUserActiveId && p.ApproveStatusUser1 == "Approve" && p.ApproveStatusUser2 == "Approve" && p.ApproveStatusUser3 == null))
+                                .OrderByDescending(a => a.CreateDateTime)
+                                .ToList();
+
+                var DataQtyDiff = _qtyDifferenceRepository.GetAllQtyDifference()
+                                .Where(p => (p.UserApprove1Id == getUserActiveId && p.ApproveStatusUser1 == null)
+                                || (p.UserApprove2Id == getUserActiveId && p.ApproveStatusUser1 == "Approve" && p.ApproveStatusUser2 == null))
+                                .OrderByDescending(a => a.CreateDateTime)
+                                .ToList();
+
+                var DataUnitReq = _unitRequestRepository.GetAllUnitRequest()
+                                .Where(p => (p.UserApprove1Id == getUserActiveId && p.ApproveStatusUser1 == null))
+                                .OrderByDescending(a => a.CreateDateTime)
+                                .ToList();
+
+
+                foreach (var logger in DataPR)
+                {
+                    if (logger.ApproveStatusUser1 == null)
                     {
-                        approvalId = getUserApproveId,
-                        createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
-                        qtyDifferenceNumber = logger.QtyDifferenceNumber,
-                        createdDate = logger.CreateDateTime
-                    };
-                    loggerDataQtyDiff.Add(detail);
+                        var getUserApproveId = _approvalRepository.GetAllApproval().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User1" && u.PurchaseRequestNumber == logger.PurchaseRequestNumber).FirstOrDefault().ApprovalId;
+
+                        var detail = new
+                        {
+                            approvalId = getUserApproveId,
+                            createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
+                            purchaseRequestNumber = logger.PurchaseRequestNumber,
+                            createdDate = logger.CreateDateTime
+                        };
+                        loggerDataPR.Add(detail);
+                    }
+                    else if (logger.ApproveStatusUser1 == "Approve" && logger.ApproveStatusUser2 == null)
+                    {
+                        var getUserApproveId = _approvalRepository.GetAllApproval().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User2" && u.PurchaseRequestNumber == logger.PurchaseRequestNumber).FirstOrDefault().ApprovalId;
+
+                        var detail = new
+                        {
+                            approvalId = getUserApproveId,
+                            createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
+                            purchaseRequestNumber = logger.PurchaseRequestNumber,
+                            createdDate = logger.CreateDateTime.ToString("dd/MM/yyyy HH:mm")
+                        };
+                        loggerDataPR.Add(detail);
+                    }
+                    else if (logger.ApproveStatusUser1 == "Approve" && logger.ApproveStatusUser2 == "Approve" && logger.ApproveStatusUser3 == null)
+                    {
+                        var getUserApproveId = _approvalRepository.GetAllApproval().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User3" && u.PurchaseRequestNumber == logger.PurchaseRequestNumber).FirstOrDefault().ApprovalId;
+
+                        var detail = new
+                        {
+                            approvalId = getUserApproveId,
+                            createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
+                            purchaseRequestNumber = logger.PurchaseRequestNumber,
+                            createdDate = logger.CreateDateTime
+                        };
+                        loggerDataPR.Add(detail);
+                    }
                 }
-                else if (logger.ApproveStatusUser1 == "Approve" && logger.ApproveStatusUser2 == null)
-                {
-                    var getUserApproveId = _approvalQtyDifferenceRepository.GetAllApproval().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User2" && u.QtyDifferenceId == logger.QtyDifferenceId).FirstOrDefault().ApprovalQtyDifferenceId;
 
-                    var detail = new
+                foreach (var logger in DataQtyDiff)
+                {
+                    if (logger.ApproveStatusUser1 == null)
                     {
-                        approvalId = getUserApproveId,
-                        createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
-                        qtyDifferenceNumber = logger.QtyDifferenceNumber,
-                        createdDate = logger.CreateDateTime
-                    };
-                    loggerDataQtyDiff.Add(detail);
+                        var getUserApproveId = _approvalQtyDifferenceRepository.GetAllApproval().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User1" && u.QtyDifferenceId == logger.QtyDifferenceId).FirstOrDefault().ApprovalQtyDifferenceId;
+
+                        var detail = new
+                        {
+                            approvalId = getUserApproveId,
+                            createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
+                            qtyDifferenceNumber = logger.QtyDifferenceNumber,
+                            createdDate = logger.CreateDateTime
+                        };
+                        loggerDataQtyDiff.Add(detail);
+                    }
+                    else if (logger.ApproveStatusUser1 == "Approve" && logger.ApproveStatusUser2 == null)
+                    {
+                        var getUserApproveId = _approvalQtyDifferenceRepository.GetAllApproval().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User2" && u.QtyDifferenceId == logger.QtyDifferenceId).FirstOrDefault().ApprovalQtyDifferenceId;
+
+                        var detail = new
+                        {
+                            approvalId = getUserApproveId,
+                            createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
+                            qtyDifferenceNumber = logger.QtyDifferenceNumber,
+                            createdDate = logger.CreateDateTime
+                        };
+                        loggerDataQtyDiff.Add(detail);
+                    }
                 }
-            }
 
-            foreach (var logger in DataUnitReq)
-            {
-                if (logger.ApproveStatusUser1 == null)
+                foreach (var logger in DataUnitReq)
                 {
-                    var getUserApproveId = _approvalUnitRequestRepository.GetAllApprovalRequest().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User1" && u.UnitRequestId == logger.UnitRequestId).FirstOrDefault().ApprovalUnitRequestId;
-
-                    var detail = new
+                    if (logger.ApproveStatusUser1 == null)
                     {
-                        approvalId = getUserApproveId,
-                        createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
-                        unitRequestNumber = logger.UnitRequestNumber,
-                        createdDate = logger.CreateDateTime
-                    };
-                    loggerDataUnitReq.Add(detail);
-                }                
-            }
+                        var getUserApproveId = _approvalUnitRequestRepository.GetAllApprovalRequest().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User1" && u.UnitRequestId == logger.UnitRequestId).FirstOrDefault().ApprovalUnitRequestId;
 
-            var totalNotification = DataPR.Count + DataQtyDiff.Count + DataUnitReq.Count;
+                        var detail = new
+                        {
+                            approvalId = getUserApproveId,
+                            createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
+                            unitRequestNumber = logger.UnitRequestNumber,
+                            createdDate = logger.CreateDateTime
+                        };
+                        loggerDataUnitReq.Add(detail);
+                    }
+                }
 
-            return Json(new { success = true, totalJsonAllNotification = totalNotification, loggerDataJsonPR = loggerDataPR, loggerDataJsonQtyDiff = loggerDataQtyDiff, loggerDataJsonUnitReq = loggerDataUnitReq });
+                var totalNotification = DataPR.Count + DataQtyDiff.Count + DataUnitReq.Count;
 
+                return Json(new { success = true, totalJsonAllNotification = totalNotification, loggerDataJsonPR = loggerDataPR, loggerDataJsonQtyDiff = loggerDataQtyDiff, loggerDataJsonUnitReq = loggerDataUnitReq });
+            }                       
         }
 
         private string ProcessUploadFile(UserActiveViewModel model)

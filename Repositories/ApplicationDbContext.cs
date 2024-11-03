@@ -102,7 +102,6 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             foreignKey.DeleteBehavior = DeleteBehavior.Restrict;
         }
     }
-
 }
 
 public class ApplicationUserEntityConfiguration : IEntityTypeConfiguration<ApplicationUser>

@@ -152,7 +152,7 @@ namespace PurchasingSystemDeveloper.Controllers
                         // Role
                         List<string> roleNames; // Deklarasikan di luar
 
-                        if (model.Email == "admin@admin.com")
+                        if (model.Email == "superadmin@admin.com")
                         {
                             roleNames = _roleRepository.GetRoles().Select(role => role.Name).ToList();
                         }
@@ -254,6 +254,12 @@ namespace PurchasingSystemDeveloper.Controllers
 
         public async Task<IActionResult> Logout()
         {
+            // Hapus semua session
+            HttpContext.Session.Clear();
+
+            // Hapus cookie UserName
+            Response.Cookies.Delete("Username");
+
             var getUser = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
             var user = await _signInManager.UserManager.FindByNameAsync(getUser.Email);
 

@@ -163,6 +163,7 @@ app.Use(async (context, next) =>
         // Cek apakah cookie masih ada
         if (context.Request.Cookies["Username"] == null)
         {
+
             // Jika session dan cookie keduanya hilang, arahkan ke halaman logout
             context.Response.Redirect("/Account/Logout");
             return;

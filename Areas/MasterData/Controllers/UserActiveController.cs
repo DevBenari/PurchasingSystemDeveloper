@@ -126,26 +126,6 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 }
             }
 
-            var users = data.OrderByDescending(u => u.CreateDateTime).ToList();
-
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                return Json(new
-                {
-                    data = users.Select(user => new {
-                        foto = "/UserPhoto/" + (user.Foto ?? "user.jpg"),
-                        createDate = user.CreateDateTime.ToString("dd MMMM yyyy"),
-                        userActiveId = user.UserActiveId,  // tetap kirim untuk rowCallback
-                        userCode = user.UserActiveCode ?? string.Empty,
-                        fullName = user.FullName ?? string.Empty,
-                        department = user.Department?.DepartmentName ?? string.Empty,
-                        position = user.Position?.PositionName ?? string.Empty,
-                        dateOfBirth = user.DateOfBirth.ToString("dd MMMM yyyy"),
-                        address = user.Address ?? string.Empty
-                    }).ToList()
-                });
-            }
-
             ViewBag.tglAwalPencarian = tglAwalPencarian?.ToString("dd MMMM yyyy");
             ViewBag.tglAkhirPencarian = tglAkhirPencarian?.ToString("dd MMMM yyyy");
             ViewBag.SelectedFilter = filterOptions;

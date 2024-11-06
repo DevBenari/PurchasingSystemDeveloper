@@ -136,7 +136,6 @@
     <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
     
     <script>
-        // Add this script at the bottom of your view or in a separate JS file
         $(document).ready(function () {
             $('#btnFilterBy').on('change', function () {
                 $('.datetimepicker-input').val('');
@@ -145,14 +144,14 @@
 
             // Initialize date pickers
             $('#tglAwalPencarian').datetimepicker({
-                        format: 'DD MMMM YYYY',
-                        timepicker: false,
-                        enableHours: false,
-                        ignoreReadonly: true,
-                        allowInputToggle: true,
-                        useCurrent: false,
-                        keepOpen: false,
-                        mask: true
+                format: 'DD MMMM YYYY',
+                timepicker: false,
+                enableHours: false,
+                ignoreReadonly: true,
+                allowInputToggle: true,
+                useCurrent: false,
+                keepOpen: false,
+                mask: true
 
             })
 
@@ -165,12 +164,11 @@
                 useCurrent: false,
                 keepOpen: false,
                 mask: true
-
             })
 
-            $('#btn-search').on('click', function() {
+            $('#btn-search').on('click', function () {
                 $('#btnFilterBy').val('');
-            }) 
+            })
 
             $('.datetimepicker-input').on('keydown paste ', function (e) {
                 e.preventDefault();
@@ -180,80 +178,7 @@
             $('.datetimepicker-input').on('focus', function () {
                 $(this).closest('.input-group').find('.input-group-append').click();
             });
-
-    // Clear any existing table data
-        $('#tblTemplate tbody').empty();
-
-        // Initialize DataTable
-        var table = $('#tblTemplate').DataTable({
-            "processing": true,
-            "serverSide": false,
-            "ajax": {
-                "url": "/MasterData/UserActive/Index",
-                "type": "POST",
-                "data": function(d) {
-                    d.filterOptions = $('#btnFilterBy').val();
-                    d.tglAwalPencarian = $('#tglAwalPencarian').find('input').val();
-                    d.tglAkhirPencarian = $('#tglAkhirPencarian').find('input').val();
-                    // Add anti-forgery token if needed
-                    d.__RequestVerificationToken = $('input[name="__RequestVerificationToken"]').val();
-                }
-            },
-            "columns": [
-                { "data": null, "orderable": false },
-                { 
-                    "data": "foto",
-                    "render": function(data) {
-                        return `<img src="${data}" height="50px;" width="50px;" />`;
-                    }
-                },
-                { "data": "createDate" },
-                { "data": "userCode" },
-                { "data": "fullName" },
-                { "data": "department" },
-                { "data": "position" },
-                { "data": "dateOfBirth" },
-                { "data": "address" }
-            ],
-            "order": [[1, "asc"]], 
-            "pagingType": "full_numbers", 
-            "lengthChange": true, 
-            "responsive": true,
-            "rowCallback": function(row, data) {
-                $(row).attr('data-href', `/MasterData/UserActive/DetailUserActive?id=${data.userActiveId}`);
-            }
-            
         });
-
-    // Add row numbers
-    table.on('draw.dt', function () {
-        table.column(0, {search:'applied', order:'applied'}).nodes().each(function (cell, i) {
-            cell.innerHTML = i + 1;
-        });
-    });
-
-    // Handle filter dropdown change
-    $('#btnFilterBy').on('change', function() {
-        // Clear date inputs when using predefined filters
-        if ($(this).val()) {
-            $('#tglAwalPencarian').find('input').val('');
-            $('#tglAkhirPencarian').find('input').val('');
-        }
-        table.ajax.reload();
-    });
-
-    // Handle double click on row
-        $('#tblTemplate tbody').on('dblclick', 'tr', function () {
-            window.location = $(this).data('href');
-        });
-    });
-
-    // Global function for filter
-    function filterUsers() {
-        if ($.fn.DataTable.isDataTable('#tblTemplate')) {
-            $('#tblTemplate').DataTable().ajax.reload();
-        }
-}
     </script>
 
     <style>

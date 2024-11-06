@@ -745,5 +745,18 @@
                 title: {
                 text: 'Sebelum Expired Date',
                         },
+
+                    }, {
+                opposite: true,
+                title: {
+                text: 'Sesudah Expired Date'
+                        }
+                    }]
+                };
+
+            var chart = new ApexCharts(document.querySelector("#chart"), options);
+            chart.render();
+        })
+    }
 </script>
 <!-- /.content -->

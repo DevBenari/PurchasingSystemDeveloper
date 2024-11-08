@@ -10,6 +10,7 @@ using PurchasingSystemDeveloper.Data;
 using PurchasingSystemDeveloper.Models;
 using PurchasingSystemDeveloper.Repositories;
 using PurchasingSystemDeveloper.ViewModels;
+using System.Reflection;
 using System.Security.Claims;
 
 namespace PurchasingSystemDeveloper.Controllers
@@ -150,11 +151,14 @@ namespace PurchasingSystemDeveloper.Controllers
                         HttpContext.Session.SetString("KodeUser", user.KodeUser);
 
                         // Role
-                        List<string> roleNames; // Deklarasikan di luar
+                        List<string> roleNames;
 
                         if (model.Email == "superadmin@admin.com")
                         {
-                            roleNames = _roleRepository.GetRoles().Select(role => role.Name).ToList();
+                            roleNames = Assembly.GetExecutingAssembly().GetTypes()
+                                                .Where(type => typeof(Controller).IsAssignableFrom(type))
+                                                .Select(type => type.Name.Replace("Controller", "")) // Menghapus akhiran "Controller"
+                                                .ToList();
                         }
                         else
                         {
@@ -166,8 +170,14 @@ namespace PurchasingSystemDeveloper.Controllers
                                 roleNames = (from role in _roleRepository.GetRoles()
                                              join userRole in _groupRoleRepository.GetAllGroupRole()
                                              on role.Id equals userRole.RoleId
-                                             where userRole.DepartemenId == userId // Gunakan userId langsung
+                                             where userRole.DepartemenId == userId
                                              select role.Name).ToList();
+
+                                roleNames = (from role in _roleRepository.GetRoles()
+                                             join userRole in _groupRoleRepository.GetAllGroupRole()
+                                             on role.Id equals userRole.RoleId
+                                             where userRole.DepartemenId == userId
+                                             select role.ConcurrencyStamp).Distinct().ToList();
                             }
                             else
                             {
@@ -177,6 +187,7 @@ namespace PurchasingSystemDeveloper.Controllers
 
                         // Menyimpan daftar roleNames ke dalam session
                         HttpContext.Session.SetString("ListRole", string.Join(",", roleNames));
+
 
                         user.IsOnline = true;
 

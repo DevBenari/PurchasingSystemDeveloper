@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using PurchasingSystemDeveloper.Areas.MasterData.Models;
 using PurchasingSystemDeveloper.Areas.MasterData.Repositories;
 using PurchasingSystemDeveloper.Data;
 using System.Net.Http;
+using System.Security.Policy;
 
 namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
 {
@@ -34,10 +36,12 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             return View();
         }
 
-        public IActionResult Getdata()
-        {
-            return View();
-        }
+        public IActionResult GetData(){return View(); }
+        public IActionResult GetDataSupplier() { return View(); }
+        public IActionResult GetDataSatuan() { return View(); }
+        public IActionResult GetDataKategoriObat() { return View(); }
+        public IActionResult GetDataObat() { return View(); }
+        public IActionResult GetDataDiskon() { return View(); }
 
         [HttpGet]
         public async Task<IActionResult> Impor(string apiCode)
@@ -60,6 +64,179 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 return View("Error", "Gagal mengambil data dari API");
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> CreateSupplier(string apiCode)
+        {
+            var apiUrl = apiCode; // URL API untuk mengambil data supplier
+
+            // Menambahkan header Authorization
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", "YWRtZWRpa2E6YWRtZWRpa2E"); // Pastikan token atau kredensial benar
+
+            try
+            {
+                // Mengirimkan permintaan GET ke API
+                var response = await _httpClient.GetAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonData = await response.Content.ReadAsStringAsync();
+
+                    var responseObject = JsonConvert.DeserializeObject<dynamic>(jsonData);
+                    var supplierData = responseObject.data.ToObject<List<dynamic>>();
+
+                    return View("CreateSupplier", supplierData); // Kirimkan data ke View
+                }
+                else
+                {
+                    // Jika request gagal
+                    return View("Error", "Gagal mengambil data dari API");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Tangani kesalahan jika ada masalah dengan koneksi atau pemrosesan data
+                return View("Error", $"Terjadi kesalahan: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> CreateSatuan(string apiCode)
+        {
+            var apiUrl = apiCode; // URL API untuk mengambil data supplier
+
+            // Menambahkan header Authorization
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", "YWRtZWRpa2E6YWRtZWRpa2E"); // Pastikan token atau kredensial benar
+
+            try
+            {
+                // Mengirimkan permintaan GET ke API
+                var response = await _httpClient.GetAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonData = await response.Content.ReadAsStringAsync();
+
+                    var responseObject = JsonConvert.DeserializeObject<dynamic>(jsonData);
+                    var CreateSatuan = responseObject.data.ToObject<List<dynamic>>();
+
+                    return View("CreateSatuan", CreateSatuan); // Kirimkan data ke View
+                }
+                else
+                {
+                    // Jika request gagal
+                    return View("Error", "Gagal mengambil data dari API");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Tangani kesalahan jika ada masalah dengan koneksi atau pemrosesan data
+                return View("Error", $"Terjadi kesalahan: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> CreateObat(string apiCode, int page = 1, int pageSize = 100)
+        {
+            var apiUrl = $"{apiCode}?page={page}&pageSize={pageSize}"; // Ubah API untuk mendukung pagination
+
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", "YWRtZWRpa2E6YWRtZWRpa2E");
+
+            try
+            {
+                var response = await _httpClient.GetAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonData = await response.Content.ReadAsStringAsync();
+                    var responseObject = JsonConvert.DeserializeObject<dynamic>(jsonData);
+                    var CreateObat = responseObject.data.ToObject<List<dynamic>>();
+                    return View("CreateObat", CreateObat);
+                }
+                else
+                {
+                    return View("Error", "Gagal mengambil data dari API");
+                }
+            }
+            catch (Exception ex)
+            {
+                return View("Error", $"Terjadi kesalahan: {ex.Message}");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> CreateKategoriObat(string apiCode)
+        {
+            var apiUrl = apiCode; // URL API untuk mengambil data supplier
+
+            // Menambahkan header Authorization
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", "YWRtZWRpa2E6YWRtZWRpa2E"); // Pastikan token atau kredensial benar
+
+            try
+            {
+                // Mengirimkan permintaan GET ke API
+                var response = await _httpClient.GetAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonData = await response.Content.ReadAsStringAsync();
+
+                    var responseObject = JsonConvert.DeserializeObject<dynamic>(jsonData);
+                    var CreateKategoriObat = responseObject.data.ToObject<List<dynamic>>();
+
+                    return View("CreateKategoriObat", CreateKategoriObat); // Kirimkan data ke View
+                }
+                else
+                {
+                    // Jika request gagal
+                    return View("Error", "Gagal mengambil data dari API");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Tangani kesalahan jika ada masalah dengan koneksi atau pemrosesan data
+                return View("Error", $"Terjadi kesalahan: {ex.Message}");
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> CreateDiskon(string apiCode)
+        {
+            var apiUrl = apiCode; // URL API untuk mengambil data supplier
+
+            // Menambahkan header Authorization
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", "YWRtZWRpa2E6YWRtZWRpa2E"); // Pastikan token atau kredensial benar
+
+            try
+            {
+                // Mengirimkan permintaan GET ke API
+                var response = await _httpClient.GetAsync(apiUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonData = await response.Content.ReadAsStringAsync();
+
+                    var responseObject = JsonConvert.DeserializeObject<dynamic>(jsonData);
+                    var CreateDiskon = responseObject.data.ToObject<List<dynamic>>();
+
+                    return View("CreateDiskon", CreateDiskon); // Kirimkan data ke View
+                }
+                else
+                {
+                    // Jika request gagal
+                    return View("Error", "Gagal mengambil data dari API");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Tangani kesalahan jika ada masalah dengan koneksi atau pemrosesan data
+                return View("Error", $"Terjadi kesalahan: {ex.Message}");
+            }
+        }
+
+
 
         [HttpPost]
         public async Task<IActionResult> CreateProduct(List<Product> products)

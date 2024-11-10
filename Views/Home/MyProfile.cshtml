@@ -27,7 +27,8 @@
                 </li>
             </ul>
             <div id="buttonEdits" class="d-flex flex-row justify-content-between" style="gap:5px; margin:10px;">
-                <button type="button" class="btn btn-primary" style="right:20px;" id="btnEdit" onclick="document.getElementById('photoInput').click(); ">
+                <!--Button changes Photos-->
+                <button type="button" class="btn btn-sm btn-primary p-2" style="right:20px;" id="btnEdit" onclick="document.getElementById('photoInput').click(); ">
                     Changes Photo
                 </button>
                 <form id="photoForm" asp-action="MyProfile" asp-controller="Home" enctype="multipart/form-data" method="post">
@@ -43,11 +44,13 @@
                         };
                     </script>
                 }
+                <!--End Button changes Photos-->
 
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#changePassword">
+
+                <button type="button" class="btn btn-sm btn-primary p-2" data-toggle="modal" data-target="#changePassword">
                     Changes Password
                 </button>
-                <!--Modal Change Password-->
+                <!-- Modal Change Password -->
                 <div class="modal fade rounded" id="changePassword" tabindex="-1" role="dialog" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered" role="document">
                         <div class="modal-content">
@@ -58,27 +61,53 @@
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <form id="ChangePassword">
+                                <form id="ChangePasswordForm" method="post" asp-action="ResetPassword" asp-controller="Home">
                                     <div class="form-group">
-                                        <label for="Password">Password</label>
-                                        <input type="password" class="form-control" id="password" placeholder="Change Password">
+                                        <label for="Password">New Password</label>
+                                        <input type="password" class="form-control" name="NewPassword" id="password" placeholder="New Password" required>
+                                        <div class="input-group-append position-absolute" style="right:20px; margin-top:-34px;">
+                                            <span class="input-group-text bg-white border-0" id="togglePassword" style="cursor: pointer;">
+                                                <i class="fas fa-eye-slash" id="eyeIcon"></i>
+                                            </span>
+                                        </div>
+                                        <small class="form-text text-muted">
+                                            <i class="fas fa-info-circle"></i>
+                                            must enter one capital letter, number and symbol
+                                        </small>
                                     </div>
                                     <div class="form-group">
-                                        <label for="Password">Confirm Password</label>
-                                        <input type="password" class="form-control" id="password" placeholder="Change Password">
+                                        <label for="ConfirmPassword">Confirm Password</label>
+                                        <input type="password" class="form-control" name="ConfirmPassword" id="confirmPassword" placeholder="Confirm New Password" required>
+                                        <div class="input-group-append position-absolute" style="right:20px; margin-top:-34px;">
+                                            <span class="input-group-text bg-white border-0" id="toggleConfirmPassword" style="cursor: pointer;">
+                                                <i class="fas fa-eye-slash" id="confirmEyeIcon"></i>
+                                            </span>
+                                        </div>
+                                        <small class="form-text text-muted">
+                                            <i class="fas fa-info-circle"></i>
+                                            must enter one capital letter, number and symbol
+                                        </small>
+                                    </div>
+                                    
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Save changes</button>
                                     </div>
                                 </form>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary" onclick="submitEditProfile()">Save changes</button>
+                                @if (TempData["MessageSuccess"] != null)
+                                {
+                                    <script type="text/javascript">
+                                        window.onload = function () {
+                                            swal("Notification", '@TempData["MessageSuccess"]', "success");
+                                        };
+                                    </script>
+                                }
                             </div>
                         </div>
                     </div>
                 </div>
-                <!--End Modal-->
+                <!-- End Modal -->
             </div>
-
         </div>
 
         <div class="col-md-9 bg-white" style="height:100vh;">
@@ -202,10 +231,67 @@
                                 });
                                 input.value = '';
                             }else{
-                                document.getElementById('photoForm').submit();
-                            }
+                                swal({
+                                    title: "Are you sure you want to change your photo?",
+                                    text: "Do you want to update your profile photo?",
+                                    type: "warning",
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    confirmButtonText: 'Yes, update it!',
+                                    cancelButtonText: 'No, cancel'
+                                }).then(function () {
+                                    document.getElementById('photoForm').submit();
+                                }, function (dismiss) {
+                                    if (dismiss === "cancel") {
+                                        swal({
+                                            title: "Session Berakhir",
+                                            text: "Session Anda telah berakhir",
+                                            type: "error",
+                                            timer: 1500,
+                                            showConfirmButton: false
+                                        });
+                                    }
+                                });
+                            }         
                         }
                     </script>
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            // toggle untuk change password to text in field password
+                            document.getElementById("togglePassword").addEventListener("click", function () {
+                                const passwordField = document.getElementById("password");
+                                const eyeIcon = document.getElementById("eyeIcon");
+                                if (passwordField.type === "password") {
+                                    passwordField.type = "text";
+                                    eyeIcon.classList.remove("fa-eye-slash");
+                                    eyeIcon.classList.add("fa-eye");
+                                } else {
+                                    passwordField.type = "password";
+                                    eyeIcon.classList.remove("fa-eye");
+                                    eyeIcon.classList.add("fa-eye-slash");
+                                }
+                            });
+
+                            // toggle untuk change password to text in field Confirmpassword
+                            document.getElementById("toggleConfirmPassword").addEventListener("click", function () {
+                                const confirmPasswordField = document.getElementById("confirmPassword");
+                                const confirmEyeIcons = document.getElementById("confirmEyeIcon");
+                                if(confirmPasswordField.type === "password"){
+                                   confirmPasswordField.type = "text";
+                                    confirmEyeIcons.classList.remove("fa-eye-slash");
+                                    confirmEyeIcons.classList.add("fa-eye");
+                                } else {
+                                    confirmPasswordField.type = "password";
+                                    confirmEyeIcons.classList.remove("fa-eye");
+                                    confirmEyeIcons.classList.add("fa-eye-slash");
+                                }
+                            });
+                        });
+                    </script>
+
+
                 }
             </form>
         </div>

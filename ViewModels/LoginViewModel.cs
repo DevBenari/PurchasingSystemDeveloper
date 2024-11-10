@@ -5,15 +5,15 @@ namespace PurchasingSystemDeveloper.ViewModels
 {
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "Email tidak boleh kosong")]
+        [Required(ErrorMessage = "Email is required !")]
         [EmailAddress]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Kata sandi tidak boleh kosong")]
+        [Required(ErrorMessage = "Password is required !")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        [Display(Name = "Ingatkan Saya")]
+        [Display(Name = "Remember Me")]
         public bool RememberMe { get; set; }
     }
 }

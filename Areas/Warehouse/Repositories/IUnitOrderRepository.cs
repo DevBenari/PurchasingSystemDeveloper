@@ -41,6 +41,12 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Repositories
             {
                 var UnitOrderDetail = new UnitOrder()
                 {
+                    CreateDateTime = UnitOrder.CreateDateTime,
+                    CreateBy = UnitOrder.CreateBy,
+                    UpdateDateTime = UnitOrder.UpdateDateTime,
+                    UpdateBy = UnitOrder.UpdateBy,
+                    DeleteDateTime = UnitOrder.DeleteDateTime,
+                    DeleteBy = UnitOrder.DeleteBy,
                     UnitOrderId = UnitOrder.UnitOrderId,
                     UnitOrderNumber = UnitOrder.UnitOrderNumber,
                     UnitRequestId = UnitOrder.UnitRequestId,
@@ -79,6 +85,12 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Repositories
         {
             return await _context.UnitOrders.Where(s => s.Status != "Selesai").OrderBy(p => p.CreateDateTime).Select(UnitOrder => new UnitOrder()
             {
+                CreateDateTime = UnitOrder.CreateDateTime,
+                CreateBy = UnitOrder.CreateBy,
+                UpdateDateTime = UnitOrder.UpdateDateTime,
+                UpdateBy = UnitOrder.UpdateBy,
+                DeleteDateTime = UnitOrder.DeleteDateTime,
+                DeleteBy = UnitOrder.DeleteBy,
                 UnitOrderId = UnitOrder.UnitOrderId,
                 UnitOrderNumber = UnitOrder.UnitOrderNumber,
                 UnitRequestId = UnitOrder.UnitRequestId,

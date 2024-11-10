@@ -41,6 +41,12 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Repositories
             {
                 var WarehouseTransferDetail = new WarehouseTransfer()
                 {
+                    CreateDateTime = WarehouseTransfer.CreateDateTime,
+                    CreateBy = WarehouseTransfer.CreateBy,
+                    UpdateDateTime = WarehouseTransfer.UpdateDateTime,
+                    UpdateBy = WarehouseTransfer.UpdateBy,
+                    DeleteDateTime = WarehouseTransfer.DeleteDateTime,
+                    DeleteBy = WarehouseTransfer.DeleteBy,
                     WarehouseTransferId = WarehouseTransfer.WarehouseTransferId,
                     WarehouseTransferNumber = WarehouseTransfer.WarehouseTransferNumber,
                     UnitOrderId = WarehouseTransfer.UnitOrderId,
@@ -71,6 +77,12 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Repositories
         {
             return await _context.WarehouseTransfers.Where(s => s.Status != "Selesai").OrderBy(p => p.CreateDateTime).Select(WarehouseTransfer => new WarehouseTransfer()
             {
+                CreateDateTime = WarehouseTransfer.CreateDateTime,
+                CreateBy = WarehouseTransfer.CreateBy,
+                UpdateDateTime = WarehouseTransfer.UpdateDateTime,
+                UpdateBy = WarehouseTransfer.UpdateBy,
+                DeleteDateTime = WarehouseTransfer.DeleteDateTime,
+                DeleteBy = WarehouseTransfer.DeleteBy,
                 WarehouseTransferId = WarehouseTransfer.WarehouseTransferId,
                 WarehouseTransferNumber = WarehouseTransfer.WarehouseTransferNumber,
                 UnitOrderId = WarehouseTransfer.UnitOrderId,
@@ -93,6 +105,12 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Repositories
         {
             return await _context.WarehouseTransfers.OrderBy(p => p.CreateDateTime).Select(WarehouseTransfer => new WarehouseTransfer()
             {
+                CreateDateTime = WarehouseTransfer.CreateDateTime,
+                CreateBy = WarehouseTransfer.CreateBy,
+                UpdateDateTime = WarehouseTransfer.UpdateDateTime,
+                UpdateBy = WarehouseTransfer.UpdateBy,
+                DeleteDateTime = WarehouseTransfer.DeleteDateTime,
+                DeleteBy = WarehouseTransfer.DeleteBy,
                 WarehouseTransferId = WarehouseTransfer.WarehouseTransferId,
                 WarehouseTransferNumber = WarehouseTransfer.WarehouseTransferNumber,
                 UnitOrderId = WarehouseTransfer.UnitOrderId,

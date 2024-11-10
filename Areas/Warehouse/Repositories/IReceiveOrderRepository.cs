@@ -40,6 +40,12 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Repositories
             {
                 var receiveOrderDetail = new ReceiveOrder()
                 {
+                    CreateDateTime = receiveOrder.CreateDateTime,
+                    CreateBy = receiveOrder.CreateBy,
+                    UpdateDateTime = receiveOrder.UpdateDateTime,
+                    UpdateBy = receiveOrder.UpdateBy,
+                    DeleteDateTime = receiveOrder.DeleteDateTime,
+                    DeleteBy = receiveOrder.DeleteBy,
                     ReceiveOrderId = receiveOrder.ReceiveOrderId,
                     ReceiveOrderNumber = receiveOrder.ReceiveOrderNumber,
                     PurchaseOrderId = receiveOrder.PurchaseOrderId,
@@ -62,6 +68,12 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Repositories
         {
             return await _context.ReceiveOrders.OrderBy(p => p.CreateDateTime).Select(receiveOrder => new ReceiveOrder()
             {
+                CreateDateTime = receiveOrder.CreateDateTime,
+                CreateBy = receiveOrder.CreateBy,
+                UpdateDateTime = receiveOrder.UpdateDateTime,
+                UpdateBy = receiveOrder.UpdateBy,
+                DeleteDateTime = receiveOrder.DeleteDateTime,
+                DeleteBy = receiveOrder.DeleteBy,
                 ReceiveOrderId = receiveOrder.ReceiveOrderId,
                 ReceiveOrderNumber = receiveOrder.ReceiveOrderNumber,
                 PurchaseOrderId = receiveOrder.PurchaseOrderId,

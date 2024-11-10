@@ -37,7 +37,7 @@
                                         <div class="input-group-append" data-target="#tglAwalPencarian" data-toggle="datetimepicker">
                                             <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                         </div>
-                                        <input autocomplete="off" value="@ViewBag.tglAwalPencarian" name="tglAwalPencarian" type="text" class="form-control datetimepicker-input" placeholder="Search start date..." />
+                                        <input autocomplete="off" value="@ViewBag.tglAwalPencarian" name="tglAwalPencarian" type="text" class="form-control datetimepicker-input" placeholder="Search start date..." readonly />
                                     </div>
                                 </div>
                             </div>
@@ -48,11 +48,11 @@
                                             <div class="input-group-append" data-target="#tglAkhirPencarian" data-toggle="datetimepicker">
                                                 <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                                             </div>
-                                            <input autocomplete="off" value="@ViewBag.tglAkhirPencarian" name="tglAkhirPencarian" type="text" class="form-control datetimepicker-input" placeholder="Search end date..." />
-                                            <button type="submit" class="btn btn-default">
+                                            <input autocomplete="off" value="@ViewBag.tglAkhirPencarian" name="tglAkhirPencarian" type="text" class="form-control datetimepicker-input" placeholder="Search end date..." readonly />
+                                            <button type="submit" class="btn btn-default" id="btn-search">
                                                 <i class="fa fa-search"></i>
                                             </button>
-                                            <a class="btn bg-indigo" asp-action="NonPks" asp-controller="Supplier" asp-area="MasterData">
+                                            <a class="btn bg-indigo" asp-action="Index" asp-controller="UserActive" asp-area="MasterData">
                                                 <i class="fa-solid fa-arrows-rotate"></i>
                                             </a>
                                         </div>
@@ -61,11 +61,14 @@
                             </div>
                             <div class="form-group col-md-3">
                                 <div class="form-group">
-                                    <select class="form-control select2bs4" style="width: 100%;" id="btnFilterBy" data-placeholder="--Filter by--">
+                                    <select class="form-control" name="filterOptions" id="btnFilterBy">
                                         <option value="" hidden disabled selected>--Filter by--</option>
-                                        <option value="Monthly">Monthly</option>
-                                        <option value="Weekly">Weekly</option>
-                                        <option value="Daily">Daily</option>
+                                        <option value="Today" selected=@(ViewBag.SelectedFilter == "Today")>Today</option>
+                                        <option value="Last Day" selected=@(ViewBag.SelectedFilter == "Last Day")>Last Day</option>
+                                        <option value="Last 7 Days" selected=@(ViewBag.SelectedFilter == "Last 7 Days")>Last 7 Days</option>
+                                        <option value="Last 30 Days" selected=@(ViewBag.SelectedFilter == "Last 30 Days")>Last 30 Days</option>
+                                        <option value="This Month" selected=@(ViewBag.SelectedFilter == "This Month")>This Month</option>
+                                        <option value="Last Month" selected=@(ViewBag.SelectedFilter == "Last Month")>Last Month</option>
                                     </select>
                                 </div>
                             </div>
@@ -75,26 +78,26 @@
                             <table id="tblTemplate" class="table table-hover table-head-fixed text-nowrap">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
-                                        <th>Create Date</th>
-                                        <th>Supplier Code</th>
-                                        <th>Supplier Name</th>
-                                        <th>Lead Time</th>
-                                        <th>Email</th>
-                                        <th>Address</th>
+                                        <th class="text-center" style="width: 5%;">No</th>
+                                        <th class="text-left" style="width: 10%;">Create Date</th>
+                                        <th class="text-left" style="width: 10%;">Supplier Code</th>
+                                        <th class="text-left" style="width: 15%;">Supplier Name</th>
+                                        <th class="text-left" style="width: 10%;">Lead Time</th>
+                                        <th class="text-left" style="width: 15%;">Email</th>
+                                        <th class="text-left" style="width: 20%;">Address</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach (var Supplier in Model)
                                     {
                                         <tr data-href="@Url.Action("DetailSupplier", "Supplier", new { id = Supplier.SupplierId })">
-                                            <th></th>
-                                            <td>@Supplier.CreateDateTime.ToString("dd MMMM yyyy")</td>
-                                            <td>@Supplier.SupplierCode</td>
-                                            <td>@Supplier.SupplierName</td>
-                                            <td>@Supplier.LeadTime.LeadTimeValue hari</td>
-                                            <td>@Supplier.Email</td>
-                                            <td>@Supplier.Address</td>
+                                            <th class="text-center"></th>
+                                            <td class="text-left">@Supplier.CreateDateTime.ToString("dd MMMM yyyy")</td>
+                                            <td class="text-left">@Supplier.SupplierCode</td>
+                                            <td class="text-left">@Supplier.SupplierName</td>
+                                            <td class="text-left">@Supplier.LeadTime.LeadTimeValue hari</td>
+                                            <td class="text-left">@Supplier.Email</td>
+                                            <td class="text-left">@Supplier.Address</td>
                                         </tr>
                                     }
                                 </tbody>
@@ -121,26 +124,52 @@
 <!-- /.content -->
 @section Scripts {
     <script src="~/scripts/tabletemplate.js"></script>
-    <script>
-        $(function () {
-            //Initialize Select2 Elements
-            $('.select2bs4').select2({
-                theme: 'bootstrap4'
-            })
+    <script src="~/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
 
-            $("#btnFilterBy").data('placeholder');
-        })
-    </script>
     <script>
-        $(function () {
+        $(document).ready(function () {
+            $('#btnFilterBy').on('change', function () {
+                $('.datetimepicker-input').val('');
+                $(this).closest('form').submit();
+            });
+
+            // Initialize date pickers
             $('#tglAwalPencarian').datetimepicker({
-                format: 'DD MMMM YYYY'
+                format: 'DD MMMM YYYY',
+                timepicker: false,
+                enableHours: false,
+                ignoreReadonly: true,
+                allowInputToggle: true,
+                useCurrent: false,
+                keepOpen: false,
+                mask: true
+
             })
 
             $('#tglAkhirPencarian').datetimepicker({
-                format: 'DD MMMM YYYY'
+                format: 'DD MMMM YYYY',
+                timepicker: false,
+                enableHours: false,
+                ignoreReadonly: true,
+                allowInputToggle: true,
+                useCurrent: false,
+                keepOpen: false,
+                mask: true
             })
-        })
+
+            $('#btn-search').on('click', function () {
+                $('#btnFilterBy').val('');
+            })
+
+            $('.datetimepicker-input').on('keydown paste ', function (e) {
+                e.preventDefault();
+                return false;
+            });
+
+            $('.datetimepicker-input').on('focus', function () {
+                $(this).closest('.input-group').find('.input-group-append').click();
+            });
+        });
     </script>
 
     <style>

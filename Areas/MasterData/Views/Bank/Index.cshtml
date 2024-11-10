@@ -78,12 +78,12 @@
                             <table id="tblTemplate" class="table table-hover table-head-fixed text-nowrap">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
-                                        <th>Create Date</th>
-                                        <th>Bank Code</th>
-                                        <th>Bank Name</th>
-                                        <th>Account Number</th>
-                                        <th>Card Holder Name</th>
+                                        <th class="text-center" style="width: 5%;">No</th>
+                                        <th class="text-left" style="width: 15%;">Create Date</th>
+                                        <th class="text-left" style="width: 10%;">Bank Code</th>
+                                        <th class="text-left" style="width: 10%;">Bank Name</th>
+                                        <th class="text-left" style="width: 10%;">Account Number</th>
+                                        <th class="text-left" style="width: 15%;">Card Holder Name</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -91,12 +91,12 @@
                                     {
 
                                         <tr data-href="@Url.Action("DetailBank", "Bank", new {id=Bank.BankId})">
-                                            <th></th>
-                                            <td>@Bank.CreateDateTime.ToString("dd MMMM yyyy")</td>
-                                            <td>@Bank.BankCode</td>
-                                            <td>@Bank.BankName</td>
-                                            <td>@Bank.AccountNumber</td>
-                                            <td>@Bank.CardHolderName</td>
+                                            <th class="text-center"></th>
+                                            <td class="text-left">@Bank.CreateDateTime.ToString("dd MMMM yyyy")</td>
+                                            <td class="text-left">@Bank.BankCode</td>
+                                            <td class="text-left">@Bank.BankName</td>
+                                            <td class="text-left">@Bank.AccountNumber</td>
+                                            <td class="text-left">@Bank.CardHolderName</td>
                                         </tr>
                                     }
                                 </tbody>

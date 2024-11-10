@@ -54,8 +54,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             return View(); // Kirim data role ke view
         }
 
-        [HttpGet]
-        [AllowAnonymous]
+        [HttpGet]     
         public async Task<IActionResult> CreateRole()
         {
             var roles = await _roleManager.Roles
@@ -71,7 +70,6 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         public async Task<IActionResult> CreateRole(GroupRoleViewModel vm)
         {
             var dateNow = DateTimeOffset.Now;
@@ -104,7 +102,6 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
         public async Task<IActionResult> CreateRoleNavbar()
         {
             var controllers = Assembly.GetExecutingAssembly().GetTypes()

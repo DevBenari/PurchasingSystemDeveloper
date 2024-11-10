@@ -1,0 +1,139 @@
+﻿@{
+    ViewData["Title"] = "Kategori Obat Data";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+@using Microsoft.AspNetCore.Identity;
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model List<dynamic>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <div class="card-header bg-cyan">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewData["Title"]</h3>
+            </div>
+            <div class="card-body table-responsive p-0">
+                <form enctype="multipart/form-data" asp-controller="Api" asp-action="CreateKategoriObat" method="post">
+                    <table id="tblTemplate" class="table table-hover table-head-fixed text-wrap">
+                        <thead>
+                            <tr>
+                                <th><strong>No</strong></th>
+                                <th>Kategori Barang</th>
+                                <th>Is Cost Center</th>
+                                <th>COA Inventory</th>
+                                <th>Nama Inventory</th>
+                                <th>COA Inpatient</th>
+                                <th>Nama Inpatient</th>
+                                <th>COA Outpatient</th>
+                                <th>Nama Outpatient</th>
+                                <th>COA COGS Inpatient</th>
+                                <th>Nama COGS Inpatient</th>
+                                <th>COA COGS</th>
+                                <th>Nama COGS</th>
+                                <th>COA Adjustment</th>
+                                <th>Nama Adjustment</th>
+                                <th>COA AP Konsinyasi</th>
+                                <th>Nama COA AP Konsinyasi</th>
+                                <th>COA COGS Inpatient Konsinyasi</th>
+                                <th>Nama COA COGS Inpatient Konsinyasi</th>
+                                <th>COA COGS Outpatient Konsinyasi</th>
+                                <th>Nama COA COGS Outpatient Konsinyasi</th>
+                                <th>Is Consignee</th>
+                                <th>Is Fixed Asset</th>
+                                <th>Kode Group</th>
+                                <th>Kategori Barang (Eng)</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @if (Model != null && Model.Count > 0)
+                            {
+                                var no = 0;
+                                foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@no++</td>
+                                        <td>@item.kel_brg</td>
+                                        <td>@item.is_cost_center</td>
+                                        <td>@item.coa_inventory</td>
+                                        <td>@item.ninventory</td>
+                                        <td>@item.coa_inpatient</td>
+                                        <td>@item.ninpatient</td>
+                                        <td>@item.coa_outpatient</td>
+                                        <td>@item.noutpatient</td>
+                                        <td>@item.coa_cogs_inpatient</td>
+                                        <td>@item.ncogs_inpatient</td>
+                                        <td>@item.coa_cogs</td>
+                                        <td>@item.ncogs</td>
+                                        <td>@item.coa_adjustment</td>
+                                        <td>@item.nadjustment</td>
+                                        <td>@item.coa_ap_konsinyasi</td>
+                                        <td>@item.ncoa_ap_konsinyasi</td>
+                                        <td>@item.coa_cogs_inpatient_konsinyasi</td>
+                                        <td>@item.ncoa_cogs_inpatient_konsinyasi</td>
+                                        <td>@item.coa_cogs_outpatient_konsinyasi</td>
+                                        <td>@item.ncoa_cogs_outpatient_konsinyasi</td>
+                                        <td>@item.is_consignee</td>
+                                        <td>@item.is_fixed_asset</td>
+                                        <td>@item.kode_group</td>
+                                        <td>@item.kel_brg_eng</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="14">Tidak ada data untuk ditampilkan.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    @* <button type="submit" class="btn btn-primary">Kirim</button> *@
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script src="~/scripts/tabletemplate.js"></script>
+
+    <style>
+        span.error {
+            display: block;
+            color: #347FC4;
+            font-size: 90%;
+        }
+
+        tr.error {
+            background-color: rgba(255,0,0,0.35);
+        }
+
+        /*css for table*/
+        .container td {
+            vertical-align: top;
+        }
+
+        .tablecontainer table {
+            width: 100%;
+            border-collapse: collapse;
+            border-top: 1px solid #BFAEAE;
+            border-right: 1px solid #BFAEAE;
+        }
+
+        .tablecontainer th {
+            border-bottom: 2px solid #BFAEAE;
+        }
+
+        .tablecontainer th, .tablecontainer td {
+            text-align: center;
+            border-left: 1px solid #BFAEAE;
+            padding: 5px;
+            border-bottom: 1px solid #BFAEAE;
+        }
+
+        .ui-widget {
+            font-size: 12px !important;
+        }
+    </style>
+}

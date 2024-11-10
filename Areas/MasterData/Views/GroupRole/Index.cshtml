@@ -23,26 +23,16 @@
             @{
                 var user = await signInManager.UserManager.FindByNameAsync(User.Identity.Name);
             }
-            @if (user?.Email == "admin@admin.com")
+            @if (user?.Email == "superadmin@admin.com")
             {
                 <form id="createRoleForm" asp-controller="GroupRole" asp-action="CreateRoleNavbar" method="post">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-2">
                             <div class="card">
                                 <div class="card-header">
-                                    <h3 class="card-title">
-                                        <input type="text" name="roleName" class="form-control" required placeholder="Role Name" />
-                                    </h3>
-                                    <h3 class="card-title">
-                                        <select name="normalized" class="form-control select2bs4" style="width: 100%;" data-placeholder="--Choose Department--">
-                                            <option value="" hidden disabled selected>--Choose Group--</option>
-                                            <option value="Master Data">Master Data</option>
-                                            <option value="Purchase Request">Purchase Request</option>
-                                        </select>
-                                    </h3>
                                     <div class="card-tools">
                                         <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold">
-                                            Create
+                                            Refresh Roles
                                         </button>
                                     </div>
                                 </div>
@@ -57,12 +47,20 @@
             <!-- Card Body for Role Menus -->
             <div class="row mt-3">
                 <div class="col-md-3" id="div0">
-                    <a href="#" class="btn bg-info btn-block mb-3">All User</a>
+                    <a href="#" class="btn bg-warning btn-block mb-3">All User</a>
                         <!-- DIRECT CHAT -->
                         <div class="card direct-chat direct-chat-primary">
                             <div class="card-header">
-                                <h3 class="card-title">User Active</h3>
-
+                            <h3 class="card-title">
+                                <form action="#" method="post">
+                                    <div class="input-group">
+                                        <input type="text" id="searchInput" name="message" placeholder="Search User" class="form-control">
+                                        <span class="input-group-append">
+                                            <!-- Tombol Search dihapus -->
+                                        </span>
+                                    </div>
+                                </form>
+                            </h3>
                                 <div class="card-tools">
                                     <button type="button" class="btn btn-tool" data-card-widget="collapse">
                                         <i class="fas fa-minus"></i>
@@ -72,30 +70,22 @@
                             <!-- /.card-header -->
                             <div class="card-body">
                                 <!-- Conversations are loaded here -->
-                                <div class="direct-chat-messages" style="height:500px;">
+                                <div class="direct-chat-messages" style="height:777px;">
                                     <ul class="contacts-list" id="userList">
                                     </ul>
                                     <!-- /.contacts-list -->
                                 </div>
                                 <!-- /.direct-chat-pane -->
                             </div>
-                            <!-- /.card-body -->
-                            <div class="card-footer">
-                                <form action="#" method="post">
-                                    <div class="input-group">
-                                        <input type="text" id="searchInput" name="message" placeholder="Search User" class="form-control">
-                                        <span class="input-group-append">
-                                            <!-- Tombol Search dihapus -->
-                                        </span>
-                                    </div>
-                                </form>
-                            </div>
+                        <!-- /.card-body -->
+                        <div class="card-footer">
+                        </div>
                     </div>
                     <!-- /.card -->
                 </div>
 
                 <div class="col-md-4" id="div1">
-                    <a href="#" class="btn bg-info btn-block mb-3">All Role Menu</a>
+                    <a href="#" class="btn bg-success btn-block mb-3">All Role Menu</a>
                     <div class="card">
                         <div class="card-header">
                             <h3 class="card-title">
@@ -108,12 +98,14 @@
                             </h3>
                             <div class="card-tools">
                                 <button type="button" class="btn btn-success float-left fw-bold" id="moveButton">
-                                    Move All
+                                    Move All 
                                 </button>
                             </div>
                         </div>
-                        <div class="card-body p-0">
-                            <ul class="nav nav-pills flex-column" id="folderList"></ul>
+                        <div class="card-body p-0 direct-chat-messages" style="height:800px;">
+                            <ul class="nav nav-pills flex-column" id="folderList">
+
+                            </ul>
                         </div>
                         <!-- /.card-body -->
                     </div>
@@ -127,16 +119,15 @@
                         <form enctype="multipart/form-data" asp-controller="GroupRole" asp-action="CreateRole" method="post">
                             <div class="card-header">
                                 <h3 class="card-title" id="menuTitle">Menu</h3>
+                                <input type="hidden" name="DepartemenId" id="DepartemenId">
                                 <div class="card-tools">
                                     <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold">
                                         <i class="fas fa-plus blue-icon"></i> Add
                                     </button>
                                 </div>
                             </div>
-                            <div class="card-body p-0">
-                                <ul class="nav nav-pills flex-column" id="newFolderList">
-                                    <!-- Elements to be moved here -->
-                                </ul>
+                            <div class="card-body p-0 direct-chat-messages" style="height:800px;">
+                                <ul class="nav nav-pills flex-column" id="newFolderList"></ul>
                             </div>
                             <!-- /.card-body -->
                         </form>
@@ -164,20 +155,57 @@
     }
 
 
-    function moveToDiv2(itemId) {
+    function moveToDiv2(itemId, folderCurrentConcurrencyStamp) {
+        const newList = document.getElementById('div1').querySelector(`#${folderCurrentConcurrencyStamp}`);
+        const originalList = document.getElementById('div2').querySelector(`#${folderCurrentConcurrencyStamp}`);
+        console.log("ini item = " + itemId);
+        const newFolderList = document.getElementById('newFolderList');
+        const folderList = document.getElementById('folderList');
+
+        // Membuat elemen <li> baru untuk folder, jika belum ada
+        const newListItem = document.createElement('li');
+        newListItem.classList.add('nav-item', 'active');
+        newListItem.id = 'inboxItem';
+        newListItem.innerHTML = `
+        <a href="#" class="nav-link" onclick="toggleSubFolder('${folderCurrentConcurrencyStamp}')">
+            ${folderCurrentConcurrencyStamp}
+            <span class="float-right" id="inboxIcon"><i class="fas fa-plus"></i></span>
+        </a>
+        <ul class="nav nav-pills flex-column ml-3 collapse show" id="${folderCurrentConcurrencyStamp}">
+        </ul>
+    `;
+
+        const menuTitle = document.getElementById('menuTitle');
+        if (menuTitle && menuTitle.textContent.trim() !== "") {
+            if (!newList) {
+                folderList.insertBefore(newListItem, folderList.firstChild);
+                console.log("ini 1 = " + itemId);
+            } else if (!originalList) {
+                newFolderList.insertBefore(newListItem, newFolderList.firstChild);
+                console.log("ini 2 = " + itemId);
+            }
+        } else {
+            alert("User Belum Dipilih.");
+        }
+        moveToDiv1(itemId, folderCurrentConcurrencyStamp)
+    }
+
+
+    function moveToDiv1(itemId, folderCurrentConcurrencyStamp) {
         const item = document.getElementById(itemId);
-        const newList = document.getElementById('newFolderList');
-        const originalList = document.getElementById('folderList');
-        const iconElement = document.querySelector(`#${itemId} span i`);
+        const newList = document.getElementById('div1').querySelector(`#${folderCurrentConcurrencyStamp}`);
+        const originalList = document.getElementById('div2').querySelector(`#${folderCurrentConcurrencyStamp}`);
+        console.log("ini item = " + itemId);
+
 
         const menuTitle = document.getElementById('menuTitle');
         if (menuTitle && menuTitle.textContent.trim() !== "") {
             if (originalList.contains(item)) {
+                console.log("ini item 1= " + itemId);
                 newList.appendChild(item);
-                iconElement.classList.replace('fa-plus', 'fa-times');
             } else {
                 originalList.appendChild(item);
-                iconElement.classList.replace('fa-times', 'fa-plus');
+                console.log("ini item 2 = " + itemId);
             }
         }
     }
@@ -193,31 +221,116 @@
                 $('#newFolderList').empty();
 
                 document.getElementById("menuTitle").textContent = NameUser;
-                // Proses roles untuk department yang sesuai
+                document.getElementById("DepartemenId").value = Email;
+
+                let folderContent = '';  // Menyimpan konten folderList
+                let folderArrayBody = '';  // Menyimpan list item untuk setiap folder
+                let folderCurrentConcurrencyStamp = ''; // Menyimpan concurrencyStamp sebelumnya
+
+                let newFolderContent = '';  // Menyimpan konten newFolderList
+                let newFolderArrayBody = '';  // Menyimpan list item untuk setiap folder
+                let newFolderCurrentConcurrencyStamp = ''; // Menyimpan concurrencyStamp sebelumnya
+
+
+                // Iterasi untuk memproses rolesForDepartment dan mengelompokkan berdasarkan concurrencyStamp
                 $.each(data.rolesForDepartment, function (index, role) {
-                    $('#folderList').append(`
-                                    <li class="nav-item" id="${role.name}">
-                                        <input type="hidden" name="DepartemenId" value="${Email}">
-                                        <input type="hidden" name="RoleId" value="${role.id}">
-                                        <a href="#" class="nav-link" onclick="moveToDiv2('${role.name}')">
-                                            <i class="fas fa-inbox"></i> ${role.name}
-                                            <span class="float-right" id="inboxIcon"></span>
-                                        </a>
-                                    </li>
-                                `);
+
+                    if (folderCurrentConcurrencyStamp === '') {
+                        // Pertama kali set nilai concurrencyStamp
+                        folderCurrentConcurrencyStamp = role.concurrencyStamp;
+                    } else if (role.concurrencyStamp !== folderCurrentConcurrencyStamp) {
+                        // Jika concurrencyStamp berubah, buat folder baru untuk grup sebelumnya
+                        folderContent += `
+                                <li class="nav-item active" id="inboxItem" name="${folderCurrentConcurrencyStamp}">
+                                    <a href="#" class="nav-link" onclick="toggleSubFolder('${folderCurrentConcurrencyStamp}')">
+                                        ${folderCurrentConcurrencyStamp}
+                                        <span class="float-right" id="inboxIcon"><i class="fas fa-plus" onclick="myCustomFunction('${folderCurrentConcurrencyStamp}')"></i></span>
+                                    </a>
+                                    <ul class="nav nav-pills flex-column ml-3 collapse" id="${folderCurrentConcurrencyStamp}">
+                                        ${folderArrayBody}
+                                    </ul>
+                                </li>
+                            `;
+                        // Reset arrayBody untuk grup berikutnya
+                        folderArrayBody = '';
+                        folderCurrentConcurrencyStamp = role.concurrencyStamp;  // Update concurrencyStamp untuk grup berikutnya
+                    }
+
+                    folderArrayBody += `
+                            <li class="nav-item" id="${role.name}">
+                                <input type="hidden" name="RoleId" value="${role.id}">
+                                <a href="#" class="nav-link" onclick="moveToDiv2('${role.name}','${role.concurrencyStamp}')">
+                                    <i class="fas fa-inbox"></i> ${role.name}
+                                    <span class="float-right" id="inboxIcon"></span>
+                                </a>
+                            </li>
+                        `;
                 });
 
+                if (folderArrayBody !== '') {
+                    folderContent += `
+                            <li class="nav-item active" id="inboxItem" name="${folderCurrentConcurrencyStamp}">
+                                <a href="#" class="nav-link" onclick="toggleSubFolder('${folderCurrentConcurrencyStamp}')">
+                                    ${folderCurrentConcurrencyStamp}
+                                    <span class="float-right" id="inboxIcon"><i class="fas fa-plus" onclick="myCustomFunction('${folderCurrentConcurrencyStamp}')"></i></span>
+                                </a>
+                                <ul class="nav nav-pills flex-column ml-3 collapse" id="${folderCurrentConcurrencyStamp}">
+                                    ${folderArrayBody}
+                                </ul>
+                            </li>
+                        `;
+                }
+                $('#folderList').append(folderContent);
+
+                // User
                 $.each(data.rolesNotForDepartment, function (index, role) {
-                    $('#newFolderList').append(`
-                                     <li class="nav-item" id="${role.name}">
-                                        <input type="hidden" name="RoleId" value="${role.id}">
-                                        <a href="#" class="nav-link" onclick="moveToDiv2('${role.name}')">
-                                            <i class="fas fa-inbox"></i> ${role.name}
-                                            <span class="float-right" id="inboxIcon"></span>
-                                        </a>
-                                    </li>
-                                `);
+
+                    if (newFolderCurrentConcurrencyStamp === '') {
+                        newFolderCurrentConcurrencyStamp = role.concurrencyStamp;
+                    } else if (role.concurrencyStamp !== newFolderCurrentConcurrencyStamp) {
+                        // Jika concurrencyStamp berubah, buat folder baru untuk grup sebelumnya
+                        newFolderContent += `
+                                <li class="nav-item active" id="inboxItem" name="${newFolderCurrentConcurrencyStamp}">
+                                    <a href="#" class="nav-link" onclick="toggleSubFolder('${newFolderCurrentConcurrencyStamp}')">
+                                        ${newFolderCurrentConcurrencyStamp}
+                                        <span class="float-right" id="inboxIcon"><i class="fas fa-plus" onclick="myCustomFunction('${newFolderCurrentConcurrencyStamp}')"></i></span>
+                                    </a>
+                                    <ul class="nav nav-pills flex-column ml-3 collapse" id="${newFolderCurrentConcurrencyStamp}">
+                                        ${newFolderArrayBody}
+                                    </ul>
+                                </li>
+                            `;
+                        // Reset arrayBody untuk grup berikutnya
+                        newFolderArrayBody = '';
+                        newFolderCurrentConcurrencyStamp = role.concurrencyStamp;  // Update concurrencyStamp untuk grup berikutnya
+                    }
+
+                    newFolderArrayBody += `
+                            <li class="nav-item" id="${role.name}">
+                                <input type="hidden" name="RoleId" value="${role.id}">
+                                <a href="#" class="nav-link" onclick="moveToDiv2('${role.name}','${role.concurrencyStamp}')">
+                                    <i class="fas fa-inbox"></i> ${role.name}
+                                    <span class="float-right" id="inboxIcon"></span>
+                                </a>
+                            </li>
+                        `;
                 });
+
+                if (newFolderArrayBody !== '') {
+                    newFolderContent += `
+                            <li class="nav-item active" id="inboxItem" name="${newFolderCurrentConcurrencyStamp}">
+                                <a href="#" class="nav-link" onclick="toggleSubFolder('${newFolderCurrentConcurrencyStamp}')">
+                                    ${newFolderCurrentConcurrencyStamp}
+                                    <span class="float-right" id="inboxIcon"><i class="fas fa-plus" onclick="myCustomFunction('${newFolderCurrentConcurrencyStamp}')"></i></span>
+                                </a>
+                                <ul class="nav nav-pills flex-column ml-3 collapse" id="${newFolderCurrentConcurrencyStamp}">
+                                    ${newFolderArrayBody}
+                                </ul>
+                            </li>
+                        `;
+                }
+
+                $('#newFolderList').append(newFolderContent);
             },
             error: function (xhr, status, error) {
                 console.error('Error getting roles:', error);
@@ -225,12 +338,14 @@
         });
     }
 
+
+
+
     function userData() {
         $.ajax({
             url: '@Url.Action("LoadUser", "GroupRole")',
             method: 'GET',
             success: function (data) {
-                console.log(data);
                 $('#userList').empty();
                 $.each(data, function (index, user) {
                     var foto = user.foto ? user.foto : 'user.jpg';
@@ -257,7 +372,7 @@
 
                     var selectedUserCode = $(this).find('input[name="kdUser"]').val();
                     var nmUser = $(this).find('input[name="nmUser"]').val();
-                    console.log("Selected User Code:", selectedUserCode);
+
                     roleData(selectedUserCode, nmUser); // Panggil fungsi roleData dengan kode user yang dipilih
                 });
             },
@@ -281,14 +396,57 @@
                 } else {
                     alert('Error: ' + response.message);
                 }
-                form.find('input[name="roleName"]').val(''); // Mengosongkan input roleName
-                form.find('select[name="normalized"]').prop('selectedIndex', 0);
             },
             error: function (xhr, status, error) {
                 alert('An error occurred: ' + error);
             }
         });
     }
+
+    function toggleSubFolder(folderId) {
+        const div1Item = document.getElementById('div1').querySelector(`#${folderId}`);
+        const div2Item = document.getElementById('div2').querySelector(`#${folderId}`);
+
+        if (div1Item) {
+            $(div1Item).collapse('toggle');
+        }
+
+        if (div2Item) {
+            $(div2Item).collapse('toggle');
+        }
+    }
+
+    function myCustomFunction(folderId) {
+        const folderItems = document.querySelectorAll(`#folderList #${folderId} li`);
+        const newFolderListUl = document.querySelector(`#newFolderList #${folderId}`);
+
+        const folderList = document.getElementById('folderList');
+        const newFolderList = document.getElementById('newFolderList');
+
+        // Ambil elemen li yang memiliki atribut name sesuai dengan folderId di kedua list
+        const folderItem = document.querySelector(`#folderList li[name="${folderId}"]`);
+        const newFolderItem = document.querySelector(`#newFolderList li[name="${folderId}"]`);
+
+        // Jika elemen ditemukan di folderList, pindahkan ke newFolderList
+        if (folderItem) {
+            if (newFolderListUl) {
+                folderItems.forEach(item => {
+                    newFolderListUl.appendChild(item);
+                });
+                folderItem.remove();
+            } else {
+                newFolderList.insertBefore(folderItem, newFolderList.firstChild);
+            }
+
+        }else if (newFolderItem) {
+            // Memindahkan item ke posisi paling atas di folderList
+            folderList.insertBefore(newFolderItem, folderList.firstChild);
+        }
+        else {
+            console.log('Elemen tidak ditemukan');
+        }
+    }
+
 
     $(document).ready(function () {
         initSignalR();
@@ -299,7 +457,6 @@
             e.preventDefault(); // Mencegah form dari pengiriman standar
             submitRoleForm($(this));
         });
-
 
         $('#searchInput').on('input', function () {
             var searchTerm = $(this).val().toLowerCase(); // Ambil nilai input dan ubah menjadi lowercase
@@ -317,16 +474,28 @@
 
     document.getElementById('moveButton').addEventListener('click', function (event) {
         event.preventDefault();
+
+        const folderItems = document.querySelectorAll(`#folderList #${folderId} li`);
+        const newFolderListUl = document.querySelector(`#newFolderList #${folderId}`);
+
         const folderList = document.getElementById('folderList');
         const newFolderList = document.getElementById('newFolderList');
 
         const menuTitle = document.getElementById('menuTitle');
         if (menuTitle && menuTitle.textContent.trim() !== "") {
             while (folderList.firstChild) {
-                newFolderList.appendChild(folderList.firstChild);
+                if (newFolderListUl) {
+                    folderItems.forEach(item => {
+                        newFolderListUl.appendChild(item);
+                    });
+                } else {
+                    newFolderList.appendChild(folderList.firstChild);
+                }
             }
         }
     });
+
+
     document.getElementById('searchMenu').addEventListener('input', function () {
         const searchValue = this.value.toLowerCase();
         const items = document.querySelectorAll('#folderList .nav-item');

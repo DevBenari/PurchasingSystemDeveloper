@@ -78,17 +78,17 @@
                             <table id="tblTemplate" class="table table-hover table-head-fixed text-nowrap">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
-                                        <th>Create Date</th>
-                                        <th>Product Name</th>
-                                        <th>Supplier</th>
-                                        <th>Category</th>
-                                        <th>Measure</th>
-                                        <th>Min Stock</th>
-                                        <th>Max Stock</th>
-                                        <th>Buffer Stock</th>
-                                        <th>Stock</th>
-                                        <th>Retail Price</th>
+                                        <th class="text-center" style="width: 5%;">No</th>
+                                        <th class="text-left" style="width: 15%;">Create Date</th>
+                                        <th class="text-left" style="width: 15%;">Product Name</th>
+                                        <th class="text-left" style="width: 15%;">Supplier</th>
+                                        <th class="text-left" style="width: 5%;">Category</th>
+                                        <th class="text-left" style="width: 5%;">Measure</th>
+                                        <th class="text-left" style="width: 5%;">Min Stock</th>
+                                        <th class="text-left" style="width: 5%;">Max Stock</th>
+                                        <th class="text-left" style="width: 5%;">Buffer Stock</th>
+                                        <th class="text-left" style="width: 5%;">Stock</th>
+                                        <th class="text-left" style="width: 10%;">Retail Price</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -96,17 +96,17 @@
                                     {
 
                                         <tr data-href="@Url.Action("DetailProduct", "Product", new {id=Product.ProductId})">
-                                            <th></th>
-                                            <td>@Product.CreateDateTime.ToString("dd MMMM yyyy")</td>                                            
-                                            <td>@Product.ProductName</td>
-                                            <td>@Product.Supplier.SupplierName</td>
-                                            <td>@Product.Category.CategoryName</td>
-                                            <td>@Product.Measurement.MeasurementName</td>
-                                            <td>@Product.MinStock</td>
-                                            <td>@Product.MaxStock</td>
-                                            <td>@Product.BufferStock</td>
-                                            <td>@Product.Stock</td>
-                                            <td>@Math.Truncate(@Product.RetailPrice)</td>
+                                            <th class="text-center"></th>
+                                            <td class="text-left">@Product.CreateDateTime.ToString("dd MMMM yyyy")</td>
+                                            <td class="text-left">@Product.ProductName</td>
+                                            <td class="text-left">@Product.Supplier.SupplierName</td>
+                                            <td class="text-left">@Product.Category.CategoryName</td>
+                                            <td class="text-left">@Product.Measurement.MeasurementName</td>
+                                            <td class="text-left">@Product.MinStock</td>
+                                            <td class="text-left">@Product.MaxStock</td>
+                                            <td class="text-left">@Product.BufferStock</td>
+                                            <td class="text-left">@Product.Stock</td>
+                                            <td class="text-left">@Math.Truncate(@Product.RetailPrice)</td>
                                         </tr>
                                     }
                                 </tbody>

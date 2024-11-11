@@ -1,0 +1,119 @@
+﻿@{
+    ViewData["Title"] = "Supplier Data";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+@using Microsoft.AspNetCore.Identity;
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model List<dynamic>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <div class="card-header bg-cyan">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewData["Title"]</h3>
+            </div>
+            <div class="card-body table-responsive p-0">
+                <form enctype="multipart/form-data" asp-controller="Api" asp-action="CreateSupplier" method="post">
+                    <table id="tblTemplate" class="table table-hover table-head-fixed text-wrap">
+                        <thead>
+                            <tr>
+                                <th><strong>No</strong></th>
+                                <th><strong>Kode Supplier</strong></th>
+                                <th><strong>Nama Supplier</strong></th>
+                                <th><strong>Kota</strong></th>
+                                <th><strong>Kontak Person</strong></th>
+                                <th><strong>Alamat Supplier</strong></th>
+                                <th><strong>Fax</strong></th>
+                                <th><strong>Telepon</strong></th>
+                                <th><strong>HP</strong></th>
+                                <th><strong>Atas Nama</strong></th>
+                                <th><strong>No Rekening</strong></th>
+                                <th><strong>Bank</strong></th>
+                                <th><strong>Term of Payment</strong></th>
+                                <th><strong>PPN</strong></th>
+                                <th><strong>Pay Type</strong></th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @if (Model != null && Model.Count > 0)
+                            {
+                                var no = 0;
+                                foreach (var supplier in Model)
+                                {
+                                    <tr>
+                                        <td>@no++</td>
+                                        <td>@supplier.kode_supp</td>
+                                        <td>@supplier.nama_supp</td>
+                                        <td>@supplier.kota_supp</td>
+                                        <td>@supplier.kontak_person</td>
+                                        <td>@supplier.alamat_supp</td>
+                                        <td>@supplier.fax</td>
+                                        <td>@supplier.tlp</td>
+                                        <td>@supplier.hp</td>
+                                        <td>@supplier.atas_nama</td>
+                                        <td>@supplier.no_rekening</td>
+                                        <td>@supplier.bank</td>
+                                        <td>@supplier.term_of_payment</td>
+                                        <td>@supplier.ppn</td>
+                                        <td>@supplier.paytype</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="14">Tidak ada data untuk ditampilkan.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    @* <button type="submit" class="btn btn-primary">Kirim</button> *@
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts{
+    <script src="~/scripts/tabletemplate.js"></script>
+
+    <style>
+        span.error {
+            display: block;
+            color: #347FC4;
+            font-size: 90%;
+        }
+
+        tr.error {
+            background-color: rgba(255,0,0,0.35);
+        }
+
+        /*css for table*/
+        .container td {
+            vertical-align: top;
+        }
+
+        .tablecontainer table {
+            width: 100%;
+            border-collapse: collapse;
+            border-top: 1px solid #BFAEAE;
+            border-right: 1px solid #BFAEAE;
+        }
+
+        .tablecontainer th {
+            border-bottom: 2px solid #BFAEAE;
+        }
+
+        .tablecontainer th, .tablecontainer td {
+            text-align: center;
+            border-left: 1px solid #BFAEAE;
+            padding: 5px;
+            border-bottom: 1px solid #BFAEAE;
+        }
+
+        .ui-widget {
+            font-size: 12px !important;
+        }
+    </style>
+}

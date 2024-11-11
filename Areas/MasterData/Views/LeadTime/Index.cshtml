@@ -78,10 +78,10 @@
                             <table id="tblTemplate" class="table table-hover table-head-fixed text-nowrap">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
-                                        <th>Create Date</th>
-                                        <th>LeadTime Code</th>
-                                        <th>LeadTime Value</th>
+                                        <th class="text-center" style="width: 5%;">No</th>
+                                        <th class="text-left" style="width: 15%;">Create Date</th>
+                                        <th class="text-left" style="width: 15%;">LeadTime Code</th>
+                                        <th class="text-left" style="width: 15%;">LeadTime Value</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -89,10 +89,10 @@
                                     {
 
                                         <tr data-href="@Url.Action("DetailLeadTime", "LeadTime", new {id=LeadTime.LeadTimeId})">
-                                            <th></th>
-                                            <td>@LeadTime.CreateDateTime.ToString("dd MMMM yyyy")</td>
-                                            <td>@LeadTime.LeadTimeCode</td>
-                                            <td>@LeadTime.LeadTimeValue</td>
+                                            <th class="text-center"></th>
+                                            <td class="text-left">@LeadTime.CreateDateTime.ToString("dd MMMM yyyy")</td>
+                                            <td class="text-left">@LeadTime.LeadTimeCode</td>
+                                            <td class="text-left">@LeadTime.LeadTimeValue</td>
                                         </tr>
                                     }
                                 </tbody>

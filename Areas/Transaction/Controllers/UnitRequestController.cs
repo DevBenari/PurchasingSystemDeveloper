@@ -9,6 +9,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using PurchasingSystemDeveloper.Areas.MasterData.Models;
 using PurchasingSystemDeveloper.Areas.MasterData.Repositories;
+using PurchasingSystemDeveloper.Areas.Order.Models;
 using PurchasingSystemDeveloper.Areas.Order.Repositories;
 using PurchasingSystemDeveloper.Areas.Transaction.Models;
 using PurchasingSystemDeveloper.Areas.Transaction.Repositories;
@@ -419,47 +420,45 @@ namespace PurchasingSystemDeveloper.Areas.Transaction.Controllers
             ViewBag.Approval = new SelectList(await _userActiveRepository.GetUserActives(), "UserActiveId", "FullName", SortOrder.Ascending);
             TempData["WarningMessage"] = "Number " + model.UnitRequestNumber + " Failed saved";
             return Json(new { redirectToUrl = Url.Action("Index", "UnitRequest") });
-        }        
+        }
 
-        //public async Task<IActionResult> PrintUnitRequest(Guid Id)
-        //{
-            //var unitRequest = await _unitRequestRepository.GetUnitRequestById(Id);
+        public async Task<IActionResult> PrintUnitRequest(Guid Id)
+        {
+            var unitRequest = await _unitRequestRepository.GetUnitRequestById(Id);
 
-            //var CreateDate = DateTime.Now.ToString("dd MMMM yyyy");
-            //var ReqNumber = unitRequest.UnitRequestNumber;
-            //var CreateBy = unitRequest.ApplicationUser.NamaUser;
-            //var HeadUnit = unitRequest.UnitRequestManager.FullName;
-            //var UnitLocation = unitRequest.UnitLocation.UnitLocationName;
-            //var HeadWarehouse = unitRequest.WarehouseApproval.FullName;
-            //var WarehouseLocation = unitRequest.WarehouseLocation.WarehouseLocationName;            
-            //var Note = unitRequest.Note;
-            //var QtyTotal = unitRequest.QtyTotal;
+            var CreateDate = unitRequest.CreateDateTime.ToString("dd MMMM yyyy");
+            var ReqNumber = unitRequest.UnitRequestNumber;
+            var CreateBy = unitRequest.ApplicationUser.NamaUser;
+            var UserApprove1 = unitRequest.UserApprove1.FullName;
+            var UnitLocation = unitRequest.UnitLocation.UnitLocationName;
+            var WarehouseLocation = unitRequest.WarehouseLocation.WarehouseLocationName;
+            var Note = unitRequest.Note;
+            var QtyTotal = unitRequest.QtyTotal;
 
-            //WebReport web = new WebReport();
-            //var path = $"{_webHostEnvironment.WebRootPath}\\Reporting\\UnitRequest.frx";
-            //web.Report.Load(path);
+            WebReport web = new WebReport();
+            var path = $"{_webHostEnvironment.WebRootPath}\\Reporting\\UnitRequest.frx";
+            web.Report.Load(path);
 
-            //var msSqlDataConnection = new MsSqlDataConnection();
-            //msSqlDataConnection.ConnectionString = _configuration.GetConnectionString("DefaultConnection");
-            //var Conn = msSqlDataConnection.ConnectionString;
+            var msSqlDataConnection = new MsSqlDataConnection();
+            msSqlDataConnection.ConnectionString = _configuration.GetConnectionString("DefaultConnection");
+            var Conn = msSqlDataConnection.ConnectionString;
 
-            //web.Report.SetParameterValue("Conn", Conn);
-            //web.Report.SetParameterValue("UnitRequestId", Id.ToString());
-            //web.Report.SetParameterValue("ReqNumber", ReqNumber);
-            //web.Report.SetParameterValue("CreateDate", CreateDate);
-            //web.Report.SetParameterValue("CreateBy", CreateBy);
-            //web.Report.SetParameterValue("HeadUnit", HeadUnit);
-            //web.Report.SetParameterValue("UnitLocation", UnitLocation);
-            //web.Report.SetParameterValue("HeadWarehouse", HeadWarehouse);
-            //web.Report.SetParameterValue("WarehouseLocation", WarehouseLocation);
-            //web.Report.SetParameterValue("Note", Note);
-            //web.Report.SetParameterValue("QtyTotal", QtyTotal);
+            web.Report.SetParameterValue("Conn", Conn);
+            web.Report.SetParameterValue("UnitRequestId", Id.ToString());
+            web.Report.SetParameterValue("ReqNumber", ReqNumber);
+            web.Report.SetParameterValue("CreateDate", CreateDate);
+            web.Report.SetParameterValue("CreateBy", CreateBy);
+            web.Report.SetParameterValue("UserApprove1", UserApprove1);
+            web.Report.SetParameterValue("UnitLocation", UnitLocation);
+            web.Report.SetParameterValue("WarehouseLocation", WarehouseLocation);
+            web.Report.SetParameterValue("Note", Note);
+            web.Report.SetParameterValue("QtyTotal", QtyTotal);
 
-            //web.Report.Prepare();
-            //Stream stream = new MemoryStream();
-            //web.Report.Export(new PDFSimpleExport(), stream);
-            //stream.Position = 0;
-            //return File(stream, "application/zip", (ReqNumber + ".pdf"));
-        //}
+            web.Report.Prepare();
+            Stream stream = new MemoryStream();
+            web.Report.Export(new PDFSimpleExport(), stream);
+            stream.Position = 0;
+            return File(stream, "application/zip", (ReqNumber + ".pdf"));
+        }
     }
 }

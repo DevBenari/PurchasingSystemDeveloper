@@ -78,10 +78,10 @@
                             <table id="tblTemplate" class="table table-hover table-head-fixed text-nowrap">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
-                                        <th>Create Date</th>
-                                        <th>Category Code</th>
-                                        <th>Category Name</th>
+                                        <th class="text-center" style="width: 5%;">No</th>
+                                        <th class="text-left" style="width: 10%;">Create Date</th>
+                                        <th class="text-left" style="width: 10%;">Category Code</th>
+                                        <th class="text-left" style="width: 10%;">Category Name</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -89,10 +89,10 @@
                                     {
 
                                         <tr data-href="@Url.Action("DetailCategory", "Category", new {id=Category.CategoryId})">
-                                            <th></th>
-                                            <td>@Category.CreateDateTime.ToString("dd MMMM yyyy")</td>
-                                            <td>@Category.CategoryCode</td>
-                                            <td>@Category.CategoryName</td>
+                                            <th class="text-center"></th>
+                                            <td class="text-left">@Category.CreateDateTime.ToString("dd MMMM yyyy")</td>
+                                            <td class="text-left">@Category.CategoryCode</td>
+                                            <td class="text-left">@Category.CategoryName</td>
                                         </tr>
                                     }
                                 </tbody>

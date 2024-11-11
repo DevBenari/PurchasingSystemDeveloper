@@ -170,10 +170,11 @@
         const newListItem = document.createElement('li');
         newListItem.classList.add('nav-item', 'active');
         newListItem.id = 'inboxItem';
+        newListItem.setAttribute('name', folderCurrentConcurrencyStamp);
         newListItem.innerHTML = `
         <a href="#" class="nav-link" onclick="toggleSubFolder('${folderCurrentConcurrencyStamp}')">
             ${folderCurrentConcurrencyStamp}
-            <span class="float-right" id="inboxIcon"><i class="fas fa-plus"></i></span>
+            <span class="float-right" id="inboxIcon"><i class="fas fa-plus" onclick="myCustomFunction('${folderCurrentConcurrencyStamp}')"></i></span>
         </a>
         <ul class="nav nav-pills flex-column ml-3 collapse show" id="${folderCurrentConcurrencyStamp}">
         </ul>
@@ -192,6 +193,7 @@
             alert("User Belum Dipilih.");
         }
         moveToDiv1(itemId, folderCurrentConcurrencyStamp)
+        changeIconsToX();
     }
 
 
@@ -199,17 +201,14 @@
         const item = document.getElementById(itemId);
         const newList = document.getElementById('div1').querySelector(`#${folderCurrentConcurrencyStamp}`);
         const originalList = document.getElementById('div2').querySelector(`#${folderCurrentConcurrencyStamp}`);
-        console.log("ini item = " + itemId);
 
 
         const menuTitle = document.getElementById('menuTitle');
         if (menuTitle && menuTitle.textContent.trim() !== "") {
             if (originalList.contains(item)) {
-                console.log("ini item 1= " + itemId);
                 newList.appendChild(item);
             } else {
                 originalList.appendChild(item);
-                console.log("ini item 2 = " + itemId);
             }
         }
     }
@@ -334,6 +333,7 @@
                 }
 
                 $('#newFolderList').append(newFolderContent);
+                changeIconsToX();
             },
             error: function (xhr, status, error) {
                 console.error('Error getting roles:', error);
@@ -419,6 +419,8 @@
     function myCustomFunction(folderId) {
         const folderItems = document.querySelectorAll(`#folderList #${folderId} li`);
         const newFolderListUl = document.querySelector(`#newFolderList #${folderId}`);
+        const newFolderItems = document.querySelectorAll(`#newFolderList #${folderId} li`);
+        const folderListUl = document.querySelector(`#folderList #${folderId}`);
 
         const folderList = document.getElementById('folderList');
         const newFolderList = document.getElementById('newFolderList');
@@ -427,24 +429,61 @@
         const folderItem = document.querySelector(`#folderList li[name="${folderId}"]`);
         const newFolderItem = document.querySelector(`#newFolderList li[name="${folderId}"]`);
 
-        // Jika elemen ditemukan di folderList, pindahkan ke newFolderList
-        if (folderItem) {
-            if (newFolderListUl) {
-                folderItems.forEach(item => {
-                    newFolderListUl.appendChild(item);
-                });
-                folderItem.remove();
-            } else {
-                newFolderList.insertBefore(folderItem, newFolderList.firstChild);
-            }
+        
+        const menuTitle = document.getElementById('menuTitle');
+        if (menuTitle && menuTitle.textContent.trim() !== "") {
+            if (folderItem) {
+                console.log("Folder item ditemukan di folderList:", folderItem);
+                console.log("Pindahkan items dari folderList ke newFolderList");
 
-        }else if (newFolderItem) {
-            // Memindahkan item ke posisi paling atas di folderList
-            folderList.insertBefore(newFolderItem, folderList.firstChild);
+                if (newFolderListUl) {
+                    folderItems.forEach(item => {
+                        console.log("Menambahkan item ke newFolderList:", item);
+                        newFolderListUl.appendChild(item); // Pindahkan item dari folderList ke newFolderListUl
+                    });
+                    folderItem.remove(); // Hapus folderItem dari folderList
+                    console.log("Folder item dihapus dari folderList");
+                } else {
+                    console.log("newFolderListUl tidak ditemukan, memasukkan folderItem ke newFolderList");
+                    newFolderList.insertBefore(folderItem, newFolderList.firstChild); // Pindahkan ke newFolderList
+                }
+
+                // Jika newFolderItem ditemukan di newFolderList
+            } else if (newFolderItem) {
+                console.log("New folder item ditemukan di newFolderList:", newFolderItem);
+                console.log("Pindahkan items dari newFolderList kembali ke folderList");
+
+                if (folderListUl) {
+                    newFolderItems.forEach(item => {
+                        console.log("Menambahkan item ke folderList:", item);
+                        folderListUl.appendChild(item); // Pindahkan item dari newFolderList kembali ke folderList
+                    });
+                    newFolderItem.remove(); // Hapus newFolderItem dari newFolderList
+                    console.log("New folder item dihapus dari newFolderList");
+                } else {
+                    console.log("folderListUl tidak ditemukan, memasukkan newFolderItem ke folderList");
+                    folderList.insertBefore(newFolderItem, folderList.firstChild); // Pindahkan ke folderList
+                }
+            } else {
+                console.log('Elemen folderItem dan newFolderItem tidak ditemukan');
+            }
+        } else {
+            alert("Silahkan Pilih User Active.");
         }
-        else {
-            console.log('Elemen tidak ditemukan');
-        }
+
+        changeIconsToX();
+    }
+    
+    function changeIconsToX() {
+        const icons = document.querySelectorAll('#newFolderList i.fas.fa-plus');
+        const iconsNew = document.querySelectorAll('#folderList i.fas.fa-times');
+
+        icons.forEach(icon => {
+            icon.className = 'fas fa-times';
+        });
+        iconsNew.forEach(icon => {
+            icon.className = 'fas fa-plus';
+        });
     }
 
 
@@ -494,6 +533,7 @@
             }
         }
     });
+
     document.getElementById('searchMenu').addEventListener('input', function () {
         const searchValue = this.value.toLowerCase();
         const items = document.querySelectorAll('#folderList .nav-item');

@@ -109,7 +109,6 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             ViewBag.tglAwalPencarian = tglAwalPencarian?.ToString("dd MMMM yyyy");
             ViewBag.tglAkhirPencarian = tglAkhirPencarian?.ToString("dd MMMM yyyy");
             ViewBag.SelectedFilter = filterOptions;
-
             return View(data);
         }
 

@@ -29,13 +29,13 @@
                                 <input hidden asp-for="PositionId" />
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="PositionCode"></label>
+                                        <label asp-for="PositionCode">Position Code</label>
                                         <input type="text" asp-for="PositionCode" class="form-control form-control-border border-width-2" id="PositionCode" placeholder="Position Code" readonly disabled>
                                     </div>                                    
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="DepartmentId"></label>
+                                        <label asp-for="DepartmentId">Department Name</label>
                                         <select class="form-control select2bs4" autofocus style="width: 100%;" asp-for="DepartmentId" asp-items="@ViewBag.Department" disabled>
                                             <option value="" hidden disabled selected>--Choose Department--</option>
                                         </select>
@@ -44,8 +44,8 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="PositionName"></label>
-                                        <input type="text" asp-for="PositionName" class="form-control form-control-border border-width-2" maxlength="250" autocomplete="off" id="PositionName" placeholder="Position Name" disabled>
+                                        <label asp-for="PositionName">Position Name</label>
+                                        <input type="text" asp-for="PositionName" class="form-control form-control-border border-width-2" maxlength="50" autocomplete="off" id="PositionName" placeholder="Position Name" disabled>
                                         <span asp-validation-for="PositionName" class="text-danger"></span>
                                     </div>
                                 </div>

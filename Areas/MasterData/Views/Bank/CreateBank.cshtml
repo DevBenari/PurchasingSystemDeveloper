@@ -29,34 +29,34 @@
                             <div class="col-md-12">
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="BankCode"></label>
+                                        <label asp-for="BankCode">Bank Code</label>
                                         <input type="text" asp-for="BankCode" class="form-control form-control-border border-width-2" id="BankCode" placeholder="Bank Code" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="BankName"></label>
-                                        <input maxlength="100" autocomplete="off" autofocus type="text" asp-for="BankName" class="form-control form-control-border border-width-2" id="BankName" placeholder="Bank Name">
+                                        <label asp-for="BankName">Bank Name</label>
+                                        <input maxlength="50" autocomplete="off" autofocus type="text" asp-for="BankName" class="form-control form-control-border border-width-2" id="BankName" placeholder="Bank Name">
                                         <span asp-validation-for="BankName" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="AccountNumber"></label>
-                                        <input type="text" asp-for="AccountNumber" class="form-control form-control-border border-width-2" id="AccountNumber" placeholder="Account Number">
+                                        <label asp-for="AccountNumber">Account Number</label>
+                                        <input maxlength="50" autocomplete="off" type="text" asp-for="AccountNumber" class="form-control form-control-border border-width-2" id="AccountNumber" placeholder="Account Number">
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="CardHolderName"></label>
-                                        <input maxlength="100" autocomplete="off" type="text" asp-for="CardHolderName" class="form-control form-control-border border-width-2" id="CardHolderName" placeholder="Card Holder Name">
+                                        <label asp-for="CardHolderName">Card Holder Name</label>
+                                        <input maxlength="50" autocomplete="off" type="text" asp-for="CardHolderName" class="form-control form-control-border border-width-2" id="CardHolderName" placeholder="Card Holder Name">
                                         <span asp-validation-for="CardHolderName" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="Note"></label>
-                                        <input maxlength="100" autocomplete="off" type="text" asp-for="Note" class="form-control form-control-border border-width-2" id="Note" placeholder="Note">
+                                        <label asp-for="Note">Note</label>
+                                        <input maxlength="75" autocomplete="off" type="text" asp-for="Note" class="form-control form-control-border border-width-2" id="Note" placeholder="Note">
                                         <span asp-validation-for="Note" class="text-danger"></span>
                                     </div>
                                 </div>

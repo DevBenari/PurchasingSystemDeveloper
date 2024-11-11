@@ -29,20 +29,20 @@
                             <div class="col-md-12">
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="WarehouseLocationCode"></label>
+                                        <label asp-for="WarehouseLocationCode">Warehouse Location Code</label>
                                         <input type="text" asp-for="WarehouseLocationCode" class="form-control form-control-border border-width-2" id="WarehouseLocationCode" placeholder="Warehouse Location Code" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="WarehouseLocationName"></label>
-                                        <input maxlength="100" autocomplete="off" autofocus type="text" asp-for="WarehouseLocationName" class="form-control form-control-border border-width-2" id="WarehouseLocationName" placeholder="Warehouse Location Name">
+                                        <label asp-for="WarehouseLocationName">Warehouse Location Name</label>
+                                        <input maxlength="50" autocomplete="off" autofocus type="text" asp-for="WarehouseLocationName" class="form-control form-control-border border-width-2" id="WarehouseLocationName" placeholder="Warehouse Location Name">
                                         <span asp-validation-for="WarehouseLocationName" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="WarehouseManagerId"></label>
+                                        <label asp-for="WarehouseManagerId">Warehouse Manager</label>
                                         <select asp-for="WarehouseManagerId" asp-items="@ViewBag.WarehouseManager" class="form-control select2bs4" id="WarehouseManagerId" style="width: 100%;">
                                             <option value="" hidden disabled selected>--Choice Warehouse Manager--</option>
                                         </select>
@@ -51,8 +51,8 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="Address"></label>
-                                        <input maxlength="100" autocomplete="off" type="text" asp-for="Address" class="form-control form-control-border border-width-2" id="Address" placeholder="Address">
+                                        <label asp-for="Address">Address</label>
+                                        <input maxlength="75" autocomplete="off" type="text" asp-for="Address" class="form-control form-control-border border-width-2" id="Address" placeholder="Address">
                                         <span asp-validation-for="Address" class="text-danger"></span>
                                     </div>
                                 </div>

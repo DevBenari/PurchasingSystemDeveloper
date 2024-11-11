@@ -378,7 +378,7 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
         {
             var purchaseOrder = await _purchaseOrderRepository.GetPurchaseOrderById(Id);
 
-            var CreateDate = DateTime.Now.ToString("dd MMMM yyyy");
+            var CreateDate = purchaseOrder.CreateDateTime.ToString("dd MMMM yyyy");
             var PoNumber = purchaseOrder.PurchaseOrderNumber;
             var CreateBy = purchaseOrder.ApplicationUser.NamaUser;
             var UserApprove1 = purchaseOrder.UserApprove1.FullName;
@@ -408,7 +408,6 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
             web.Report.SetParameterValue("UserApprove2", UserApprove2);
             web.Report.SetParameterValue("UserApprove3", UserApprove3);
             web.Report.SetParameterValue("TermOfPayment", TermOfPayment);
-            //web.Report.SetParameterValue("DueDate", DueDate);
             web.Report.SetParameterValue("Note", Note);
             web.Report.SetParameterValue("GrandTotal", GrandTotal);
             web.Report.SetParameterValue("Tax", Tax);

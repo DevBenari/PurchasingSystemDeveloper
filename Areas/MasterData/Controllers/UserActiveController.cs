@@ -81,8 +81,8 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
         public async Task<IActionResult> Index(DateTime? tglAwalPencarian, DateTime? tglAkhirPencarian, string filterOptions)
         {
             ViewBag.Active = "MasterData";
-            var data = _userActiveRepository.GetAllUser();
-            var userLogin = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+
+            var data = _userActiveRepository.GetAllUser();            
 
             if (tglAwalPencarian.HasValue && tglAkhirPencarian.HasValue)
             {

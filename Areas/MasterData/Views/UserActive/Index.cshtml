@@ -81,15 +81,14 @@
                             <table id="tblTemplate" class="table table-hover table-head-fixed text-wrap">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
-                                        <th>Photo</th>
-                                        <th>Create Date</th>
-                                        <th>User Code</th>
-                                        <th>Fullname</th>
-                                        <th>Department</th>
-                                        <th>Position</th>
-                                        <th>Date Of Birth</th>
-                                        <th>Address</th>
+                                        <th class="text-center" style="width: 5%;">No</th>
+                                        <th class="text-center" style="width: 10%;">Photo</th>
+                                        <th class="text-left" style="width: 15%;">Create Date</th>
+                                        <th class="text-left" style="width: 10%;">User Code</th>
+                                        <th class="text-left" style="width: 15%;">Fullname</th>
+                                        <th class="text-left" style="width: 10%;">Department</th>
+                                        <th class="text-left" style="width: 10%;">Position</th>
+                                        <th class="text-left" style="width: 15%;">Date Of Birth</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -98,15 +97,14 @@
                                         var imagePath = "/UserPhoto/" + (user.Foto ?? "user.jpg");
 
                                         <tr data-href="@Url.Action("DetailUserActive", "UserActive", new {id=user.UserActiveId})">
-                                            <th></th>
-                                            <td><img src="@imagePath" height="50px;" width="50px;" /></td>
-                                            <td>@user.CreateDateTime.ToString("dd MMMM yyyy")</td>
-                                            <td>@user.UserActiveCode</td>
-                                            <td>@user.FullName</td>
-                                            <td>@user.Department.DepartmentName</td>
-                                            <td>@user.Position.PositionName</td>
-                                            <td>@user.DateOfBirth.ToString("dd MMMM yyyy")</td>
-                                            <td>@user.Address</td>
+                                            <th class="text-center"></th>
+                                            <td class="text-center"><img src="@imagePath" height="50px;" width="50px;" /></td>
+                                            <td class="text-left">@user.CreateDateTime.ToString("dd MMMM yyyy")</td>
+                                            <td class="text-left">@user.UserActiveCode</td>
+                                            <td class="text-left">@user.FullName</td>
+                                            <td class="text-left">@user.Department.DepartmentName</td>
+                                            <td class="text-left">@user.Position.PositionName</td>
+                                            <td class="text-left">@user.DateOfBirth.ToString("dd MMMM yyyy")</td>
                                         </tr>
                                     }
                                 </tbody>

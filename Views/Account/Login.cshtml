@@ -17,7 +17,7 @@
             <span asp-validation-for="Email" class="text-danger"></span>
         </div>
         <div class="form-outline mb-2">
-            <input type="password" asp-for="Password" id="password" class="form-control" placeholder="Kata Sandi" maxlength="45" />
+            <input type="password" asp-for="Password" id="password" class="form-control" placeholder="Password" maxlength="45" />
             <span asp-validation-for="Password" class="text-danger"></span>
             <!-- password mata / toggle password to text -->
             <div class="input-group-app end position-absolute  border-0 " style="right:60px; margin-top:-40px; ">
@@ -34,7 +34,7 @@
                     </label>
             </div>-->
         </div>
-        <button type="submit" class="form-control btn btn-primary rounded submit px-3"><div style="color:white">Masuk</div></button>
+        <button type="submit" class="form-control btn btn-primary rounded submit px-3"><div style="color:white">Login</div></button>
     </form>
     <div class="form-check form-check-inline">
         <label asp-for="RememberMe">
@@ -42,63 +42,104 @@
             @Html.DisplayNameFor(m => m.RememberMe)
         </label>
     </div>
-    <div class="text-center">
+    @*<div class="text-center">
         <a href="#">Pusat Bantuan</a>
-    </div>
+    </div>*@
     @*<div class="text-center pt-1 mb-1 pb-1">
         <a href="#" onclick="forgot()" id="forgotPassword">Pusat Bantuan</a>
-    </div>*@
+    </div>*@    
+</div>
+
+@section Scripts {
     @if (TempData["WarningMessage"] != null)
     {
         <script type="text/javascript">
             window.onload = function () {
-                swal("Failed !", '@TempData["WarningMessage"]', "warning");
+                swal({
+                    title: "Failed!",
+                    text: '@TempData["WarningMessage"]',
+                    type: "warning"
+                }).then(() => {
+                    // Setelah swal ditutup, fokus pada input password
+                    document.getElementById("password").focus();
+                });
             };
         </script>
     }
     else if (TempData["UserActiveMessage"] != null)
     {
-        <script type="text/javascript">
+        <script>
             window.onload = function () {
-                swal("Oops...", '@TempData["UserActiveMessage"]', "error");
+                swal({
+                    title: "Oops...",
+                    text: '@TempData["UserActiveMessage"]',
+                    type: "error"
+                }).then(() => {
+                    // Setelah swal ditutup, fokus pada input password
+                    document.getElementById("password").focus();
+                });
             };
+
+            @*window.onload = function () {
+                swal("Oops...", '@TempData["UserActiveMessage"]', "error");
+                document.getElementById("password").focus();
+            };*@
+        </script>
+    }
+    else if (TempData["UserOnlineMessage"] != null)
+    {
+        <script>
+                window.onload = function () {
+                    swal({
+                        title: "Oops...",
+                        text: '@TempData["UserOnlineMessage"]',
+                        type: "warning"
+                    }).then(() => {
+                        // Setelah swal ditutup, fokus pada input password
+                        document.getElementById("password").focus();
+                    });
+                };
         </script>
     }
     else if (TempData["UserLockOut"] != null)
     {
         <script type="text/javascript">
-            window.onload = function () {
-                swal("Locked !", '@TempData["UserLockOut"]', "error");
-            };
+                window.onload = function () {
+                    swal({
+                        title: "Locked !",
+                        text: '@TempData["UserLockOut"]',
+                        type: "error"
+                    }).then(() => {
+                        // Setelah swal ditutup, fokus pada input password
+                        document.getElementById("password").focus();
+                    });
+                };
         </script>
     }
-</div>
 
-@section Scripts {
     <script src="https://kit.fontawesome.com/c3423d6308.js" crossorigin="anonymous"></script>
     <link href="~/admin/plugins/select2/css/select2.min.css" rel="stylesheet" />
     <link href="~/admin/plugins/select2/css/select2.css" rel="stylesheet" />
     <link href="~/admin/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css" rel="stylesheet" />
     <link href="~/admin/plugins/select2-bootstrap4-theme/select2-bootstrap4.css" rel="stylesheet" />
-   <!-- password to text with check box-->
-   <!--
-         <script type="text/javascript">
-         var show = document.getElementById('showPassword');
-         var textbox = document.getElementById('password');
-
-         show.addEventListener("click", function () {
-             var isCheked = show.checked;
-
-             if (isCheked) {
-                 textbox.type = "text";
-             } else {
-                 textbox.type = "password";
-             }
-         })
-     </script>
-   -->
     <!-- password to text with check box-->
+    <!--
+          <script type="text/javascript">
+          var show = document.getElementById('showPassword');
+          var textbox = document.getElementById('password');
 
+          show.addEventListener("click", function () {
+              var isCheked = show.checked;
+
+              if (isCheked) {
+                  textbox.type = "text";
+              } else {
+                  textbox.type = "password";
+              }
+          })
+      </script>
+    -->
+    <!-- password to text with check box-->
     <!-- function javascript icon mata untuk merubah password to text -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -120,5 +161,4 @@
         });
     </script>
     <!--end code function javascript icon mata untuk merubah password to text -->
-
 }

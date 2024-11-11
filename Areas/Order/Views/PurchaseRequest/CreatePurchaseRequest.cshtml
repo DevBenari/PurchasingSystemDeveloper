@@ -16,168 +16,159 @@
 <section class="content">
     <div class="row">
         <div class="col-md-12 bg-white">
-            <div class="card-header bg-cyan">
-                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
-            </div>
-
             <form enctype="multipart/form-data" asp-controller="PurchaseRequest" asp-action="CreatePurchaseRequest" method="post" class="form-horizontal">
-                <div class="card-body">
-                    @if (signInManager.IsSignedIn(User))
-                    {
-                        <input asp-for="@User.Identity.Name" class="form-control" type="hidden">
-                    }
-                    <input asp-for="Status" id="status" value="Waiting Approval" type="hidden">
-                    <input asp-for="UserAccessId" id="UserAccessId" type="hidden">
+                <div class="card-header bg-cyan">
+                    <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+                </div>
 
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" asp-for="PurchaseRequestNumber">PR Number</label>
-                        <div class="col-sm-10">
-                            <input type="text" asp-for="PurchaseRequestNumber" class="form-control form-control-border border-width-2" id="purchaserequestnumber" placeholder="PR Number" readonly>
-                        </div>
-                    </div>
+                @if (signInManager.IsSignedIn(User))
+                {
+                    <input asp-for="@User.Identity.Name" class="form-control" type="hidden">
+                }
+                <input asp-for="Status" id="status" value="Waiting Approval" type="hidden">
+                <input asp-for="UserAccessId" id="UserAccessId" type="hidden">
 
-                    @*Content Approve User 1*@
-                    <div class="col-md-12 bg-white">
-                        <div class="card-header bg-cyan">
-                            <h3 class="card-title fw-bold" style="color:#ffffff">Approve 1</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" asp-for="Department1Id">
-                                    Department Name
-                                </label>
-                                <div class="col-sm-10">
-                                    <select asp-for="Department1Id" asp-items="@ViewBag.Department" class="form-control select2bs4" id="Department1List" style="width: 100%;">
-                                        <option value="" hidden disabled selected>--Choose Department--</option>
-                                    </select>
-                                    <span asp-validation-for="Department1Id" class="error"></span>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" asp-for="Position1Id">
-                                    Position Name
-                                </label>
-                                <div class="col-sm-10">
-                                    <select asp-for="Position1Id" asp-items="@ViewBag.Position" class="form-control select2bs4" id="Position1List" style="width: 100%;">
-                                        <option value="" hidden disabled selected>--Choose Position--</option>
-                                    </select>
-                                    <span asp-validation-for="Position1Id" class="error"></span>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" asp-for="UserApprove1Id">
-                                    User Approve
-                                </label>
-                                <div class="col-sm-10">
-                                    <select asp-for="UserApprove1Id" asp-items="@ViewBag.Approval" class="form-control select2bs4" id="UserApprove1List" style="width: 100%;">
-                                        <option value="" hidden disabled selected>--Choose User--</option>
-                                    </select>
-                                    <span asp-validation-for="UserApprove1Id" class="error"></span>
-                                </div>
-                            </div>
-                        </div>                        
-                    </div>
+            
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-0"></div>
+                            <div class="col-md-12">                                
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label class="col-sm-2 col-form-label" asp-for="PurchaseRequestNumber">PR Number</label>
+                                        <input type="text" asp-for="PurchaseRequestNumber" class="form-control form-control-border border-width-2" id="purchaserequestnumber" placeholder="PR Number" readonly>
+                                    </div>
+                                </div>                               
 
-                    @*Content Approve User 2*@
-                    <div class="col-md-12 bg-white">
-                        <div class="card-header bg-cyan">
-                            <h3 class="card-title fw-bold" style="color:#ffffff">Approve 2</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" asp-for="Department2Id">
-                                    Department Name
-                                </label>
-                                <div class="col-sm-10">
-                                    <select asp-for="Department2Id" asp-items="@ViewBag.Department" class="form-control select2bs4" id="Department2List" style="width: 100%;">
-                                        <option value="" hidden disabled selected>--Choose Department--</option>
-                                    </select>
-                                    <span asp-validation-for="Department2Id" class="error"></span>
+                                @*Content Approve User 1*@
+                                <div class="col-md-12 bg-white">
+                                    <div class="card-header bg-cyan">
+                                        <h3 class="card-title fw-bold" style="color:#ffffff">Approve 1</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-group row">
+                                            <div class="col-sm-12">
+                                                <label class="col-sm-2 col-form-label" asp-for="Department1Id">Department Name</label>
+                                                <select asp-for="Department1Id" asp-items="@ViewBag.Department" class="form-control select2bs4" id="Department1List" style="width: 100%;">
+                                                    <option value="" hidden disabled selected>--Choose Department--</option>
+                                                </select>
+                                                <span asp-validation-for="Department1Id" class="error"></span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-sm-12">
+                                                <label class="col-sm-2 col-form-label" asp-for="Position1Id">Position Name</label>
+                                                <select asp-for="Position1Id" asp-items="@ViewBag.Position" class="form-control select2bs4" id="Position1List" style="width: 100%;">
+                                                    <option value="" hidden disabled selected>--Choose Position--</option>
+                                                </select>
+                                                <span asp-validation-for="Position1Id" class="error"></span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-sm-12">
+                                                <label class="col-sm-2 col-form-label" asp-for="UserApprove1Id">User Approve</label>
+                                                <select asp-for="UserApprove1Id" asp-items="@ViewBag.Approval" class="form-control select2bs4" id="UserApprove1List" style="width: 100%;">
+                                                    <option value="" hidden disabled selected>--Choose User--</option>
+                                                </select>
+                                                <span asp-validation-for="UserApprove1Id" class="error"></span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" asp-for="Position2Id">
-                                    Position Name
-                                </label>
-                                <div class="col-sm-10">
-                                    <select asp-for="Position2Id" asp-items="@ViewBag.Position" class="form-control select2bs4" id="Position2List" style="width: 100%;">
-                                        <option value="" hidden disabled selected>--Choose Position--</option>
-                                    </select>
-                                    <span asp-validation-for="Position2Id" class="error"></span>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" asp-for="UserApprove2Id">
-                                    User Approve
-                                </label>
-                                <div class="col-sm-10">
-                                    <select asp-for="UserApprove2Id" asp-items="@ViewBag.Approval" class="form-control select2bs4" id="UserApprove2List" style="width: 100%;">
-                                        <option value="" hidden disabled selected>--Choose User--</option>
-                                    </select>
-                                    <span asp-validation-for="UserApprove2Id" class="error"></span>
-                                </div>
-                            </div>
-                        </div>                        
-                    </div>
 
-                    @*Content Approve User 3*@
-                    <div class="col-md-12 bg-white">
-                        <div class="card-header bg-cyan">
-                            <h3 class="card-title fw-bold" style="color:#ffffff">Approve 3</h3>
-                        </div>
-                        <div class="card-body">
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" asp-for="Department3Id">
-                                    Department Name
-                                </label>
-                                <div class="col-sm-10">
-                                    <select asp-for="Department3Id" asp-items="@ViewBag.Department" class="form-control select2bs4" id="Department3List" style="width: 100%;">
-                                        <option value="" hidden disabled selected>--Choose Department--</option>
-                                    </select>
-                                    <span asp-validation-for="Department3Id" class="error"></span>
+                                @*Content Approve User 2*@
+                                <div class="col-md-12 bg-white">
+                                    <div class="card-header bg-cyan">
+                                        <h3 class="card-title fw-bold" style="color:#ffffff">Approve 2</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-group row">
+                                            <div class="col-sm-12">
+                                                <label class="col-sm-2 col-form-label" asp-for="Department2Id">Department Name</label>
+                                                <select asp-for="Department2Id" asp-items="@ViewBag.Department" class="form-control select2bs4" id="Department2List" style="width: 100%;">
+                                                    <option value="" hidden disabled selected>--Choose Department--</option>
+                                                </select>
+                                                <span asp-validation-for="Department2Id" class="error"></span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-sm-12">
+                                                <label class="col-sm-2 col-form-label" asp-for="Position2Id">Position Name</label>
+                                                <select asp-for="Position2Id" asp-items="@ViewBag.Position" class="form-control select2bs4" id="Position2List" style="width: 100%;">
+                                                    <option value="" hidden disabled selected>--Choose Position--</option>
+                                                </select>
+                                                <span asp-validation-for="Position2Id" class="error"></span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-sm-12">
+                                                <label class="col-sm-2 col-form-label" asp-for="UserApprove2Id">User Approve</label>
+                                                <select asp-for="UserApprove2Id" asp-items="@ViewBag.Approval" class="form-control select2bs4" id="UserApprove2List" style="width: 100%;">
+                                                    <option value="" hidden disabled selected>--Choose User--</option>
+                                                </select>
+                                                <span asp-validation-for="UserApprove2Id" class="error"></span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" asp-for="Position3Id">
-                                    Position Name
-                                </label>
-                                <div class="col-sm-10">
-                                    <select asp-for="Position3Id" asp-items="@ViewBag.Position" class="form-control select2bs4" id="Position3List" style="width: 100%;">
-                                        <option value="" hidden disabled selected>--Choose Position--</option>
-                                    </select>
-                                    <span asp-validation-for="Position3Id" class="error"></span>
+
+                                @*Content Approve User 3*@
+                                <div class="col-md-12 bg-white">
+                                    <div class="card-header bg-cyan">
+                                        <h3 class="card-title fw-bold" style="color:#ffffff">Approve 3</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-group row">
+                                            <div class="col-sm-12">
+                                                <label class="col-sm-2 col-form-label" asp-for="Department3Id">Department Name</label>
+                                                <select asp-for="Department3Id" asp-items="@ViewBag.Department" class="form-control select2bs4" id="Department3List" style="width: 100%;">
+                                                    <option value="" hidden disabled selected>--Choose Department--</option>
+                                                </select>
+                                                <span asp-validation-for="Department3Id" class="error"></span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-sm-12">
+                                                <label class="col-sm-2 col-form-label" asp-for="Position3Id">Position Name</label>
+                                                <select asp-for="Position3Id" asp-items="@ViewBag.Position" class="form-control select2bs4" id="Position3List" style="width: 100%;">
+                                                    <option value="" hidden disabled selected>--Choose Position--</option>
+                                                </select>
+                                                <span asp-validation-for="Position3Id" class="error"></span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-sm-12">
+                                                <label class="col-sm-2 col-form-label" asp-for="UserApprove3Id">User Approve</label>
+                                                <select asp-for="UserApprove3Id" asp-items="@ViewBag.Approval" class="form-control select2bs4" id="UserApprove3List" style="width: 100%;">
+                                                    <option value="" hidden disabled selected>--Choose User--</option>
+                                                </select>
+                                                <span asp-validation-for="UserApprove3Id" class="error"></span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-group row">
-                                <label class="col-sm-2 col-form-label" asp-for="UserApprove3Id">
-                                    User Approve
-                                </label>
-                                <div class="col-sm-10">
-                                    <select asp-for="UserApprove3Id" asp-items="@ViewBag.Approval" class="form-control select2bs4" id="UserApprove3List" style="width: 100%;">
-                                        <option value="" hidden disabled selected>--Choose User--</option>
-                                    </select>
-                                    <span asp-validation-for="UserApprove3Id" class="error"></span>
+
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label class="col-sm-2 col-form-label" asp-for="TermOfPaymentId">Term Of Payment</label>
+                                        <select asp-for="TermOfPaymentId" asp-items="@ViewBag.TermOfPayment" class="form-control select2bs4" id="TermOfPayment" style="width: 100%;">
+                                            <option value="" hidden disabled selected>--Choose TOP--</option>
+                                        </select>
+                                        <span asp-validation-for="TermOfPaymentId" class="error"></span>
+                                    </div>
                                 </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="Note">Note</label>
+                                        <input maxlength="75" autocomplete="off" type="text" asp-for="Note" class="form-control form-control-border border-width-2" id="Note" placeholder="Note">
+                                        <span asp-validation-for="Note" class="text-danger"></span>
+                                    </div>
+                                </div>                            
                             </div>
+                            <div class="col-md-0"></div>
                         </div>
-                    </div>                   
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" asp-for="TermOfPaymentId">
-                            Term Of Payment
-                        </label>
-                        <div class="col-sm-10">
-                            <select asp-for="TermOfPaymentId" asp-items="@ViewBag.TermOfPayment" class="form-control select2bs4" id="TermOfPayment" style="width: 100%;">
-                                <option value="" hidden disabled selected>--Choose TOP--</option>
-                            </select>
-                            <span asp-validation-for="TermOfPaymentId" class="error"></span>
-                        </div>
-                    </div>                   
-                    <div class="form-group row">
-                        <label class="col-sm-2 col-form-label" asp-for="Note">Note</label>
-                        <div class="col-sm-10">
-                            <input type="text" asp-for="Note" class="form-control form-control-border border-width-2" id="note" placeholder="Note">
-                        </div>
-                    </div>
+                    </div>                                       
                 </div>
 
                 <div class="card card-default">
@@ -266,7 +257,7 @@
                             <table id="tbldetailpr" class="table table-head-fixed text-nowrap table-bordered table-hover table-striped">
                                 <thead>
                                     <tr>
-                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">No</div></th>
+                                        <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff">No</div></th>
                                         <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Number</div></th>
                                         <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Product Name</div></th>
                                         <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Supplier</div></th>

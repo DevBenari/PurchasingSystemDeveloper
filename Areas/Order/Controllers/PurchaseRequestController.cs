@@ -581,13 +581,13 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
             ViewBag.Position = new SelectList(await _positionRepository.GetPositions(), "PositionId", "PositionName", SortOrder.Ascending);
             TempData["WarningMessage"] = "Number " + model.PurchaseRequestNumber + " Failed saved";
             return Json(new { redirectToUrl = Url.Action("Index", "PurchaseRequest") });
-        }        
-
+        }
+        
         public async Task<IActionResult> PrintPurchaseRequest(Guid Id)
         {
             var purchaseRequest = await _purchaseRequestRepository.GetPurchaseRequestById(Id);
 
-            var CreateDate = DateTimeOffset.Now.ToString("dd MMMM yyyy");
+            var CreateDate = purchaseRequest.CreateDateTime.ToString("dd MMMM yyyy");
             var PrNumber = purchaseRequest.PurchaseRequestNumber;
             var CreateBy = purchaseRequest.ApplicationUser.NamaUser;
             var UserApprove1 = purchaseRequest.UserApprove1.FullName;
@@ -616,13 +616,13 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
             web.Report.SetParameterValue("UserApprove2", UserApprove2);
             web.Report.SetParameterValue("UserApprove3", UserApprove3);
             web.Report.SetParameterValue("TermOfPayment", TermOfPayment);
-            //web.Report.SetParameterValue("DueDate", DueDate);
             web.Report.SetParameterValue("Note", Note);
             web.Report.SetParameterValue("GrandTotal", GrandTotal);
             web.Report.SetParameterValue("Tax", Tax);
             web.Report.SetParameterValue("GrandTotalAfterTax", GrandTotalAfterTax);
 
             web.Report.Prepare();
+
             Stream stream = new MemoryStream();
             web.Report.Export(new PDFSimpleExport(), stream);
             stream.Position = 0;

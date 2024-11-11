@@ -29,21 +29,21 @@
                             <div class="col-md-12">
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="TermOfPaymentCode"></label>
+                                        <label asp-for="TermOfPaymentCode">T.O.P Code</label>
                                         <input type="text" asp-for="TermOfPaymentCode" class="form-control form-control-border border-width-2" id="TermOfPaymentCode" placeholder="Term Of Payment Code" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="TermOfPaymentName"></label>
-                                        <input maxlength="100" autocomplete="off" autofocus type="text" asp-for="TermOfPaymentName" class="form-control form-control-border border-width-2" id="TermOfPaymentName" placeholder="Term Of Payment Name">
+                                        <label asp-for="TermOfPaymentName">T.O.P Name</label>
+                                        <input maxlength="50" autocomplete="off" autofocus type="text" asp-for="TermOfPaymentName" class="form-control form-control-border border-width-2" id="TermOfPaymentName" placeholder="Term Of Payment Name">
                                         <span asp-validation-for="TermOfPaymentName" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="Note"></label>
-                                        <input maxlength="100" autocomplete="off" type="text" asp-for="Note" class="form-control form-control-border border-width-2" id="Note" placeholder="Note">
+                                        <label asp-for="Note">Note</label>
+                                        <input maxlength="75" autocomplete="off" type="text" asp-for="Note" class="form-control form-control-border border-width-2" id="Note" placeholder="Note">
                                         <span asp-validation-for="Note" class="text-danger"></span>
                                     </div>
                                 </div>

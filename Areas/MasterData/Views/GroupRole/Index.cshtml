@@ -12,132 +12,136 @@
 
 <!-- Main content -->
 <section class="content">
-    <div class="container-fluid">
-        <!-- Card Header -->
-        <div class="card card-cyan">
-            <div class="card-header">
-                <h3 class="card-title" style="color:#ffffff"><b>@ViewBag.Title</b></h3>
-                <div class="card-tools"></div>
-            </div>
-            <!-- Form Role Creation -->
-            @{
-                var user = await signInManager.UserManager.FindByNameAsync(User.Identity.Name);
-            }
-            @if (user?.Email == "superadmin@admin.com")
-            {
-                <form id="createRoleForm" asp-controller="GroupRole" asp-action="CreateRoleNavbar" method="post">
-                    <div class="row">
-                        <div class="col-md-2">
-                            <div class="card">
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-cyan">
+                <div class="card-header">
+                    <h3 class="card-title" style="color:#ffffff"><b>@ViewBag.Title</b></h3>
+                    <div class="card-tools"></div>
+                </div>
+                <!-- Form Role Creation -->
+                @{
+                    var user = await signInManager.UserManager.FindByNameAsync(User.Identity.Name);
+                }
+                @if (user?.Email == "superadmin@admin.com")
+                {
+                    <form id="createRoleForm" asp-controller="GroupRole" asp-action="CreateRoleNavbar" method="post">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="card-tools">
+                                            <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold">
+                                                Refresh Roles
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- /.card-header -->
+                                </div>
+                                <!-- /.card -->
+                            </div>
+                        </div>
+                    </form>
+                }
+
+                <!-- Card Body for Role Menus -->
+                <div class="row">
+                    <div class="col-md-4 bg-white">
+                        <div class="col-md-12" id="div0">
+                            <a href="#" class="btn bg-info btn-block mb-3">All User</a>
+                            <!-- DIRECT CHAT -->
+                            <div class="card direct-chat direct-chat-primary">
                                 <div class="card-header">
+                                    <h3 class="card-title">
+                                        <form action="#" method="post">
+                                            <div class="input-group">
+                                                <input type="text" id="searchInput" name="message" placeholder="Search User" class="form-control">
+                                                <span class="input-group-append">
+                                                    <!-- Tombol Search dihapus -->
+                                                </span>
+                                            </div>
+                                        </form>
+                                    </h3>
                                     <div class="card-tools">
-                                        <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold">
-                                            Refresh Roles
+                                        <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                            <i class="fas fa-minus"></i>
                                         </button>
                                     </div>
                                 </div>
                                 <!-- /.card-header -->
+                                <div class="card-body">
+                                    <!-- Conversations are loaded here -->
+                                    <div class="direct-chat-messages" style="height:777px;">
+                                        <ul class="contacts-list" id="userList">
+                                        </ul>
+                                        <!-- /.contacts-list -->
+                                    </div>
+                                    <!-- /.direct-chat-pane -->
+                                </div>
+                                <!-- /.card-body -->
+                                <div class="card-footer">
+                                </div>
+                            </div>
+                            <!-- /.card -->
+                        </div>                                                
+                    </div>
+
+                    <div class="col-md-4 bg-white">
+                        <div class="col-md-12" id="div1">
+                            <a href="#" class="btn bg-info btn-block mb-3">All Role Menu</a>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        <div class="input-group">
+                                            <input type="text" id="searchMenu" name="message" placeholder="Search Menu" class="form-control">
+                                            <span class="input-group-append">
+                                                <!-- Tombol Search dihapus -->
+                                            </span>
+                                        </div>
+                                    </h3>
+                                    <div class="card-tools">
+                                        <button type="button" class="btn btn-success float-left fw-bold" id="moveButton">
+                                            Move All
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0 direct-chat-messages" style="height:800px;">
+                                    <ul class="nav nav-pills flex-column" id="folderList">
+                                    </ul>
+                                </div>
+                                <!-- /.card-body -->
                             </div>
                             <!-- /.card -->
                         </div>
                     </div>
-                </form>
-            }
 
-            <!-- Card Body for Role Menus -->
-            <div class="row mt-3">
-                <div class="col-md-3" id="div0">
-                    <a href="#" class="btn bg-warning btn-block mb-3">All User</a>
-                        <!-- DIRECT CHAT -->
-                        <div class="card direct-chat direct-chat-primary">
-                            <div class="card-header">
-                            <h3 class="card-title">
-                                <form action="#" method="post">
-                                    <div class="input-group">
-                                        <input type="text" id="searchInput" name="message" placeholder="Search User" class="form-control">
-                                        <span class="input-group-append">
-                                            <!-- Tombol Search dihapus -->
-                                        </span>
+                    <div class="col-md-4 bg-white">
+                        <div class="col-md-12" id="div2">
+                            <a href="#" class="btn btn-primary btn-block mb-3">Create Role User</a>
+                            <div class="card">
+                                <form enctype="multipart/form-data" asp-controller="GroupRole" asp-action="CreateRole" method="post">
+                                    <div class="card-header">
+                                        <h3 class="card-title" id="menuTitle">Menu</h3>
+                                        <input type="hidden" name="DepartemenId" id="DepartemenId">
+                                        <div class="card-tools">
+                                            <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold">
+                                                Update Role
+                                            </button>
+                                        </div>
                                     </div>
+                                    <div class="card-body p-0 direct-chat-messages" style="height:800px;">
+                                        <ul class="nav nav-pills flex-column" id="newFolderList"></ul>
+                                    </div>
+                                    <!-- /.card-body -->
                                 </form>
-                            </h3>
-                                <div class="card-tools">
-                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                        <i class="fas fa-minus"></i>
-                                    </button>
-                                </div>
                             </div>
-                            <!-- /.card-header -->
-                            <div class="card-body">
-                                <!-- Conversations are loaded here -->
-                                <div class="direct-chat-messages" style="height:777px;">
-                                    <ul class="contacts-list" id="userList">
-                                    </ul>
-                                    <!-- /.contacts-list -->
-                                </div>
-                                <!-- /.direct-chat-pane -->
-                            </div>
-                        <!-- /.card-body -->
-                        <div class="card-footer">
+                            <!-- /.card -->
                         </div>
                     </div>
-                    <!-- /.card -->
                 </div>
-
-                <div class="col-md-4" id="div1">
-                    <a href="#" class="btn bg-success btn-block mb-3">All Role Menu</a>
-                    <div class="card">
-                        <div class="card-header">
-                            <h3 class="card-title">
-                                <div class="input-group">
-                                    <input type="text" id="searchMenu" name="message" placeholder="Search Menu" class="form-control">
-                                    <span class="input-group-append">
-                                        <!-- Tombol Search dihapus -->
-                                    </span>
-                                </div>
-                            </h3>
-                            <div class="card-tools">
-                                <button type="button" class="btn btn-success float-left fw-bold" id="moveButton">
-                                    Move All 
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card-body p-0 direct-chat-messages" style="height:800px;">
-                            <ul class="nav nav-pills flex-column" id="folderList">
-
-                            </ul>
-                        </div>
-                        <!-- /.card-body -->
-                    </div>
-                    <!-- /.card -->
-                </div>
-
-                <!-- Form for Create Group -->
-                <div class="col-md-4" id="div2">
-                    <a href="#" class="btn btn-primary btn-block mb-3">Create Role User</a>
-                    <div class="card">
-                        <form enctype="multipart/form-data" asp-controller="GroupRole" asp-action="CreateRole" method="post">
-                            <div class="card-header">
-                                <h3 class="card-title" id="menuTitle">Menu</h3>
-                                <input type="hidden" name="DepartemenId" id="DepartemenId">
-                                <div class="card-tools">
-                                    <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold">
-                                        <i class="fas fa-plus blue-icon"></i> Add
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="card-body p-0 direct-chat-messages" style="height:800px;">
-                                <ul class="nav nav-pills flex-column" id="newFolderList"></ul>
-                            </div>
-                            <!-- /.card-body -->
-                        </form>
-                    </div>
-                    <!-- /.card -->
-                </div>
+                <!-- /.row -->
             </div>
-            <!-- /.row -->
         </div>
-        <!-- /.container-fluid -->
     </div>
 </section>
 <!-- /.content -->
@@ -209,7 +213,6 @@
             }
         }
     }
-
 
     function roleData(Email, NameUser) {
         $.ajax({
@@ -338,9 +341,6 @@
         });
     }
 
-
-
-
     function userData() {
         $.ajax({
             url: '@Url.Action("LoadUser", "GroupRole")',
@@ -350,7 +350,7 @@
                 $.each(data, function (index, user) {
                     var foto = user.foto ? user.foto : 'user.jpg';
                     $('#userList').append(`
-                        <li style="background-color: orange; cursor: pointer;">
+                        <li style="background-color: #347FC4; cursor: pointer;">
                             <a href="#">
                                 <img class="contacts-list-img" src="/UserPhoto/${foto}" alt="User Avatar">
                                 <input type="hidden" name="nmUser" value="${user.fullName}" />
@@ -367,8 +367,8 @@
 
                 $('#userList').on('click', 'li', function () {
                     // Hapus kelas aktif dari semua li
-                    $('#userList li').css('background-color', 'orange'); // Reset warna latar belakang
-                    $(this).css('background-color', 'blue'); // Ubah warna latar belakang yang diklik
+                    $('#userList li').css('background-color', '#347FC4'); // Reset warna latar belakang
+                    $(this).css('background-color', '#7FB9EE'); // Ubah warna latar belakang yang diklik
 
                     var selectedUserCode = $(this).find('input[name="kdUser"]').val();
                     var nmUser = $(this).find('input[name="nmUser"]').val();
@@ -494,8 +494,6 @@
             }
         }
     });
-
-
     document.getElementById('searchMenu').addEventListener('input', function () {
         const searchValue = this.value.toLowerCase();
         const items = document.querySelectorAll('#folderList .nav-item');

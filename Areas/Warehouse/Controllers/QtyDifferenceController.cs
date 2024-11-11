@@ -376,16 +376,15 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
         {
             var qtyDifference = await _QtyDifferenceRepository.GetQtyDifferenceById(Id);
 
-            var CreateDate = DateTime.Now.ToString("dd MMMM yyyy");
+            var CreateDate = qtyDifference.CreateDateTime.ToString("dd MMMM yyyy");
             var QdNumber = qtyDifference.QtyDifferenceNumber;
             var PoNumber = qtyDifference.PurchaseOrder.PurchaseOrderNumber;
-            //var HeadWarehouse = qtyDifference.HeadWarehouseManager.FullName;
-            //var HeadPurchasing = qtyDifference.HeadPurchasingManager.FullName;
-            //var CheckedBy = qtyDifference.ApplicationUser.NamaUser;
+            var UserApprove1 = qtyDifference.UserApprove1.FullName;
+            var UserApprove2 = qtyDifference.UserApprove2.FullName;
             var Note = qtyDifference.Note;
 
             WebReport web = new WebReport();
-            var path = $"{_webHostEnvironment.WebRootPath}\\Reporting\\QtyDifference.frx";
+            var path = $"{_webHostEnvironment.WebRootPath}\\Reporting\\CancelPurchaseOrder.frx";
             web.Report.Load(path);
 
             var msSqlDataConnection = new MsSqlDataConnection();
@@ -397,9 +396,8 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
             web.Report.SetParameterValue("QdNumber", QdNumber);
             web.Report.SetParameterValue("PoNumber", PoNumber);
             web.Report.SetParameterValue("CreateDate", CreateDate);
-            //web.Report.SetParameterValue("HeadWarehouse", HeadWarehouse);
-            //web.Report.SetParameterValue("HeadPurchasing", HeadPurchasing);
-            //web.Report.SetParameterValue("CheckedBy", CheckedBy);
+            web.Report.SetParameterValue("UserApprove1", UserApprove1);
+            web.Report.SetParameterValue("UserApprove2", UserApprove2);
             web.Report.SetParameterValue("Note", Note);
 
             web.Report.Prepare();

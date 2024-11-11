@@ -308,9 +308,10 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
                             _applicationDbContext.SaveChanges();
                         }
 
-                        var openQtyDiff = _qtyDifferenceRepository.GetAllQtyDifference().FirstOrDefault();
-                        var getPO = _purchaseOrderRepository.GetAllPurchaseOrder().Where(p => p.PurchaseOrderId == openQtyDiff.PurchaseOrderId).FirstOrDefault();
+                        //var openQtyDiff = _qtyDifferenceRepository.GetAllQtyDifference().FirstOrDefault();
+                        var getPO = _purchaseOrderRepository.GetAllPurchaseOrder().Where(p => p.PurchaseOrderId == checkQtyDiff.PurchaseOrderId).FirstOrDefault();
                         var getPR = _purchaseRequestRepository.GetAllPurchaseRequest().Where(a => a.PurchaseRequestId == getPO.PurchaseRequestId).FirstOrDefault();
+                        var getQtyDiff = _qtyDifferenceRepository.GetAllQtyDifference().Where(po => po.PurchaseOrderId == getPO.PurchaseOrderId).FirstOrDefault();
 
                         //Proses Generate New Purchase Order
                         var newPO = new PurchaseOrder
@@ -336,21 +337,62 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
 
                         var ItemsList = new List<PurchaseOrderDetail>();
 
-                        foreach (var item in getPR.PurchaseRequestDetails)
+                        foreach (var item in getPO.PurchaseOrderDetails)
                         {
-                            ItemsList.Add(new PurchaseOrderDetail
+                            if (getPO.PurchaseOrderDetails.Count != 1)
                             {
-                                CreateDateTime = DateTimeOffset.Now,
-                                CreateBy = new Guid(getUser.Id),
-                                ProductNumber = item.ProductNumber,
-                                ProductName = item.ProductName,
-                                Supplier = item.Supplier,
-                                Measurement = item.Measurement,
-                                Qty = item.Qty,
-                                Price = Math.Truncate(item.Price),
-                                Discount = item.Discount,
-                                SubTotal = Math.Truncate(item.SubTotal)
-                            });
+                                foreach (var itemQtyDiff in getQtyDiff.QtyDifferenceDetails)
+                                {
+                                    if (itemQtyDiff.ProductName == item.ProductName && itemQtyDiff.QtyReceive == item.Qty)
+                                    {
+                                        ItemsList.Add(new PurchaseOrderDetail
+                                        {
+                                            CreateDateTime = DateTimeOffset.Now,
+                                            CreateBy = new Guid(getUser.Id),
+                                            ProductNumber = item.ProductNumber,
+                                            ProductName = item.ProductName,
+                                            Supplier = item.Supplier,
+                                            Measurement = item.Measurement,
+                                            Qty = item.Qty,
+                                            Price = Math.Truncate(item.Price),
+                                            Discount = item.Discount,
+                                            SubTotal = Math.Truncate(item.SubTotal)
+                                        });
+                                    }
+                                    else if (itemQtyDiff.ProductName == item.ProductName && itemQtyDiff.QtyReceive != item.Qty)
+                                    {
+                                        ItemsList.Add(new PurchaseOrderDetail
+                                        {
+                                            CreateDateTime = DateTimeOffset.Now,
+                                            CreateBy = new Guid(getUser.Id),
+                                            ProductNumber = item.ProductNumber,
+                                            ProductName = item.ProductName,
+                                            Supplier = item.Supplier,
+                                            Measurement = item.Measurement,
+                                            Qty = itemQtyDiff.QtyReceive,
+                                            Price = Math.Truncate(item.Price),
+                                            Discount = item.Discount,
+                                            SubTotal = Math.Truncate(item.SubTotal)
+                                        });
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                ItemsList.Add(new PurchaseOrderDetail
+                                {
+                                    CreateDateTime = DateTimeOffset.Now,
+                                    CreateBy = new Guid(getUser.Id),
+                                    ProductNumber = item.ProductNumber,
+                                    ProductName = item.ProductName,
+                                    Supplier = item.Supplier,
+                                    Measurement = item.Measurement,
+                                    Qty = item.Qty,
+                                    Price = Math.Truncate(item.Price),
+                                    Discount = item.Discount,
+                                    SubTotal = Math.Truncate(item.SubTotal)
+                                });
+                            }
                         }
 
                         newPO.PurchaseOrderDetails = ItemsList;

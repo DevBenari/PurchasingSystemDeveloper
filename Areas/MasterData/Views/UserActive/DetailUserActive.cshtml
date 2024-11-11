@@ -45,7 +45,7 @@
                                 <div class="form-group row">
                                     <div class="col-sm-12">
                                         <label asp-for="FullName">Full Name</label>
-                                        <input type="text" asp-for="FullName" class="form-control form-control-border border-width-2" autofocus maxlength="250" autocomplete="off" id="FullName" placeholder="FullName" disabled>
+                                        <input type="text" asp-for="FullName" class="form-control form-control-border border-width-2" autofocus maxlength="75" autocomplete="off" id="FullName" placeholder="FullName" disabled>
                                         <span asp-validation-for="FullName" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -91,7 +91,7 @@
                                 <div class="form-group row">
                                     <div class="col-sm-12">
                                         <label asp-for="PlaceOfBirth">Place Of Birth</label>
-                                        <input type="text" asp-for="PlaceOfBirth" class="form-control form-control-border border-width-2" id="PlaceOfBirth" placeholder="Place Of Birth" disabled>
+                                        <input type="text" asp-for="PlaceOfBirth" class="form-control form-control-border border-width-2" maxlength="50" autocomplete="off" id="PlaceOfBirth" placeholder="Place Of Birth" disabled>
                                         <span asp-validation-for="PlaceOfBirth" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -108,7 +108,7 @@
                                 <div class="form-group row">
                                     <div class="col-sm-12">
                                         <label asp-for="Address">Address</label>
-                                        <input maxlength="250" autocomplete="off" type="text" asp-for="Address" class="form-control form-control-border border-width-2" id="Address" placeholder="Address" disabled>
+                                        <input maxlength="150" autocomplete="off" type="text" asp-for="Address" class="form-control form-control-border border-width-2" id="Address" placeholder="Address" disabled>
                                         <span asp-validation-for="Gender" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -118,7 +118,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fas fa-phone"></i></span>
                                         </div>
-                                        <input asp-for="Handphone" autocomplete="off" type="text" class="form-control form-control-border border-width-2" id="Handphone" data-inputmask='"mask": "(9999) - 9999-9999-9"' data-mask-hp disabled>
+                                        <input asp-for="Handphone" maxlength="20" autocomplete="off" type="text" class="form-control form-control-border border-width-2" id="Handphone" data-inputmask='"mask": "(9999) - 9999-9999-9"' data-mask-hp disabled>
                                         <span asp-validation-for="Handphone" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -128,7 +128,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fas fa-envelope"></i></span>
                                         </div>
-                                        <input asp-for="Email" autocomplete="off" type="text" class="form-control form-control-border border-width-2" id="Email" placeholder="Email" disabled>
+                                        <input asp-for="Email" maxlength="50" autocomplete="off" type="text" class="form-control form-control-border border-width-2" id="Email" placeholder="Email" disabled>
                                         <span asp-validation-for="Email" class="text-danger"></span>
                                     </div>
                                 </div>

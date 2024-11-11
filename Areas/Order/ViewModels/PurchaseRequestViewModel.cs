@@ -1,4 +1,5 @@
 ﻿using PurchasingSystemDeveloper.Areas.Order.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace PurchasingSystemDeveloper.Areas.Order.ViewModels
 {
@@ -10,16 +11,25 @@ namespace PurchasingSystemDeveloper.Areas.Order.ViewModels
         public int ExpiredDay { get; set; }
         public int RemainingDay { get; set; }
         public DateTimeOffset ExpiredDate { get; set; }
+        [Required(ErrorMessage = "Department is required !")]
         public Guid? Department1Id { get; set; }
+        [Required(ErrorMessage = "Position is required !")]
         public Guid? Position1Id { get; set; }
+        [Required(ErrorMessage = "User Approve is required !")]
         public Guid? UserApprove1Id { get; set; }
         public string? ApproveStatusUser1 { get; set; }
+        [Required(ErrorMessage = "Department is required !")]
         public Guid? Department2Id { get; set; }
+        [Required(ErrorMessage = "Position is required !")]
         public Guid? Position2Id { get; set; }
+        [Required(ErrorMessage = "User Approve is required !")]
         public Guid? UserApprove2Id { get; set; }
         public string? ApproveStatusUser2 { get; set; }
+        [Required(ErrorMessage = "Department is required !")]
         public Guid? Department3Id { get; set; }
+        [Required(ErrorMessage = "Position is required !")]
         public Guid? Position3Id { get; set; }
+        [Required(ErrorMessage = "User Approve is required !")]
         public Guid? UserApprove3Id { get; set; }
         public string? ApproveStatusUser3 { get; set; }
         public Guid? TermOfPaymentId { get; set; }

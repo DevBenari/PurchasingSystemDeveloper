@@ -39,6 +39,12 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
             {
                 var ApprovalDetail = new Approval()
                 {
+                    CreateDateTime = Approval.CreateDateTime,
+                    CreateBy = Approval.CreateBy,
+                    UpdateDateTime = Approval.UpdateDateTime,
+                    UpdateBy = Approval.UpdateBy,
+                    DeleteDateTime = Approval.DeleteDateTime,
+                    DeleteBy = Approval.DeleteBy,
                     ApprovalId = Approval.ApprovalId,
                     PurchaseRequestId = Approval.PurchaseRequestId,
                     PurchaseRequestNumber = Approval.PurchaseRequestNumber,
@@ -70,6 +76,12 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
         {
             return await _context.Approvals./*OrderBy(p => p.CreateDateTime).*/Select(Approval => new Approval()
             {
+                CreateDateTime = Approval.CreateDateTime,
+                CreateBy = Approval.CreateBy,
+                UpdateDateTime = Approval.UpdateDateTime,
+                UpdateBy = Approval.UpdateBy,
+                DeleteDateTime = Approval.DeleteDateTime,
+                DeleteBy = Approval.DeleteBy,
                 ApprovalId = Approval.ApprovalId,
                 PurchaseRequestId = Approval.PurchaseRequestId,
                 PurchaseRequestNumber = Approval.PurchaseRequestNumber,

@@ -78,10 +78,10 @@
                             <table id="tblTemplate" class="table table-hover table-head-fixed text-nowrap">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
-                                        <th>Create Date</th>
-                                        <th>Department Code</th>
-                                        <th>Department Name</th>
+                                        <th class="text-center" style="width: 5%;">No</th>
+                                        <th class="text-left" style="width: 10%;">Create Date</th>
+                                        <th class="text-left" style="width: 10%;">Department Code</th>
+                                        <th class="text-left" style="width: 10%;">Department Name</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -89,10 +89,10 @@
                                     {
 
                                         <tr data-href="@Url.Action("DetailDepartment", "Department", new {id=Department.DepartmentId})">
-                                            <th></th>
-                                            <td>@Department.CreateDateTime.ToString("dd MMMM yyyy")</td>
-                                            <td>@Department.DepartmentCode</td>
-                                            <td>@Department.DepartmentName</td>
+                                            <th class="text-center"></th>
+                                            <td class="text-left">@Department.CreateDateTime.ToString("dd MMMM yyyy")</td>
+                                            <td class="text-left">@Department.DepartmentCode</td>
+                                            <td class="text-left">@Department.DepartmentName</td>
                                         </tr>
                                     }
                                 </tbody>

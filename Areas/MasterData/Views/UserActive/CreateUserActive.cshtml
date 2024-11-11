@@ -1,11 +1,10 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Identity;
+@using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
+
+@{
     ViewData["Title"] = "Add User";
     Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
 }
-
-@using Microsoft.AspNetCore.Identity;
-@using PurchasingSystemDeveloper.Models;
-@using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
 
 @inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
 @model UserActiveViewModel
@@ -36,7 +35,7 @@
                                 <div class="form-group row">
                                     <div class="col-sm-12">
                                         <label asp-for="FullName">Full Name</label>
-                                        <input type="text" asp-for="FullName" class="form-control form-control-border border-width-2" autofocus maxlength="250" autocomplete="off" id="FullName" placeholder="FullName">
+                                        <input type="text" asp-for="FullName" class="form-control form-control-border border-width-2" autofocus maxlength="75" autocomplete="off" id="FullName" placeholder="FullName">
                                         <span asp-validation-for="FullName" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -82,7 +81,7 @@
                                 <div class="form-group row">
                                     <div class="col-sm-12">
                                         <label asp-for="PlaceOfBirth">Place Of Birth</label>
-                                        <input type="text" asp-for="PlaceOfBirth" class="form-control form-control-border border-width-2" id="PlaceOfBirth" placeholder="Place Of Birth">
+                                        <input type="text" asp-for="PlaceOfBirth" class="form-control form-control-border border-width-2" id="PlaceOfBirth" maxlength="75" autocomplete="off" placeholder="Place Of Birth">
                                         <span asp-validation-for="PlaceOfBirth" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -99,7 +98,7 @@
                                 <div class="form-group row">
                                     <div class="col-sm-12">
                                         <label asp-for="Address">Address</label>
-                                        <input maxlength="250" autocomplete="off" type="text" asp-for="Address" class="form-control form-control-border border-width-2" id="Address" placeholder="Address">
+                                        <input maxlength="150" autocomplete="off" type="text" asp-for="Address" class="form-control form-control-border border-width-2" id="Address" placeholder="Address">
                                         <span asp-validation-for="Gender" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -109,7 +108,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fas fa-phone"></i></span>
                                         </div>
-                                        <input asp-for="Handphone" autocomplete="off" type="text" class="form-control form-control-border border-width-2" id="Handphone" data-inputmask='"mask": "(9999) - 9999-9999-9"' data-mask-hp>
+                                        <input asp-for="Handphone" maxlength="50" autocomplete="off" type="text" class="form-control form-control-border border-width-2" id="Handphone" data-inputmask='"mask": "(9999) - 9999-9999-9"' data-mask-hp>
                                         <span asp-validation-for="Handphone" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -119,7 +118,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fas fa-envelope"></i></span>
                                         </div>
-                                        <input asp-for="Email" autocomplete="off" type="text" class="form-control form-control-border border-width-2" placeholder="Email">
+                                        <input asp-for="Email" maxlength="50" autocomplete="off" type="text" class="form-control form-control-border border-width-2" placeholder="Email">
                                         <span asp-validation-for="Email" class="text-danger"></span>
                                     </div>
                                 </div>
@@ -136,7 +135,7 @@
                                             <label class="custom-file-label" for="photoInput">Choose Photos...</label>
                                             <small class="form-text text-muted">
                                                 <i class="fas fa-info-circle"></i>
-                                                Maksimum ukuran: 2MB | Format: .jpg, .jpeg, .png, .gif
+                                                Maximum Size: 2MB | Format: .jpg, .jpeg, .png, .gif
                                             </small>
                                         </div>
                                         <span asp-validation-for="Foto" class="text-danger"></span>

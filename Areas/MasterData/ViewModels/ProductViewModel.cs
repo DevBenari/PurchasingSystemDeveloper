@@ -6,17 +6,17 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.ViewModels
     {
         public Guid ProductId { get; set; }
         public string ProductCode { get; set; }
-        [Required(ErrorMessage = "Sorry, please fill in!")]
+        [Required(ErrorMessage = "Product Name is required !")]
         public string ProductName { get; set; }
-        [Required(ErrorMessage = "Sorry, please choose!")]
+        [Required(ErrorMessage = "Supplier is required !")]
         public Guid? SupplierId { get; set; }
-        [Required(ErrorMessage = "Sorry, please choose!")]
+        [Required(ErrorMessage = "Category is required !")]
         public Guid? CategoryId { get; set; }
-        [Required(ErrorMessage = "Sorry, please choose!")]
+        [Required(ErrorMessage = "Measure is required !")]
         public Guid? MeasurementId { get; set; }
-        [Required(ErrorMessage = "Sorry, please choose!")]
+        [Required(ErrorMessage = "Discount is required !")]
         public Guid? DiscountId { get; set; }
-        [Required(ErrorMessage = "Sorry, please choose!")]
+        [Required(ErrorMessage = "Warehouse Location is required !")]
         public Guid? WarehouseLocationId { get; set; }
         public int? MinStock { get; set; } = 0;
         public int? MaxStock { get; set; } = 0;

@@ -40,6 +40,12 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
             {
                 var approvalDetail = new ApprovalQtyDifference()
                 {
+                    CreateDateTime = approval.CreateDateTime,
+                    CreateBy = approval.CreateBy,
+                    UpdateDateTime = approval.UpdateDateTime,
+                    UpdateBy = approval.UpdateBy,
+                    DeleteDateTime = approval.DeleteDateTime,
+                    DeleteBy = approval.DeleteBy,
                     ApprovalQtyDifferenceId = approval.ApprovalQtyDifferenceId,
                     QtyDifferenceId = approval.QtyDifferenceId,
                     QtyDifferenceNumber = approval.QtyDifferenceNumber,
@@ -69,6 +75,12 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
         {
             return await _context.ApprovalQtyDifferences./*OrderBy(p => p.CreateDateTime).*/Select(approval => new ApprovalQtyDifference()
             {
+                CreateDateTime = approval.CreateDateTime,
+                CreateBy = approval.CreateBy,
+                UpdateDateTime = approval.UpdateDateTime,
+                UpdateBy = approval.UpdateBy,
+                DeleteDateTime = approval.DeleteDateTime,
+                DeleteBy = approval.DeleteBy,
                 ApprovalQtyDifferenceId = approval.ApprovalQtyDifferenceId,
                 QtyDifferenceId = approval.QtyDifferenceId,
                 QtyDifferenceNumber = approval.QtyDifferenceNumber,

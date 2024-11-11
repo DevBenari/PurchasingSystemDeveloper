@@ -1,0 +1,114 @@
+﻿@{
+    ViewData["Title"] = "Diskon Data";
+    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+}
+@using Microsoft.AspNetCore.Identity;
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model List<dynamic>
+
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <div class="card-header bg-cyan">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewData["Title"]</h3>
+            </div>
+            <div class="card-body table-responsive p-0">
+                <form enctype="multipart/form-data" asp-controller="Api" asp-action="CreateDiskon" method="post">
+                    <table id="tblTemplate" class="table table-hover table-head-fixed text-wrap">
+                        <thead>
+                            <tr>
+                                <th><strong>No</strong></th>
+                                <th>Kode Barang</th>
+                                <th>Nama Barang</th>
+                                <th>Nama Supplier</th>
+                                <th>Harga</th>
+                                <th>Diskon (%)</th>
+                                <th>Supplier Utama</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @if (Model != null && Model.Count > 0)
+                            {
+                                var no = 0;
+                                foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@no++</td>
+                                        <td>@item.kode_brg</td>
+                                        <td>@item.nama_brg</td>
+                                        <td>@item.nama_supp</td>
+                                        <td>@item.harga</td>
+                                        <td>@item.disc_persen</td>
+                                        <td>@item.is_supplier_utama</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="14">Tidak ada data untuk ditampilkan.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    @* <button type="submit" class="btn btn-primary">Kirim</button> *@
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @* <script src="~/scripts/tabletemplate.js"></script> *@
+    <script>
+        $(document).ready(function () {
+            $('#tblTemplate').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "pageLength": 10,
+                "lengthChange": false
+            });
+        });
+    </script>
+    <style>
+        span.error {
+            display: block;
+            color: #347FC4;
+            font-size: 90%;
+        }
+
+        tr.error {
+            background-color: rgba(255,0,0,0.35);
+        }
+
+        /*css for table*/
+        .container td {
+            vertical-align: top;
+        }
+
+        .tablecontainer table {
+            width: 100%;
+            border-collapse: collapse;
+            border-top: 1px solid #BFAEAE;
+            border-right: 1px solid #BFAEAE;
+        }
+
+        .tablecontainer th {
+            border-bottom: 2px solid #BFAEAE;
+        }
+
+        .tablecontainer th, .tablecontainer td {
+            text-align: center;
+            border-left: 1px solid #BFAEAE;
+            padding: 5px;
+            border-bottom: 1px solid #BFAEAE;
+        }
+
+        .ui-widget {
+            font-size: 12px !important;
+        }
+    </style>
+}

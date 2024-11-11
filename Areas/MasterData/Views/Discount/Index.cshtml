@@ -78,10 +78,10 @@
                             <table id="tblTemplate" class="table table-hover table-head-fixed text-nowrap">
                                 <thead>
                                     <tr>
-                                        <th>No</th>
-                                        <th>Create Date</th>
-                                        <th>Discount Code</th>
-                                        <th>Discount Value</th>
+                                        <th class="text-center" style="width: 5%;">No</th>
+                                        <th class="text-left" style="width: 10%;">Create Date</th>
+                                        <th class="text-left" style="width: 10%;">Discount Code</th>
+                                        <th class="text-left" style="width: 10%;">Discount Value</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -89,10 +89,10 @@
                                     {
 
                                         <tr data-href="@Url.Action("DetailDiscount", "Discount", new {id=Discount.DiscountId})">
-                                            <th></th>
-                                            <td>@Discount.CreateDateTime.ToString("dd MMMM yyyy")</td>
-                                            <td>@Discount.DiscountCode</td>
-                                            <td>@Discount.DiscountValue %</td>
+                                            <th class="text-center"></th>
+                                            <td class="text-left">@Discount.CreateDateTime.ToString("dd MMMM yyyy")</td>
+                                            <td class="text-left">@Discount.DiscountCode</td>
+                                            <td class="text-left">@Discount.DiscountValue %</td>
                                         </tr>
                                     }
                                 </tbody>

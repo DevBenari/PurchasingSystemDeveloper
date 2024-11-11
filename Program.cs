@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using PurchasingSystemDeveloper.Areas.MasterData.Repositories;
@@ -46,31 +47,24 @@ builder.Services.AddMvc(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 });
 
-//Script Auto Show Login Account First Time
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/Account/Login";
-        options.LogoutPath = "/Account/Logout";
-        options.Cookie.Name = "UserLoginCookie";
-    });
-
 // konfigurasi session 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(2);
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
+    options.Cookie.IsEssential = true;    
 });
 
-// konfigurasi cookie Authentication 
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(2);
-    options.SlidingExpiration = true;
-    options.LogoutPath = "/Account/Logout";
-
-});
+//Script Auto Show Login Account First Time
+builder.Services.AddAuthentication("CookieAuth")
+    .AddCookie("CookieAuth", options =>
+    {
+        options.Cookie.Name = "AuthCookie";
+        options.LoginPath = "/Account/Login";
+        options.LogoutPath = "/Account/Logout";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+        options.SlidingExpiration = true;
+    });
 
 AddScope();
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaims>();
@@ -129,11 +123,86 @@ if (!app.Environment.IsDevelopment())
 //Tambahan Baru
 app.UseSession();
 app.UseAuthentication();
+app.UseAuthorization();
+
+//   konfigurasi end session 
+app.Use(async (context, next) =>
+{
+    var returnUrl = context.Request.Path + context.Request.QueryString;
+    var loginUrl = $"/Account/Login?ReturnUrl={Uri.EscapeDataString(returnUrl)}";
+    var now = DateTimeOffset.UtcNow;
+
+    if (context.Session.GetString("username") == null && context.Request.Path != loginUrl)
+    {
+        var username = context.User.Identity.Name;
+
+        if (!string.IsNullOrEmpty(username))
+        {
+            // Middleware Session And Cookie
+            UpdateDataForExpiredSession(username, app, context, returnUrl);            
+
+            context.Response.Redirect(loginUrl);
+            return;
+        }
+    }
+    else
+    {
+        // Jika session masih aktif, perbarui waktu "LastActivity"
+        context.Session.SetString("LastActivity", DateTimeOffset.Now.ToString());        
+    }
+
+    // Periksa apakah pengguna terautentikasi
+    if (context.User.Identity?.IsAuthenticated == true)
+    {
+        // Coba ambil `LastActivity` dari session
+        var lastActivity = context.Session.GetString("LastActivity");
+
+        if (lastActivity == null)
+        {
+            // Set `LastActivity` pada aktivitas pertama setelah login
+            context.Session.SetString("LastActivity", now.ToString("o"));
+        }
+        else if (DateTime.TryParse(lastActivity, out var lastActivityTime))
+        {
+            var sessionTimeout = TimeSpan.FromMinutes(30);
+
+            // Jika waktu hampir habis (misalnya 15 menit sebelum habis)
+            var timeRemaining = sessionTimeout - (now - lastActivityTime);
+            if (timeRemaining.TotalMinutes <= 15)
+            {
+                // Kirim waktu yang tersisa ke klien melalui header
+                context.Response.Headers["X-Session-Time-Remaining"] = timeRemaining.TotalSeconds.ToString();
+            }
+
+            // Perbarui `LastActivity` jika session belum habis
+            if (timeRemaining.TotalSeconds > 0)
+            {
+                context.Session.SetString("LastActivity", now.ToString("o"));
+            }
+            else
+            {
+                // Jika session habis, lakukan logout
+                var username = context.User.Identity.Name;
+
+                if (!string.IsNullOrEmpty(username))
+                {
+                    // Middleware Session And Cookie
+                    UpdateDataForExpiredSession(username, app, context, returnUrl);
+
+                    context.Response.Redirect(loginUrl);
+                    return;
+                }
+            }
+        }
+    }
+
+    // Lanjutkan ke middleware berikutnya
+    await next();
+});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
-app.UseAuthorization();
 
 app.UseFastReport();
 
@@ -149,32 +218,7 @@ app.UseEndpoints(endpoints =>
         pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 });
 
-//   konfigurasi end session 
-app.Use(async (context, next) =>
-{
-    if (!context.User.Identity?.IsAuthenticated ?? true)
-    {
-        context.Response.Redirect("/Account/Logout");
-        return;
-    }
-
-    if (string.IsNullOrEmpty(context.Session.GetString("Username")))
-    {
-        // Cek apakah cookie masih ada
-        if (context.Request.Cookies["Username"] == null)
-        {
-            // Jika session dan cookie keduanya hilang, arahkan ke halaman logout
-            context.Response.Redirect("/Account/Logout");
-            return;
-        }
-    }
-    await next();
-});
-
 app.MapRazorPages();
-//app.MapControllerRoute(
-//    name: "default",
-//    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 using (var scope = app.Services.CreateScope())
 {
@@ -201,4 +245,30 @@ void AddScope()
     builder.Services.AddScoped<IRoleRepository, RoleRepository>();
     builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
     builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+}
+
+async void UpdateDataForExpiredSession(string username, WebApplication app, HttpContext context, string returnUrl)
+{
+    // Logika update data
+    // Tambahkan logika lain sesuai kebutuhan, misalnya memperbarui status user di database
+    using (var scope = app.Services.CreateScope())
+    { 
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var signInManager = scope.ServiceProvider.GetRequiredService<SignInManager<ApplicationUser>>();
+
+        //Cari User
+        var user = dbContext.Users.FirstOrDefault(u => u.Email == username);
+        if (user != null)
+        {            
+            user.IsOnline = false;
+            dbContext.SaveChanges();
+        }
+
+        // Hapus session dan sign out cookie
+        context.Session.Remove("username");
+        await context.SignOutAsync("CookieAuth");
+
+        await signInManager.SignOutAsync();
+        context.Response.Redirect(returnUrl);
+    }
 }

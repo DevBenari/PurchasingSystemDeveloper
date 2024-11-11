@@ -41,6 +41,20 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             }).ToList();
             ViewBag.CountSupplier = countSupplier.Count;
 
+            var countUnitLocation = _applicationDbContext.UnitLocations.GroupBy(u => u.UnitLocationId).Select(y => new
+            {
+                UnitLocationId = y.Key,
+                CountOfUnitLocations = y.Count()
+            }).ToList();
+            ViewBag.CountUnitLocation = countUnitLocation.Count;
+
+            var countWarehouseLocation = _applicationDbContext.WarehouseLocations.GroupBy(u => u.WarehouseLocationId).Select(y => new
+            {
+                WarehouseLocationId = y.Key,
+                CountOfWarehouseLocations = y.Count()
+            }).ToList();
+            ViewBag.CountWarehouseLocation = countWarehouseLocation.Count;
+
             var countProduct = _applicationDbContext.Products.GroupBy(u => u.ProductId).Select(y => new
             {
                 ProductId = y.Key,
@@ -48,12 +62,26 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             }).ToList();                        
             ViewBag.CountProduct = countProduct.Count;
 
-            var countPurchaseRequest = _applicationDbContext.PurchaseRequests.GroupBy(u => u.PurchaseRequestId).Select(y => new
+            var countCategory = _applicationDbContext.Categories.GroupBy(u => u.CategoryId).Select(y => new
             {
-                PurchaseRequestId = y.Key,
-                CountOfPurchaseRequests= y.Count()
+                CategoryId = y.Key,
+                CountOfCategories = y.Count()
             }).ToList();
-            ViewBag.CountPurchaseRequest = countPurchaseRequest.Count;
+            ViewBag.CountCategory = countCategory.Count;
+
+            var countMeasurement = _applicationDbContext.Measurements.GroupBy(u => u.MeasurementId).Select(y => new
+            {
+                MeasurementId = y.Key,
+                CountOfMeasurements = y.Count()
+            }).ToList();
+            ViewBag.CountMeasurement = countMeasurement.Count;
+
+            var countDiscount = _applicationDbContext.Discounts.GroupBy(u => u.DiscountId).Select(y => new
+            {
+                DiscountId = y.Key,
+                CountOfDiscounts = y.Count()
+            }).ToList();
+            ViewBag.CountDiscount = countDiscount.Count;
 
             return View();
         }

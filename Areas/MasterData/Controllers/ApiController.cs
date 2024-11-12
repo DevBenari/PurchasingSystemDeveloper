@@ -23,6 +23,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
         private readonly ICategoryRepository _categoryRepository;
         private readonly IMeasurementRepository _MeasurementRepository;
         private readonly IDiscountRepository _discountRepository;
+        private readonly ISupplierRepository _supplierRepository;
 
         public ApiController(
             ApplicationDbContext applicationDbContext,
@@ -31,6 +32,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             ICategoryRepository CategoryRepository,
             IMeasurementRepository MeasurementRepository,
             IDiscountRepository DiscountRepository,
+            ISupplierRepository SupplierRepository,
 
             HttpClient httpClient
         )
@@ -42,6 +44,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             _productRepository = productRepository;
             _MeasurementRepository = MeasurementRepository;
             _discountRepository = DiscountRepository;
+            _supplierRepository = SupplierRepository;
         }
 
         public IActionResult Index()
@@ -49,34 +52,34 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             return View();
         }
 
-        public IActionResult GetData(){return View(); }
+        public IActionResult GetData() { return View(); }
         public IActionResult GetDataSupplier() { return View(); }
         public IActionResult GetDataSatuan() { return View(); }
         public IActionResult GetDataKategoriObat() { return View(); }
         public IActionResult GetDataObat() { return View(); }
         public IActionResult GetDataDiskon() { return View(); }
 
-        [HttpGet]
-        public async Task<IActionResult> Impor(string apiCode)
-        {
-            var apiUrl = apiCode; // URL API GetProduct
+        //[HttpGet]
+        //public async Task<IActionResult> Impor(string apiCode)
+        //{
+        //    var apiUrl = apiCode; // URL API GetProduct
 
-            // Mengirimkan permintaan GET ke API
-            var response = await _httpClient.GetAsync(apiUrl);
+        //    // Mengirimkan permintaan GET ke API
+        //    var response = await _httpClient.GetAsync(apiUrl);
 
-            if (response.IsSuccessStatusCode)
-            {
-                var jsonData = await response.Content.ReadAsStringAsync();
-                var productData = JsonConvert.DeserializeObject<List<Product>>(jsonData); // Deserialisasi JSON ke model Product
+        //    if (response.IsSuccessStatusCode)
+        //    {
+        //        var jsonData = await response.Content.ReadAsStringAsync();
+        //        var productData = JsonConvert.DeserializeObject<List<Product>>(jsonData); // Deserialisasi JSON ke model Product
 
-                return View("Impor", productData); // Tampilkan data dalam View
-            }
-            else
-            {
-                // Jika request gagal
-                return View("Error", "Gagal mengambil data dari API");
-            }
-        }
+        //        return View("Impor", productData); // Tampilkan data dalam View
+        //    }
+        //    else
+        //    {
+        //        // Jika request gagal
+        //        return View("Error", "Gagal mengambil data dari API");
+        //    }
+        //}
 
         [HttpGet]
         public async Task<IActionResult> CreateSupplier(string apiCode)
@@ -87,6 +90,11 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             _httpClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", "YWRtZWRpa2E6YWRtZWRpa2E"); // Pastikan token atau kredensial benar
 
+            var getUser = _userActiveRepository.GetAllUserLogin()
+                .Where(u => u.UserName == User.Identity.Name)
+                .FirstOrDefault();
+            var dateNow = DateTimeOffset.Now;
+            var setDateNow = DateTimeOffset.Now.ToString("yyMMdd");
             try
             {
                 // Mengirimkan permintaan GET ke API
@@ -98,6 +106,64 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
 
                     var responseObject = JsonConvert.DeserializeObject<dynamic>(jsonData);
                     var supplierData = responseObject.data.ToObject<List<dynamic>>();
+                    var filterDisc = new List<dynamic>();
+
+                    foreach (var item in supplierData)
+                    {
+                        //var getDiscVal = _supplierRepository.GetAllSupplier()
+                        //    .FirstOrDefault(d => d.SupplierName == (string)Convert.ToDouble(item.nama_supp));
+
+                        //if (getDiscVal == null)
+                        //{
+                            //filterDisc.Add(item);
+
+                            // Mendapatkan kode measurement terakhir berdasarkan hari ini
+                            var lastCode = _supplierRepository.GetAllSupplier()
+                            .Where(d => d.CreateDateTime.ToString("yyMMdd") == setDateNow)
+                            .OrderByDescending(k => k.SupplierCode)
+                            .FirstOrDefault();
+
+                            string SupplierCode;
+
+                            if (lastCode == null)
+                            {
+                                SupplierCode = "PCP" + setDateNow + "0001";
+                            }
+                            else
+                            {
+                                var lastCodeTrim = lastCode.SupplierCode.Substring(3, 6);
+
+                                if (lastCodeTrim != setDateNow)
+                                {
+                                    SupplierCode = "PCP" + setDateNow + "0001";
+                                }
+                                else
+                                {
+                                    SupplierCode = "PCP" + setDateNow +
+                                                    (Convert.ToInt32(lastCode.SupplierCode.Substring(9, lastCode.SupplierCode.Length - 9)) + 1)
+                                                    .ToString("D4");
+                                }
+                            }
+
+                            var supplier = new Supplier
+                            {
+                                CreateDateTime = DateTime.Now,
+                                CreateBy = new Guid(getUser.Id),
+                                SupplierId = Guid.NewGuid(),
+                                SupplierCode = SupplierCode,
+                                SupplierName = item.nama_supp,
+                                LeadTimeId = new Guid("28D557A4-DFF5-45D8-7AF6-08DCAD5EBA2E"),// id leadtime 7
+                                Address = item.alamat_supp,
+                                Handphone = item.hp,
+                                Email = "Supplier@email.com",
+                                Note = item.ket,
+                                IsPKS = true,
+                                IsActive = true,
+                            };
+                            // Simpan ke database
+                            _supplierRepository.Tambah(supplier);
+                        //}
+                    }
 
                     return View("CreateSupplier", supplierData); // Kirimkan data ke View
                 }
@@ -195,30 +261,163 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             }
         }
 
+        private async Task<T> GetApiDataAsync<T>(string url)
+        {
+            var response = await _httpClient.GetAsync(url);
+            if (response.IsSuccessStatusCode)
+            {
+                var jsonData = await response.Content.ReadAsStringAsync();
+                return JsonConvert.DeserializeObject<T>(jsonData);
+            }
+            return default(T); // Mengembalikan nilai default jika gagal
+        }
 
         [HttpGet]
         public async Task<IActionResult> CreateObat(string apiCode, int page = 1, int pageSize = 100)
         {
-            var apiUrl = $"{apiCode}?page={page}&pageSize={pageSize}"; // Ubah API untuk mendukung pagination
+            var apiUrl = $"{apiCode}?page={page}&pageSize={pageSize}";
 
             _httpClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", "YWRtZWRpa2E6YWRtZWRpa2E");
 
+            var getUser = _userActiveRepository.GetAllUserLogin().FirstOrDefault(u => u.UserName == User.Identity.Name);
+
+            if (getUser == null)
+            {
+                return View("Error", "Pengguna tidak ditemukan.");
+            }
+
             try
             {
+                // Request untuk data obat
                 var response = await _httpClient.GetAsync(apiUrl);
+                if (!response.IsSuccessStatusCode)
+                {
+                    return View("Error", "Gagal mengambil data obat dari API.");
+                }
 
-                if (response.IsSuccessStatusCode)
+                var jsonData = await response.Content.ReadAsStringAsync();
+                var responseObject = JsonConvert.DeserializeObject<dynamic>(jsonData);
+                var createObatList = responseObject.data.ToObject<List<dynamic>>();
+
+                // Format tanggal sekarang (yyMMdd)
+                var setDateNow = DateTime.Now.ToString("yyMMdd");
+
+                foreach (var item in createObatList)
                 {
-                    var jsonData = await response.Content.ReadAsStringAsync();
-                    var responseObject = JsonConvert.DeserializeObject<dynamic>(jsonData);
-                    var CreateObat = responseObject.data.ToObject<List<dynamic>>();
-                    return View("CreateObat", CreateObat);
+                    // Ambil data diskon obat
+                    var apiDiscountUrl = $"https://app.mmchospital.co.id/devel_mantap/api.php?mod=api&cmd=get_diskon_obat&return_type=json&diskon_obat={item.kode_brg}";
+                    var responseDiscount = GetApiDataAsync<dynamic>(apiDiscountUrl);
+                    var responseCategory = GetApiDataAsync<dynamic>($"https://app.mmchospital.co.id/devel_mantap/api.php?mod=api&cmd=get_kategori_obat&return_type=json&kategori_obat={item.commodity}");
+                    var responseMeasurement = GetApiDataAsync<dynamic>($"https://app.mmchospital.co.id/devel_mantap/api.php?mod=api&cmd=get_satuan&return_type=json&satuan={item.kode_satuan}");
+
+                    // Tunggu semua hasil API
+                    await Task.WhenAll(responseDiscount, responseCategory, responseMeasurement);
+
+                    // Mendapatkan hasil API
+                    var discountData = await responseDiscount;
+                    var categoryData = await responseCategory;
+                    var measurementData = await responseMeasurement;
+
+                    // Ambil nama_supp dari discountData untuk membangun URL supplier
+                    string supplierName = "RS PLUIT"; // Nilai default
+                   /* if (discountData?.data != null && discountData.data.Count > 0)
+                    {
+                        supplierName = discountData.data[0]?.nama_supp?.ToString(); // Menggunakan nilai default jika kel_brg null
+                    }*/
+
+                    var apiSupplierUrl = $"https://app.mmchospital.co.id/devel_mantap/api.php?mod=api&cmd=get_supplier&return_type=json&supplier={supplierName}";
+
+                    var supplierData = await GetApiDataAsync<dynamic>(apiSupplierUrl);
+
+                    string supplierNameS = supplierData?.data?.nama_supp?.ToString() ?? "RS PLUIT";
+                    // Pastikan categoryData dan categoryData.data tidak null sebelum mengakses nama_kategori
+                    string categoryName = "OBAT"; // Nilai default jika data tidak ada
+
+                    if (categoryData?.data != null && categoryData.data.Count > 0)
+                    {
+                        categoryName = categoryData.data[0]?.kel_brg?.ToString(); // Menggunakan nilai default jika kel_brg null
+                    }
+
+                    // Pastikan measurementData dan measurementData.data tidak null sebelum mengakses nama_satuan
+                    string measurementName = "ROL"; // Nilai default jika data tidak ada
+
+                    if (measurementData?.data != null && measurementData.data.Count > 0)
+                    {
+                        measurementName = measurementData.data[0]?.satuan?.ToString();
+                    }
+
+                    string discountValue = "0";
+                    if (discountData?.data != null && discountData.data.Count > 0)
+                    {
+                        discountValue = discountData.data[0]?.disc_persen?.ToString();
+                    }
+                    int discountIntValue = Convert.ToInt32(discountValue);
+                    decimal discountDecimalValue = Convert.ToDecimal(discountValue);
+
+                    var getSupplier = _supplierRepository.GetAllSupplier().FirstOrDefault(u => u.SupplierName == supplierNameS);
+                    var getCategory = _categoryRepository.GetAllCategory().FirstOrDefault(u => u.CategoryName == categoryName);
+                    var getMeasurement = _MeasurementRepository.GetAllMeasurement().FirstOrDefault(u => u.MeasurementName == measurementName);
+                    var getDiscount = _discountRepository.GetAllDiscount().FirstOrDefault(u => u.DiscountValue == discountIntValue);
+
+                    // Mendapatkan kode product terakhir berdasarkan hari ini
+                    var lastCode = _productRepository.GetAllProduct()
+                        .Where(d => d.CreateDateTime.ToString("yyMMdd") == setDateNow)
+                        .OrderByDescending(k => k.ProductCode)
+                        .FirstOrDefault();
+
+                    string productCode;
+
+                    if (lastCode == null)
+                    {
+                        productCode = "PDC" + setDateNow + "0001";
+                    }
+                    else
+                    {
+                        var lastCodeTrim = lastCode.ProductCode.Substring(3, 6);
+
+                        if (lastCodeTrim != setDateNow)
+                        {
+                            productCode = "PDC" + setDateNow + "0001";
+                        }
+                        else
+                        {
+                            productCode = "PDC" + setDateNow +
+                                            (Convert.ToInt32(lastCode.ProductCode.Substring(9, lastCode.ProductCode.Length - 9)) + 1)
+                                            .ToString("D4");
+                        }
+                    }
+
+                    // Membangun objek Product untuk disimpan
+                    var product = new Product
+                    {
+                        CreateDateTime = DateTime.Now,
+                        CreateBy = new Guid(getUser.Id),
+                        ProductId = Guid.NewGuid(),
+                        ProductCode = productCode,
+                        ProductName = item.nama_brg, 
+                        SupplierId = getSupplier?.SupplierId ?? Guid.Empty,
+                        CategoryId = getCategory?.CategoryId ?? Guid.Empty,
+                        MeasurementId = getMeasurement?.MeasurementId ?? Guid.Empty,
+                        DiscountId = getDiscount?.DiscountId ?? Guid.Empty,
+                        WarehouseLocationId = new Guid("4218A796-79B1-4F59-7767-08DCAE28EBBE"),
+                        MinStock = 0,
+                        MaxStock = 0,
+                        BufferStock = 0,
+                        Stock = 0,
+                        Cogs = 0m, 
+                        BuyPrice = 0m,
+                        RetailPrice = 0m,
+                        StorageLocation = "BOX",
+                        RackNumber = "4353",
+                        Note = "HSIS"
+                    };
+
+                    // Simpan ke database
+                    _productRepository.Tambah(product);
                 }
-                else
-                {
-                    return View("Error", "Gagal mengambil data dari API");
-                }
+
+                return View("CreateObat", createObatList); // Mengirimkan data ke view
             }
             catch (Exception ex)
             {
@@ -278,8 +477,8 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                                 kategoriCode = "CTG" + setDateNow + (Convert.ToInt32(lastCode.CategoryCode.Substring(9, lastCode.CategoryCode.Length - 9)) + 1).ToString("D4");
                             }
                         }
-                                // Buat objek measurement baru
-                                var Category = new Category
+                        // Buat objek measurement baru
+                        var Category = new Category
                         {
                             CreateDateTime = DateTime.Now,
                             CreateBy = new Guid(getUser.Id),
@@ -333,43 +532,6 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 var responseObject = JsonConvert.DeserializeObject<dynamic>(jsonData);
                 var diskoniList = responseObject.data.ToObject<List<dynamic>>();
                 var filterDisc = new List<dynamic>();
-                    var responseObject = JsonConvert.DeserializeObject<dynamic>(jsonData);
-                    var diskoniList = responseObject.data.ToObject<List<dynamic>>();
-
-                    foreach (var item in diskoniList)
-                    {
-                        // Mendapatkan kode measurement terakhir berdasarkan hari ini
-                        var lastCode = _discountRepository.GetAllDiscount()
-                            .Where(d => d.CreateDateTime.ToString("yyMMdd") == setDateNow)
-                            .OrderByDescending(k => k.DiscountCode)
-                            .FirstOrDefault();
-
-                        string DiscountCode;
-
-                        if (lastCode == null)
-                        {
-                            DiscountCode = "DSC" + setDateNow + "0001";
-                        }
-                        else
-                        {
-                            var lastCodeTrim = lastCode.DiscountCode.Substring(3, 6);
-
-                            if (lastCodeTrim != setDateNow)
-                            {
-                                DiscountCode = "DSC" + setDateNow + "0001";
-                            }
-                            else
-                            {
-                                DiscountCode = "DSC" + setDateNow +
-                                                (Convert.ToInt32(lastCode.DiscountCode.Substring(9, lastCode.DiscountCode.Length - 9)) + 1)
-                                                .ToString("D4");
-                            }
-                        }
-
-                        // Membuat objek diskon baru// Cek apakah nilai disc_persen tidak null
-                        var discountValue = item.disc_persen != null
-                            ? (int)Convert.ToDouble(item.disc_persen) // Membuang angka desimal tanpa pembulatan
-                            : 0;
 
                 foreach (var item in diskoniList)
                 {
@@ -435,8 +597,6 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 return View("Error", "Gagal mengambil data dari API");
             }
         }
-
-
 
 
         [HttpPost]

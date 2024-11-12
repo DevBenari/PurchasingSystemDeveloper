@@ -28,31 +28,20 @@
                         </thead>
 
                         <tbody>
-                            @if (Model != null && Model.Count > 0)
+                            @foreach (var item in Model)
                             {
-                                var no = 0;
-                                foreach (var item in Model)
-                                {
-                                    <tr>
-                                        <td>@no++</td>
-                                        <td>@item.kode_brg</td>
-                                        <td>@item.nama_brg</td>
-                                        <td>@item.nama_supp</td>
-                                        <td>@item.harga</td>
-                                        <td>@item.disc_persen</td>
-                                        <td>@item.is_supplier_utama</td>
-                                    </tr>
-                                }
-                            }
-                            else
-                            {
-                                <tr>
-                                    <td colspan="14">Tidak ada data untuk ditampilkan.</td>
-                                </tr>
+                            <tr>
+                                <th></th>
+                                <td>@item.kode_brg</td>
+                                <td>@item.nama_brg</td>
+                                <td>@item.nama_supp</td>
+                                <td>@item.harga</td>
+                                <td>@item.disc_persen</td>
+                                <td>@item.is_supplier_utama</td>
+                            </tr>
                             }
                         </tbody>
                     </table>
-                    @* <button type="submit" class="btn btn-primary">Kirim</button> *@
                 </form>
             </div>
         </div>
@@ -60,19 +49,8 @@
 </section>
 
 @section Scripts {
-    @* <script src="~/scripts/tabletemplate.js"></script> *@
-    <script>
-        $(document).ready(function () {
-            $('#tblTemplate').DataTable({
-                "paging": true,
-                "searching": true,
-                "ordering": true,
-                "info": true,
-                "pageLength": 10,
-                "lengthChange": false
-            });
-        });
-    </script>
+    <script src="~/scripts/tabletemplate.js"></script>
+
     <style>
         span.error {
             display: block;

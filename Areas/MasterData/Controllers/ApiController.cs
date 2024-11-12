@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PurchasingSystemDeveloper.Areas.MasterData.Models;
 using PurchasingSystemDeveloper.Areas.MasterData.Repositories;
+using PurchasingSystemDeveloper.Areas.Order.Models;
 using PurchasingSystemDeveloper.Data;
+using System.Data;
 using System.Net.Http;
 using System.Security.Policy;
 
@@ -17,18 +20,28 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly IUserActiveRepository _userActiveRepository;
         private readonly IProductRepository _productRepository;
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly IMeasurementRepository _MeasurementRepository;
+        private readonly IDiscountRepository _discountRepository;
 
         public ApiController(
             ApplicationDbContext applicationDbContext,
             IUserActiveRepository userActiveRepository,
             IProductRepository productRepository,
+            ICategoryRepository CategoryRepository,
+            IMeasurementRepository MeasurementRepository,
+            IDiscountRepository DiscountRepository,
+
             HttpClient httpClient
         )
         {
             _applicationDbContext = applicationDbContext;
             _userActiveRepository = userActiveRepository;
             _httpClient = httpClient;
+            _categoryRepository = CategoryRepository;
             _productRepository = productRepository;
+            _MeasurementRepository = MeasurementRepository;
+            _discountRepository = DiscountRepository;
         }
 
         public IActionResult Index()
@@ -105,6 +118,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
         {
             var apiUrl = apiCode; // URL API untuk mengambil data supplier
 
+            var getUser = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
             // Menambahkan header Authorization
             _httpClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", "YWRtZWRpa2E6YWRtZWRpa2E"); // Pastikan token atau kredensial benar
@@ -117,11 +131,56 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonData = await response.Content.ReadAsStringAsync();
-
                     var responseObject = JsonConvert.DeserializeObject<dynamic>(jsonData);
-                    var CreateSatuan = responseObject.data.ToObject<List<dynamic>>();
+                    var createSatuanList = responseObject.data.ToObject<List<dynamic>>();
 
-                    return View("CreateSatuan", CreateSatuan); // Kirimkan data ke View
+                    // Format tanggal sekarang (yyMMdd)
+                    var setDateNow = DateTime.Now.ToString("yyMMdd");
+
+                    // Convert dynamic data to List of Measurement models and save them
+                    foreach (var item in createSatuanList)
+                    {
+                        // Mendapatkan kode measurement terakhir berdasarkan hari ini
+                        var lastCode = _MeasurementRepository.GetAllMeasurement()
+                            .Where(d => d.CreateDateTime.ToString("yyMMdd") == setDateNow)
+                            .OrderByDescending(k => k.MeasurementCode)
+                            .FirstOrDefault();
+
+                        string measurementCode;
+                        if (lastCode == null)
+                        {
+                            measurementCode = "MSR" + setDateNow + "0001";
+                        }
+                        else
+                        {
+                            var lastCodeTrim = lastCode.MeasurementCode.Substring(3, 6);
+
+                            if (lastCodeTrim != setDateNow)
+                            {
+                                measurementCode = "MSR" + setDateNow + "0001";
+                            }
+                            else
+                            {
+                                measurementCode = "MSR" + setDateNow + (Convert.ToInt32(lastCode.MeasurementCode.Substring(9, lastCode.MeasurementCode.Length - 9)) + 1).ToString("D4");
+                            }
+                        }
+
+                        // Buat objek measurement baru
+                        var measurement = new Measurement
+                        {
+                            CreateDateTime = DateTime.Now,
+                            CreateBy = new Guid(getUser.Id),
+                            MeasurementId = Guid.NewGuid(),
+                            MeasurementName = item.satuan, // Pastikan item.satuan ada
+                            MeasurementCode = measurementCode // Assign kode measurement yang baru
+                        };
+
+                        // Simpan ke database
+                        _MeasurementRepository.Tambah(measurement);
+
+                    }
+
+                    return View("CreateSatuan", createSatuanList); // Kirimkan data ke View
                 }
                 else
                 {
@@ -135,6 +194,8 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 return View("Error", $"Terjadi kesalahan: {ex.Message}");
             }
         }
+
+
         [HttpGet]
         public async Task<IActionResult> CreateObat(string apiCode, int page = 1, int pageSize = 100)
         {
@@ -170,6 +231,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
         {
             var apiUrl = apiCode; // URL API untuk mengambil data supplier
 
+            var getUser = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
             // Menambahkan header Authorization
             _httpClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", "YWRtZWRpa2E6YWRtZWRpa2E"); // Pastikan token atau kredensial benar
@@ -179,13 +241,57 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 // Mengirimkan permintaan GET ke API
                 var response = await _httpClient.GetAsync(apiUrl);
 
+                var dateNow = DateTimeOffset.Now;
+                var setDateNow = DateTimeOffset.Now.ToString("yyMMdd");
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonData = await response.Content.ReadAsStringAsync();
 
                     var responseObject = JsonConvert.DeserializeObject<dynamic>(jsonData);
                     var CreateKategoriObat = responseObject.data.ToObject<List<dynamic>>();
+                    var createKategoriList = responseObject.data.ToObject<List<dynamic>>();
 
+                    foreach (var item in createKategoriList)
+                    {
+                        // Mendapatkan kode measurement terakhir berdasarkan hari ini
+                        var lastCode = _categoryRepository.GetAllCategory()
+                            .Where(d => d.CreateDateTime.ToString("yyMMdd") == setDateNow)
+                            .OrderByDescending(k => k.CategoryCode)
+                            .FirstOrDefault();
+
+
+                        string kategoriCode;
+                        if (lastCode == null)
+                        {
+                            kategoriCode = "CTG" + setDateNow + "0001";
+                        }
+                        else
+                        {
+                            var lastCodeTrim = lastCode.CategoryCode.Substring(3, 6);
+
+                            if (lastCodeTrim != setDateNow)
+                            {
+                                kategoriCode = "CTG" + setDateNow + "0001";
+                            }
+                            else
+                            {
+                                kategoriCode = "CTG" + setDateNow + (Convert.ToInt32(lastCode.CategoryCode.Substring(9, lastCode.CategoryCode.Length - 9)) + 1).ToString("D4");
+                            }
+                        }
+                                // Buat objek measurement baru
+                                var Category = new Category
+                        {
+                            CreateDateTime = DateTime.Now,
+                            CreateBy = new Guid(getUser.Id),
+                            CategoryId = Guid.NewGuid(),
+                            CategoryCode = kategoriCode,
+                            CategoryName = item.kel_brg,
+                        };
+
+                        // Simpan ke database
+                        _categoryRepository.Tambah(Category);
+
+                    }
                     return View("CreateKategoriObat", CreateKategoriObat); // Kirimkan data ke View
                 }
                 else
@@ -200,41 +306,99 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 return View("Error", $"Terjadi kesalahan: {ex.Message}");
             }
         }
+
         [HttpGet]
         public async Task<IActionResult> CreateDiskon(string apiCode)
         {
             var apiUrl = apiCode; // URL API untuk mengambil data supplier
 
+            var getUser = _userActiveRepository.GetAllUserLogin()
+                .Where(u => u.UserName == User.Identity.Name)
+                .FirstOrDefault();
+
             // Menambahkan header Authorization
             _httpClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", "YWRtZWRpa2E6YWRtZWRpa2E"); // Pastikan token atau kredensial benar
 
-            try
+            // Mengirimkan permintaan GET ke API
+            var response = await _httpClient.GetAsync(apiUrl);
+
+            var dateNow = DateTimeOffset.Now;
+            var setDateNow = DateTimeOffset.Now.ToString("yyMMdd");
+
+            if (response.IsSuccessStatusCode)
             {
-                // Mengirimkan permintaan GET ke API
-                var response = await _httpClient.GetAsync(apiUrl);
+                // Membaca konten API
+                var jsonData = await response.Content.ReadAsStringAsync();
+                var responseObject = JsonConvert.DeserializeObject<dynamic>(jsonData);
+                var diskoniList = responseObject.data.ToObject<List<dynamic>>();
+                var filterDisc = new List<dynamic>();
 
-                if (response.IsSuccessStatusCode)
+                foreach (var item in diskoniList)
                 {
-                    var jsonData = await response.Content.ReadAsStringAsync();
+                    var getDiscVal = _discountRepository.GetAllDiscount().Where(d => d.DiscountValue == (int)Convert.ToDouble(item.disc_persen)).FirstOrDefault();
 
-                    var responseObject = JsonConvert.DeserializeObject<dynamic>(jsonData);
-                    var CreateDiskon = responseObject.data.ToObject<List<dynamic>>();
+                    if (getDiscVal == null)
+                    {
+                        filterDisc.Add(item);
 
-                    return View("CreateDiskon", CreateDiskon); // Kirimkan data ke View
+                        // Mendapatkan kode measurement terakhir berdasarkan hari ini
+                        var lastCode = _discountRepository.GetAllDiscount()
+                        .Where(d => d.CreateDateTime.ToString("yyMMdd") == setDateNow)
+                        .OrderByDescending(k => k.DiscountCode)
+                        .FirstOrDefault();
+
+                        string DiscountCode;
+
+                        if (lastCode == null)
+                        {
+                            DiscountCode = "DSC" + setDateNow + "0001";
+                        }
+                        else
+                        {
+                            var lastCodeTrim = lastCode.DiscountCode.Substring(3, 6);
+
+                            if (lastCodeTrim != setDateNow)
+                            {
+                                DiscountCode = "DSC" + setDateNow + "0001";
+                            }
+                            else
+                            {
+                                DiscountCode = "DSC" + setDateNow +
+                                                (Convert.ToInt32(lastCode.DiscountCode.Substring(9, lastCode.DiscountCode.Length - 9)) + 1)
+                                                .ToString("D4");
+                            }
+                        }
+
+                        // Membuat objek diskon baru// Cek apakah nilai disc_persen tidak null
+                        var discountValue = item.disc_persen != null
+                            ? (int)Convert.ToDouble(item.disc_persen) // Membuang angka desimal tanpa pembulatan
+                            : 0;
+
+                        var discount = new Discount
+                        {
+                            CreateDateTime = DateTimeOffset.Now,
+                            CreateBy = new Guid(getUser.Id),
+                            DiscountId = Guid.NewGuid(),
+                            DiscountCode = DiscountCode,
+                            DiscountValue = discountValue // Menangani null atau jika data tidak ada
+                        };
+
+                        // Simpan ke database
+                        _discountRepository.Tambah(discount);
+                    }
                 }
-                else
-                {
-                    // Jika request gagal
-                    return View("Error", "Gagal mengambil data dari API");
-                }
+
+                // Kirimkan data ke View
+                return View("CreateDiskon", filterDisc); // Kirimkan hanya 100 data
             }
-            catch (Exception ex)
+            else
             {
-                // Tangani kesalahan jika ada masalah dengan koneksi atau pemrosesan data
-                return View("Error", $"Terjadi kesalahan: {ex.Message}");
+                // Jika request gagal, tampilkan pesan error
+                return View("Error", "Gagal mengambil data dari API");
             }
         }
+
 
 
 

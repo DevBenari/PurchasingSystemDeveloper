@@ -333,6 +333,43 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 var responseObject = JsonConvert.DeserializeObject<dynamic>(jsonData);
                 var diskoniList = responseObject.data.ToObject<List<dynamic>>();
                 var filterDisc = new List<dynamic>();
+                    var responseObject = JsonConvert.DeserializeObject<dynamic>(jsonData);
+                    var diskoniList = responseObject.data.ToObject<List<dynamic>>();
+
+                    foreach (var item in diskoniList)
+                    {
+                        // Mendapatkan kode measurement terakhir berdasarkan hari ini
+                        var lastCode = _discountRepository.GetAllDiscount()
+                            .Where(d => d.CreateDateTime.ToString("yyMMdd") == setDateNow)
+                            .OrderByDescending(k => k.DiscountCode)
+                            .FirstOrDefault();
+
+                        string DiscountCode;
+
+                        if (lastCode == null)
+                        {
+                            DiscountCode = "DSC" + setDateNow + "0001";
+                        }
+                        else
+                        {
+                            var lastCodeTrim = lastCode.DiscountCode.Substring(3, 6);
+
+                            if (lastCodeTrim != setDateNow)
+                            {
+                                DiscountCode = "DSC" + setDateNow + "0001";
+                            }
+                            else
+                            {
+                                DiscountCode = "DSC" + setDateNow +
+                                                (Convert.ToInt32(lastCode.DiscountCode.Substring(9, lastCode.DiscountCode.Length - 9)) + 1)
+                                                .ToString("D4");
+                            }
+                        }
+
+                        // Membuat objek diskon baru// Cek apakah nilai disc_persen tidak null
+                        var discountValue = item.disc_persen != null
+                            ? (int)Convert.ToDouble(item.disc_persen) // Membuang angka desimal tanpa pembulatan
+                            : 0;
 
                 foreach (var item in diskoniList)
                 {

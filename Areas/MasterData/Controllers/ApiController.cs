@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using PurchasingSystemDeveloper.Areas.MasterData.Models;
 using PurchasingSystemDeveloper.Areas.MasterData.Repositories;
+using PurchasingSystemDeveloper.Areas.Order.Models;
 using PurchasingSystemDeveloper.Data;
 using System.Data;
 using System.Net.Http;
@@ -319,18 +320,19 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             _httpClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", "YWRtZWRpa2E6YWRtZWRpa2E"); // Pastikan token atau kredensial benar
 
-            try
+            // Mengirimkan permintaan GET ke API
+            var response = await _httpClient.GetAsync(apiUrl);
+
+            var dateNow = DateTimeOffset.Now;
+            var setDateNow = DateTimeOffset.Now.ToString("yyMMdd");
+
+            if (response.IsSuccessStatusCode)
             {
-                // Mengirimkan permintaan GET ke API
-                var response = await _httpClient.GetAsync(apiUrl);
-
-                var dateNow = DateTimeOffset.Now;
-                var setDateNow = DateTimeOffset.Now.ToString("yyMMdd");
-
-                if (response.IsSuccessStatusCode)
-                {
-                    // Membaca konten API
-                    var jsonData = await response.Content.ReadAsStringAsync();
+                // Membaca konten API
+                var jsonData = await response.Content.ReadAsStringAsync();
+                var responseObject = JsonConvert.DeserializeObject<dynamic>(jsonData);
+                var diskoniList = responseObject.data.ToObject<List<dynamic>>();
+                var filterDisc = new List<dynamic>();
                     var responseObject = JsonConvert.DeserializeObject<dynamic>(jsonData);
                     var diskoniList = responseObject.data.ToObject<List<dynamic>>();
 
@@ -369,9 +371,50 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                             ? (int)Convert.ToDouble(item.disc_persen) // Membuang angka desimal tanpa pembulatan
                             : 0;
 
-                        var Discount = new Discount
+                foreach (var item in diskoniList)
+                {
+                    var getDiscVal = _discountRepository.GetAllDiscount().Where(d => d.DiscountValue == (int)Convert.ToDouble(item.disc_persen)).FirstOrDefault();
+
+                    if (getDiscVal == null)
+                    {
+                        filterDisc.Add(item);
+
+                        // Mendapatkan kode measurement terakhir berdasarkan hari ini
+                        var lastCode = _discountRepository.GetAllDiscount()
+                        .Where(d => d.CreateDateTime.ToString("yyMMdd") == setDateNow)
+                        .OrderByDescending(k => k.DiscountCode)
+                        .FirstOrDefault();
+
+                        string DiscountCode;
+
+                        if (lastCode == null)
                         {
-                            CreateDateTime = DateTime.Now,
+                            DiscountCode = "DSC" + setDateNow + "0001";
+                        }
+                        else
+                        {
+                            var lastCodeTrim = lastCode.DiscountCode.Substring(3, 6);
+
+                            if (lastCodeTrim != setDateNow)
+                            {
+                                DiscountCode = "DSC" + setDateNow + "0001";
+                            }
+                            else
+                            {
+                                DiscountCode = "DSC" + setDateNow +
+                                                (Convert.ToInt32(lastCode.DiscountCode.Substring(9, lastCode.DiscountCode.Length - 9)) + 1)
+                                                .ToString("D4");
+                            }
+                        }
+
+                        // Membuat objek diskon baru// Cek apakah nilai disc_persen tidak null
+                        var discountValue = item.disc_persen != null
+                            ? (int)Convert.ToDouble(item.disc_persen) // Membuang angka desimal tanpa pembulatan
+                            : 0;
+
+                        var discount = new Discount
+                        {
+                            CreateDateTime = DateTimeOffset.Now,
                             CreateBy = new Guid(getUser.Id),
                             DiscountId = Guid.NewGuid(),
                             DiscountCode = DiscountCode,
@@ -379,22 +422,17 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                         };
 
                         // Simpan ke database
-                        _discountRepository.Tambah(Discount);
+                        _discountRepository.Tambah(discount);
                     }
+                }
 
-                    // Kirimkan data ke View
-                    return View("CreateDiskon", diskoniList); // Kirimkan hanya 100 data
-                }
-                else
-                {
-                    // Jika request gagal, tampilkan pesan error
-                    return View("Error", "Gagal mengambil data dari API");
-                }
+                // Kirimkan data ke View
+                return View("CreateDiskon", filterDisc); // Kirimkan hanya 100 data
             }
-            catch (Exception ex)
+            else
             {
-                // Tangani kesalahan jika ada masalah dengan koneksi atau pemrosesan data
-                return View("Error", $"Terjadi kesalahan: {ex.Message}");
+                // Jika request gagal, tampilkan pesan error
+                return View("Error", "Gagal mengambil data dari API");
             }
         }
 

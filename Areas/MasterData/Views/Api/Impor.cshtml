@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
@@ -93,27 +93,51 @@
     }
 
     // Fungsi untuk mengambil data produk dari API
+    // function getProductData() {
+    //     fetch('https:app.mmchospital.co.id/devel_mantap/api.php?mod=api&cmd=get_diskon_obat&return_type=json', {
+    //         method: 'GET',
+    //         headers: {
+    //             'Authorization': 'Basic YWRtZWRpa2E6YWRtZWRpa2E', Ganti <token-anda> dengan token aktual Anda
+    //             'Content-Type': 'application/json'
+    //         }
+    //     })
+    //     fetch('https:app.mmchospital.co.id/devel_mantap/api.php?mod=api&cmd=get_diskon_obat&return_type=json&diskon_obat=')
+    //         .then(response => {
+    //             if (!response.ok) {
+    //                 throw new Error('Gagal mengambil data');
+    //             }
+    //             return response.json();
+    //         })
+    //         .then(data => {
+    //             products = data; Simpan data produk ke dalam variabel 'products'
+    //             displayProductData(products);
+
+    //             Tampilkan kolom pencarian setelah data berhasil diambil
+    //             document.getElementById('searchCard').style.display = 'block';
+    //         })
+    //         .catch(error => {
+    //             console.error('Terjadi kesalahan:', error);
+    //             alert('Terjadi kesalahan saat mengambil data produk.');
+    //         });
+    // }
     function getProductData() {
-        fetch('https://app.mmchospital.co.id/devel_mantap/api.php?mod=api&cmd=get_diskon_obat&return_type=json&diskon_obat=')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Gagal mengambil data');
-                }
-                return response.json();
-            })
-            .then(data => {
-                products = data; // Simpan data produk ke dalam variabel 'products'
-                displayProductData(products);
+        // Data dummy produk
+        const dummyProducts = [
+            { id: 1, name: 'Produk A', price: 50000, category: 'Kategori 1' },
+            { id: 2, name: 'Produk B', price: 75000, category: 'Kategori 2' },
+            { id: 3, name: 'Produk C', price: 100000, category: 'Kategori 1' },
+            { id: 4, name: 'Produk D', price: 120000, category: 'Kategori 3' }
+        ];
 
-                // Tampilkan kolom pencarian setelah data berhasil diambil
-                document.getElementById('searchCard').style.display = 'block';
-            })
-            .catch(error => {
-                console.error('Terjadi kesalahan:', error);
-                alert('Terjadi kesalahan saat mengambil data produk.');
-            });
+        // Simpan data produk ke dalam variabel 'products'
+        products = dummyProducts;
+
+        // Tampilkan data produk
+        displayProductData(products);
+
+        // Tampilkan kolom pencarian setelah data berhasil diambil
+        document.getElementById('searchCard').style.display = 'block';
     }
-
     // Fungsi untuk mencari produk berdasarkan input
     function searchProduct() {
         const searchQuery = document.getElementById('searchInput').value.toLowerCase();

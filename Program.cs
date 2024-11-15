@@ -1,12 +1,15 @@
 using FastReport.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PurchasingSystemDeveloper.Areas.MasterData.Repositories;
+using PurchasingSystemDeveloper.Areas.MasterData.Services;
 using PurchasingSystemDeveloper.Areas.Order.Repositories;
 using PurchasingSystemDeveloper.Areas.Transaction.Repositories;
 using PurchasingSystemDeveloper.Areas.Warehouse.Repositories;
@@ -14,6 +17,7 @@ using PurchasingSystemDeveloper.Data;
 using PurchasingSystemDeveloper.Hubs;
 using PurchasingSystemDeveloper.Models;
 using PurchasingSystemDeveloper.Repositories;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -86,6 +90,8 @@ builder.Services.AddScoped<IDepartmentRepository>();
 builder.Services.AddScoped<IPositionRepository>();
 builder.Services.AddScoped<IGroupRoleRepository>();
 builder.Services.AddSignalR();
+
+builder.Services.AddScoped<ApiServices>();
 #endregion
 
 #region Areas Order
@@ -121,6 +127,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 //Tambahan Baru
+app.UseRouting(); //
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
@@ -202,7 +209,6 @@ app.Use(async (context, next) =>
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseRouting();
 
 app.UseFastReport();
 

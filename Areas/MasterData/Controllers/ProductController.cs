@@ -74,7 +74,12 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             var data = _productRepository.GetAllProduct();
             return View(data);
         }
-
+        //[HttpGet]
+        //public JsonResult GetProducts()
+        //{
+        //    var products = _productRepository.GetAllProduct(); // Ambil semua data produk
+        //    return Json(new { data = products });
+        //}
         [HttpPost]
         public async Task<IActionResult> Index(DateTime? tglAwalPencarian, DateTime? tglAkhirPencarian, string filterOptions)
         {

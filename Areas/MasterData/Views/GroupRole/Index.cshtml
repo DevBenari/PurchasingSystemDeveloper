@@ -101,7 +101,7 @@
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-success float-left fw-bold" id="moveButton">
-                                            Move All
+                                            Move All &rarr;
                                         </button>
                                     </div>
                                 </div>
@@ -512,27 +512,34 @@
     });
 
     document.getElementById('moveButton').addEventListener('click', function (event) {
-        event.preventDefault();
-
-        const folderItems = document.querySelectorAll(`#folderList #${folderId} li`);
-        const newFolderListUl = document.querySelector(`#newFolderList #${folderId}`);
+        event.preventDefault(); // Menghentikan aksi default dari button jika ada
 
         const folderList = document.getElementById('folderList');
         const newFolderList = document.getElementById('newFolderList');
 
         const menuTitle = document.getElementById('menuTitle');
+        // Memeriksa apakah menuTitle ada dan teksnya tidak kosong
         if (menuTitle && menuTitle.textContent.trim() !== "") {
-            while (folderList.firstChild) {
-                if (newFolderListUl) {
-                    folderItems.forEach(item => {
-                        newFolderListUl.appendChild(item);
-                    });
-                } else {
+            // Memeriksa apakah folderList memiliki anak
+            if (folderList.childElementCount > 0) {
+                // Pindahkan semua elemen dari folderList ke newFolderList
+                while (folderList.firstChild) {
                     newFolderList.appendChild(folderList.firstChild);
                 }
+                // Mengubah teks tombol ke arah kiri (<-)
+                this.innerHTML = '&larr; Move All';
+            } else if (newFolderList.childElementCount > 0) {
+                // Jika folderList kosong, pindahkan semua elemen dari newFolderList ke folderList
+                while (newFolderList.firstChild) {
+                    folderList.appendChild(newFolderList.firstChild);
+                }
+                // Mengubah teks tombol ke arah kanan (->)
+                this.innerHTML = 'Move All &rarr;';
             }
         }
     });
+
+
 
     document.getElementById('searchMenu').addEventListener('input', function () {
         const searchValue = this.value.toLowerCase();

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PurchasingSystemDeveloper.Areas.MasterData.Models;
@@ -106,6 +107,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "CreateBank")]
         public async Task<ViewResult> CreateBank()
         {
             ViewBag.Active = "MasterData";

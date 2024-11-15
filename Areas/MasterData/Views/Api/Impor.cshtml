@@ -1,83 +1,133 @@
-﻿@{
-    ViewData["Title"] = "Impor Data";
-    Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
-}
-@using Microsoft.AspNetCore.Identity;
-@using PurchasingSystemDeveloper.Areas.MasterData.Models;
-@using PurchasingSystemDeveloper.Models;
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Data Produk</title>
 
-@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
-@model IEnumerable<Product>
+    <!-- Link CSS AdminLTE -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2.0/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-<section class="content">
-    <div class="row">
-        <div class="col-md-12 bg-white">
-            <div class="card-header bg-cyan">
-                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewData["Title"]</h3>
-            </div>
-            <div class="card-body table-responsive p-0">
-                <form enctype="multipart/form-data" asp-controller="Api" asp-action="CreateProduct" method="post">
-                    <table class="table table-hover table-head-fixed text-nowrap">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Create DateTime</th>
-                                <th>Created By</th>
-                                <th>Product ID</th>
-                                <th>Product Code</th>
-                                <th>Product Name</th>
-                                <th>Principal ID</th>
-                                <th>Category ID</th>
-                                <th>Measurement ID</th>
-                                <th>Discount ID</th>
-                                <th>Min Stock</th>
-                                <th>Max Stock</th>
-                                <th>Buffer Stock</th>
-                                <th>Stock</th>
-                                <th>COGS</th>
-                                <th>Buy Price</th>
-                                <th>Retail Price</th>
-                                <th>Storage Location</th>
-                                <th>Rack Number</th>
-                                <th>Note</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @{
-                                int i = 1;
-                            }
-                            @foreach (var product in Model)
-                            {
-                                <tr>
-                                    <td>@(i)</td> <!-- Untuk menampilkan nomor urut -->
-                                    <td>@product.CreateDateTime.ToString("g")</td>
-                                    <td>@product.CreateBy</td>
-                                    <td>@product.ProductId</td>
-                                    <td>@product.ProductCode</td>
-                                    <td>@product.ProductName</td>
-                                    <td>@product.SupplierId</td>
-                                    <td>@product.CategoryId</td>
-                                    <td>@product.MeasurementId</td>
-                                    <td>@product.DiscountId</td>
-                                    <td>@product.MinStock</td>
-                                    <td>@product.MaxStock</td>
-                                    <td>@product.BufferStock</td>
-                                    <td>@product.Stock</td>
-                                    <td>@product.Cogs</td>
-                                    <td>@product.BuyPrice</td>
-                                    <td>@product.RetailPrice</td>
-                                    <td>@product.StorageLocation</td>
-                                    <td>@product.RackNumber</td>
-                                    <td>@product.Note</td>
-                                    <td>@Math.Truncate(@product.RetailPrice)</td>
-                                </tr>
-                                i++;
-                            }
-                        </tbody>
-                    </table>
-                    <button type="submit" class="btn btn-primary">Kirim</button>
-                </form>
+    <!-- Link CSS untuk custom style -->
+</head>
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Data Produk</h1>
             </div>
         </div>
     </div>
 </section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- Card Tombol Ambil Data -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Tombol Ambil Data</h3>
+                    </div>
+                    <div class="card-body">
+                        <button id="getDataButtonProduk" class="btn btn-success btn-custom">Get Data Produk</button>
+                        <button id="getDataButtonObat" class="btn btn-warning btn-custom">Get Data Obat</button>
+                        <button id="getDataButtonDiskon" class="btn btn-info btn-custom">Get Data Diskon</button>
+                        <button id="getDataButtonKategori" class="btn btn-primary btn-custom">Get Data Kategori</button>
+                        <button id="getDataButtonSupplier" class="btn btn-danger btn-custom">Get Data Supplier</button>
+                    </div>
+                </div>
+
+                <!-- Kolom Pencarian (Disembunyikan awalnya) -->
+                <div class="card" id="searchCard" style="display: none;">
+                    <div class="card-header">
+                        <h3 class="card-title">Cari Data</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12 col-md-3">
+                                <div class="input-group">
+                                    <input type="text" id="searchInput" class="form-control" placeholder="Cari data...">
+                                    <div class="input-group-append">
+                                        <button id="searchButton" class="btn btn-primary">Cari</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tempat untuk menampilkan hasil JSON -->
+                <div id="productData" class="card" style="display: none;">
+                    <div class="card-header">
+                        <h3 class="card-title">Hasil Data</h3>
+                    </div>
+                    <div class="card-body">
+                        <pre id="jsonResult"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="main-footer">
+    <div class="container">
+        <strong>&copy; 2024 <a href="#">Nama Perusahaan</a></strong> All rights reserved.
+    </div>
+</footer>
+<script>
+    // Variabel untuk menyimpan produk
+    let products = [];
+
+    // Fungsi untuk menampilkan produk dalam format JSON
+    function displayProductData(data) {
+        const productDataDiv = document.getElementById('productData');
+        const jsonResult = document.getElementById('jsonResult');
+        jsonResult.textContent = JSON.stringify(data, null, 2);
+        productDataDiv.style.display = 'block'; // Menampilkan hasil data produk
+    }
+
+    // Fungsi untuk mengambil data produk dari API
+    function getProductData() {
+        fetch('https://app.mmchospital.co.id/devel_mantap/api.php?mod=api&cmd=get_diskon_obat&return_type=json&diskon_obat=')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Gagal mengambil data');
+                }
+                return response.json();
+            })
+            .then(data => {
+                products = data; // Simpan data produk ke dalam variabel 'products'
+                displayProductData(products);
+
+                // Tampilkan kolom pencarian setelah data berhasil diambil
+                document.getElementById('searchCard').style.display = 'block';
+            })
+            .catch(error => {
+                console.error('Terjadi kesalahan:', error);
+                alert('Terjadi kesalahan saat mengambil data produk.');
+            });
+    }
+
+    // Fungsi untuk mencari produk berdasarkan input
+    function searchProduct() {
+        const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+        const filteredProducts = products.filter(product =>
+            product.name.toLowerCase().includes(searchQuery) // Ganti 'name' sesuai dengan struktur data produk Anda
+        );
+        displayProductData(filteredProducts);
+    }
+
+    // Event listener untuk tombol Get Data Produk
+    document.getElementById('getDataButtonProduk').addEventListener('click', getProductData);
+
+    // Event listener untuk tombol Cari
+    document.getElementById('searchButton').addEventListener('click', searchProduct);
+
+</script>
+</html>

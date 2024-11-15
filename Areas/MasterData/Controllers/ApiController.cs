@@ -58,7 +58,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
         public IActionResult GetDataKategoriObat() { return View(); }
         public IActionResult GetDataObat() { return View(); }
         public IActionResult GetDataDiskon() { return View(); }
-
+        public IActionResult Impor() { return View(); }
         //[HttpGet]
         //public async Task<IActionResult> Impor(string apiCode)
         //{
@@ -287,8 +287,6 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 return View("Error", "Pengguna tidak ditemukan.");
             }
 
-            try
-            {
                 // Request untuk data obat
                 var response = await _httpClient.GetAsync(apiUrl);
                 if (!response.IsSuccessStatusCode)
@@ -305,59 +303,39 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
 
                 foreach (var item in createObatList)
                 {
-                    // Ambil data diskon obat
-                    var apiDiscountUrl = $"https://app.mmchospital.co.id/devel_mantap/api.php?mod=api&cmd=get_diskon_obat&return_type=json&diskon_obat={item.kode_brg}";
-                    var responseDiscount = GetApiDataAsync<dynamic>(apiDiscountUrl);
-                    var responseCategory = GetApiDataAsync<dynamic>($"https://app.mmchospital.co.id/devel_mantap/api.php?mod=api&cmd=get_kategori_obat&return_type=json&kategori_obat={item.commodity}");
-                    var responseMeasurement = GetApiDataAsync<dynamic>($"https://app.mmchospital.co.id/devel_mantap/api.php?mod=api&cmd=get_satuan&return_type=json&satuan={item.kode_satuan}");
+                    //var apiDiscountUrl = $"https://app.mmchospital.co.id/devel_mantap/api.php?mod=api&cmd=get_diskon_obat&return_type=json&diskon_obat={item.kode_brg}";
+                    //var responseDiscount = await _httpClient.GetAsync(apiDiscountUrl);
+                    //var jsonDataDiscount = await responseDiscount.Content.ReadAsStringAsync();
+                    //var responseObjectDiscount = JsonConvert.DeserializeObject<dynamic>(jsonDataDiscount);
+                    //var createDiscount = responseObjectDiscount?.data.ToObject<List<dynamic>>();
 
-                    // Tunggu semua hasil API
-                    await Task.WhenAll(responseDiscount, responseCategory, responseMeasurement);
-
-                    // Mendapatkan hasil API
-                    var discountData = await responseDiscount;
-                    var categoryData = await responseCategory;
-                    var measurementData = await responseMeasurement;
-
-                    // Ambil nama_supp dari discountData untuk membangun URL supplier
-                    string supplierName = "RS PLUIT"; // Nilai default
-                   /* if (discountData?.data != null && discountData.data.Count > 0)
+                    var discountValue = "0";
+                //var discountValue = $"{createDiscount.disc_persen}";
+                if (discountValue == "")
                     {
-                        supplierName = discountData.data[0]?.nama_supp?.ToString(); // Menggunakan nilai default jika kel_brg null
-                    }*/
-
-                    var apiSupplierUrl = $"https://app.mmchospital.co.id/devel_mantap/api.php?mod=api&cmd=get_supplier&return_type=json&supplier={supplierName}";
-
-                    var supplierData = await GetApiDataAsync<dynamic>(apiSupplierUrl);
-
-                    string supplierNameS = supplierData?.data?.nama_supp?.ToString() ?? "RS PLUIT";
-                    // Pastikan categoryData dan categoryData.data tidak null sebelum mengakses nama_kategori
-                    string categoryName = "OBAT"; // Nilai default jika data tidak ada
-
-                    if (categoryData?.data != null && categoryData.data.Count > 0)
-                    {
-                        categoryName = categoryData.data[0]?.kel_brg?.ToString(); // Menggunakan nilai default jika kel_brg null
+                        discountValue = "0";
                     }
 
-                    // Pastikan measurementData dan measurementData.data tidak null sebelum mengakses nama_satuan
-                    string measurementName = "ROL"; // Nilai default jika data tidak ada
-
-                    if (measurementData?.data != null && measurementData.data.Count > 0)
-                    {
-                        measurementName = measurementData.data[0]?.satuan?.ToString();
-                    }
-
-                    string discountValue = "0";
-                    if (discountData?.data != null && discountData.data.Count > 0)
-                    {
-                        discountValue = discountData.data[0]?.disc_persen?.ToString();
-                    }
                     int discountIntValue = Convert.ToInt32(discountValue);
-                    decimal discountDecimalValue = Convert.ToDecimal(discountValue);
 
+                    var supplierNameS = $"{item.supplier}";
+                    if (supplierNameS == "")
+                    {
+                        supplierNameS = "PARIT PADANG GLOBAL, PT";
+                    }
+                    var categoryS = $"{item.commodity }";
+                    if (categoryS =="")
+                    {
+                        categoryS = "OBAT";
+                    }
+                    var measurementS = $"{item.kode_satuan}";
+                    if (measurementS == "")
+                    {
+                        measurementS = "ROL";
+                    }
                     var getSupplier = _supplierRepository.GetAllSupplier().FirstOrDefault(u => u.SupplierName == supplierNameS);
-                    var getCategory = _categoryRepository.GetAllCategory().FirstOrDefault(u => u.CategoryName == categoryName);
-                    var getMeasurement = _MeasurementRepository.GetAllMeasurement().FirstOrDefault(u => u.MeasurementName == measurementName);
+                    var getCategory = _categoryRepository.GetAllCategory().FirstOrDefault(u => u.CategoryName == categoryS);
+                    var getMeasurement = _MeasurementRepository.GetAllMeasurement().FirstOrDefault(u => u.MeasurementName == measurementS);
                     var getDiscount = _discountRepository.GetAllDiscount().FirstOrDefault(u => u.DiscountValue == discountIntValue);
 
                     // Mendapatkan kode product terakhir berdasarkan hari ini
@@ -370,7 +348,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
 
                     if (lastCode == null)
                     {
-                        productCode = "PDC" + setDateNow + "0001";
+                        productCode = "PDC" + setDateNow + "00001";
                     }
                     else
                     {
@@ -378,7 +356,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
 
                         if (lastCodeTrim != setDateNow)
                         {
-                            productCode = "PDC" + setDateNow + "0001";
+                            productCode = "PDC" + setDateNow + "00001";
                         }
                         else
                         {
@@ -397,7 +375,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                         ProductCode = productCode,
                         ProductName = item.nama_brg, 
                         SupplierId = getSupplier?.SupplierId ?? Guid.Empty,
-                        CategoryId = getCategory?.CategoryId ?? Guid.Empty,
+                        CategoryId = getCategory?.CategoryId ?? new Guid("5B26524F-B843-4E63-4A96-08DCACC980CC"),
                         MeasurementId = getMeasurement?.MeasurementId ?? Guid.Empty,
                         DiscountId = getDiscount?.DiscountId ?? Guid.Empty,
                         WarehouseLocationId = new Guid("4218A796-79B1-4F59-7767-08DCAE28EBBE"),
@@ -418,11 +396,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 }
 
                 return View("CreateObat", createObatList); // Mengirimkan data ke view
-            }
-            catch (Exception ex)
-            {
-                return View("Error", $"Terjadi kesalahan: {ex.Message}");
-            }
+           
         }
 
         [HttpGet]

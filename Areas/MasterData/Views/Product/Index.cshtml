@@ -91,11 +91,13 @@
                                         <th class="text-left" style="width: 10%;">Retail Price</th>
                                     </tr>
                                 </thead>
+                                @* <tbody id="productTableBody">
+                                </tbody> *@
                                 <tbody>
                                     @foreach (var Product in Model)
                                     {
 
-                                        <tr data-href="@Url.Action("DetailProduct", "Product", new {id=Product.ProductId})">
+                                        <tr data-href="@Url.Action("DetailProduct", "Product", new { id = Product.ProductId })">
                                             <th class="text-center"></th>
                                             <td class="text-left">@Product.CreateDateTime.ToString("dd MMMM yyyy")</td>
                                             <td class="text-left">@Product.ProductName</td>
@@ -132,7 +134,79 @@
 </section>
 <!-- /.content -->
 @section Scripts{
-    <script src="~/scripts/tabletemplate.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#tblTemplate').DataTable({
+                "paging": true,
+                "searching": true,
+                "ordering": true,
+                "info": true,
+                "pageLength": 10,
+                "lengthChange": false,
+                "columnDefs": [
+                    {
+                        // Define the "No" column index, it will be the first column
+                        "targets": 0,
+                        "orderable": false,  // Disable sorting on the "No" column
+                        "searchable": false  // Disable search on the "No" column
+                    }
+                ],
+                "rowCallback": function (row, data, index) {
+                    // Populate the first cell (No column) with the row number
+                    $('th:eq(0)', row).html(index + 1);
+                }
+            });
+        });
+
+    </script>
+    @* <script>
+        $(document).ready(function () {
+
+            $('#tblTemplate').DataTable({
+                "paging": true,
+                "searching": false,
+                "ordering": true,
+                "info": true,
+                "pageLength": 10
+            });
+            loadProducts();
+
+            function loadProducts() {
+                $.ajax({
+                    url: '@Url.Action("GetProducts", "Product")',  // URL untuk mengambil data produk
+                    type: 'GET',
+                    success: function (response) {
+                        var products = response.data;
+                        var tableBody = $('#productTableBody');
+                        tableBody.empty();  // Kosongkan tabel sebelum memasukkan data baru
+
+                        // Masukkan data produk ke dalam tabel
+                        $.each(products, function (index, product) {
+                            var row = `<tr>
+                                    <th class="text-center">${index + 1}</th>
+                                    <td class="text-left">${new Date(product.createDateTime).toLocaleDateString()}</td>
+                                    <td class="text-left">${product.productName}</td>
+                                    <td class="text-left">${product.supplierName}</td>
+                                    <td class="text-left">${product.categoryName}</td>
+                                    <td class="text-left">${product.measurementName}</td>
+                                    <td class="text-left">${product.minStock}</td>
+                                    <td class="text-left">${product.maxStock}</td>
+                                    <td class="text-left">${product.bufferStock}</td>
+                                    <td class="text-left">${product.stock}</td>
+                                    <td class="text-left">${Math.trunc(product.retailPrice)}</td>
+                                </tr>`;
+                            tableBody.append(row);
+                        });
+                    },
+                    error: function () {
+                        alert('Error loading product data');
+                    }
+                });
+            }
+        });
+    </script> *@
+
     <script>
        $(document).ready(function () {
             $("#btnFilterBy").data('placeholder');

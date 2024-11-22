@@ -17,36 +17,7 @@
                 </div>
                 <div class="widget-user-image">
                     @*<img class="img-circle elevation-2" src="../dist/img/user1-128x128.jpg" alt="User Avatar">*@
-                </div>
-                <div class="card-footer">
-                    <div class="row">
-                        <div class="col-sm-4 border-right">
-                            <div class="description-block">
-                                <h5 class="description-header">@ViewBag.CountUser</h5>
-                                <span class="description-text">USERS</span>
-                            </div>
-                            <!-- /.description-block -->
-                        </div>
-                        <!-- /.col -->
-                        <div class="col-sm-4 border-right">
-                            <div class="description-block">
-                                <h5 class="description-header">@ViewBag.CountPrincipal</h5>
-                                <span class="description-text">PRINCIPALS</span>
-                            </div>
-                            <!-- /.description-block -->
-                        </div>
-                        <!-- /.col -->
-                        <div class="col-sm-4 border-right">
-                            <div class="description-block">
-                                <h5 class="description-header">@ViewBag.CountProduct</h5>
-                                <span class="description-text">PRODUCTS</span>
-                            </div>
-                            <!-- /.description-block -->
-                        </div>
-                        <!-- /.col -->                        
-                    </div>
-                    <!-- /.row -->
-                </div>
+                </div>                
             </div>
             <!-- /.widget-user -->
         </div>
@@ -60,7 +31,7 @@
                     @*change color in adminlte.min.cs*@
                     <div class="inner">
                         <h4 class="fw-bold" style="color:#ffffff">User</h4>
-                        <p style="color:#ffffff">User</p>
+                        <p style="color:#ffffff">Total @ViewBag.CountUser User</p>
                     </div>
                     <div class="icon">
                         <i class="fas fa-user-plus"></i>
@@ -70,19 +41,51 @@
         </div>        
         <div class="col-lg-3 col-6">
             <!-- small box -->
-            <a asp-controller="Principal" asp-action="Index" asp-area="MasterData">
+            <a asp-controller="Supplier" asp-action="Index" asp-area="MasterData">
                 <div class="small-box " style="background-color:#347FC4">
                     @*change color in adminlte.min.cs*@
                     <div class="inner">
-                        <h4 class="fw-bold" style="color:#ffffff">Principal</h4>
-                        <p style="color:#ffffff">Principal</p>
+                        <h4 class="fw-bold" style="color:#ffffff">Supplier</h4>
+                        <p style="color:#ffffff">Total @ViewBag.CountSupplier Supplier</p>
                     </div>
                     <div class="icon">
-                        <i class="fas fa-layer-group"></i>
+                        <i class="fas fa-users"></i>
                     </div>
                 </div>
             </a>
         </div>
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <a asp-controller="UnitLocation" asp-action="Index" asp-area="MasterData">
+                <div class="small-box " style="background-color:#347FC4">
+                    @*change color in adminlte.min.cs*@
+                    <div class="inner">
+                        <h4 class="fw-bold" style="color:#ffffff">Unit Location</h4>
+                        <p style="color:#ffffff">Total @ViewBag.CountUnitLocation Unit Location</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-route"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <a asp-controller="WarehouseLocation" asp-action="Index" asp-area="MasterData">
+                <div class="small-box " style="background-color:#347FC4">
+                    @*change color in adminlte.min.cs*@
+                    <div class="inner">
+                        <h4 class="fw-bold" style="color:#ffffff">Warehouse Location</h4>
+                        <p style="color:#ffffff">Total @ViewBag.CountWarehouseLocation Warehouse Location</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fa fa-building"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+    <div class="row mb-2">
         <div class="col-lg-3 col-6">
             <!-- small box -->
             <a asp-controller="Product" asp-action="Index" asp-area="MasterData">
@@ -90,25 +93,55 @@
                     @*change color in adminlte.min.cs*@
                     <div class="inner">
                         <h4 class="fw-bold" style="color:#ffffff">Product</h4>
-                        <p style="color:#ffffff">Product</p>
+                        <p style="color:#ffffff">Total @ViewBag.CountProduct Product</p>
                     </div>
                     <div class="icon">
-                        <i class="fa fa-book"></i>
+                        <i class="fas fa-heartbeat"></i>
                     </div>
                 </div>
             </a>
         </div>
         <div class="col-lg-3 col-6">
             <!-- small box -->
-            <a asp-controller="Warehouse" asp-action="Index" asp-area="MasterData">
+            <a asp-controller="Category" asp-action="Index" asp-area="MasterData">
                 <div class="small-box " style="background-color:#347FC4">
                     @*change color in adminlte.min.cs*@
                     <div class="inner">
-                        <h4 class="fw-bold" style="color:#ffffff">Warehouse</h4>
-                        <p style="color:#ffffff">Warehouse</p>
+                        <h4 class="fw-bold" style="color:#ffffff">Category</h4>
+                        <p style="color:#ffffff">Total @ViewBag.CountCategory Category</p>
                     </div>
                     <div class="icon">
-                        <i class="fa fa-building"></i>
+                        <i class="fas fa-clone"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <a asp-controller="Measurement" asp-action="Index" asp-area="MasterData">
+                <div class="small-box " style="background-color:#347FC4">
+                    @*change color in adminlte.min.cs*@
+                    <div class="inner">
+                        <h4 class="fw-bold" style="color:#ffffff">Measurement</h4>
+                        <p style="color:#ffffff">Total @ViewBag.CountMeasurement Measurement</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-ruler-combined"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <a asp-controller="Discount" asp-action="Index" asp-area="MasterData">
+                <div class="small-box " style="background-color:#347FC4">
+                    @*change color in adminlte.min.cs*@
+                    <div class="inner">
+                        <h4 class="fw-bold" style="color:#ffffff">Discount</h4>
+                        <p style="color:#ffffff">Total @ViewBag.CountDiscount Discount</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-balance-scale-right"></i>
                     </div>
                 </div>
             </a>

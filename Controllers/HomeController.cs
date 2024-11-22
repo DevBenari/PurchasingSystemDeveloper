@@ -303,8 +303,8 @@ namespace PurchasingSystemDeveloper.Controllers
                     user.Foto = newPhotoPath;
                     _userActiveRepository.Update(user);
                     _applicationDbContext.SaveChanges();
+                    TempData["Message"] = "Profile photo updated successfully!";
                 }
-                TempData["Message"] = "Profile photo updated successfully!";
             }
             else
             {
@@ -325,6 +325,58 @@ namespace PurchasingSystemDeveloper.Controllers
             //// Gunakan userId untuk melakukan sesuatu, misalnya:
             ViewBag.UserId = userId;
             return Json(data);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ResetPassword(string password)
+        {
+            if (string.IsNullOrEmpty(password))
+            {
+                ModelState.AddModelError("", "Invalid password reset token");
+                return View("Error");
+            }
+
+            var model = new ResetPasswordViewModel { NewPassword = password };
+            return View(model);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)    
+        {
+            if (!ModelState.IsValid)
+            {
+                TempData["Message"] = "Invalid input.";
+                return RedirectToAction("MyProfile");
+            }
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                TempData["Message"] = "User not found.";
+                return RedirectToAction("MyProfile");
+            }
+
+            var result = await _userManager.RemovePasswordAsync(user);
+            if (result.Succeeded)
+            {
+                result = await _userManager.AddPasswordAsync(user, model.NewPassword);  
+            }
+
+            if (result.Succeeded)
+            {
+                TempData["MessageSuccess"] = "Password changed successfully.";
+                await _signInManager.RefreshSignInAsync(user);
+                return RedirectToAction("MyProfile");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            TempData["MessageFailed"] = "Failed to change password.";
+            return RedirectToAction("MyProfile");
         }
 
         public async Task<IActionResult> Logout()

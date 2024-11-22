@@ -29,20 +29,20 @@
                             <div class="col-md-12">
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="ProductCode"></label>
+                                        <label asp-for="ProductCode">Product Code</label>
                                         <input type="text" asp-for="ProductCode" class="form-control form-control-border border-width-2" id="ProductCode" placeholder="Product Code" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="ProductName"></label>
-                                        <input maxlength="100" autofocus autocomplete="off" type="text" asp-for="ProductName" class="form-control form-control-border border-width-2" id="ProductName" placeholder="Product Name">
+                                        <label asp-for="ProductName">Product Name</label>
+                                        <input maxlength="50" autofocus autocomplete="off" type="text" asp-for="ProductName" class="form-control form-control-border border-width-2" id="ProductName" placeholder="Product Name">
                                         <span asp-validation-for="ProductName" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="SupplierId"></label>
+                                        <label asp-for="SupplierId">Supplier Name</label>
                                         <select class="form-control select2bs4" style="width: 100%;" asp-for="SupplierId" asp-items="@ViewBag.Supplier">
                                             <option value="" hidden disabled selected>--Choose Supplier--</option>
                                         </select>
@@ -51,7 +51,7 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="CategoryId"></label>
+                                        <label asp-for="CategoryId">Category Name</label>
                                         <select class="form-control select2bs4" style="width: 100%;" asp-for="CategoryId" asp-items="@ViewBag.Category">
                                             <option value="" hidden disabled selected>--Choose Category--</option>
                                         </select>
@@ -60,7 +60,7 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="MeasurementId"></label>
+                                        <label asp-for="MeasurementId">Measure Name</label>
                                         <select class="form-control select2bs4" style="width: 100%;" asp-for="MeasurementId" asp-items="@ViewBag.Measurement">
                                             <option value="" hidden disabled selected>--Choose Measurement--</option>
                                         </select>
@@ -69,7 +69,7 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="DiscountId"></label>
+                                        <label asp-for="DiscountId">Discount Name</label>
                                         <select class="form-control select2bs4" style="width: 100%;" asp-for="DiscountId" asp-items="@ViewBag.Discount">
                                             <option value="" hidden disabled selected>--Choose Discount--</option>
                                         </select>
@@ -78,56 +78,56 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="MinStock"></label>
-                                        <input type="text" asp-for="MinStock" class="form-control form-control-border border-width-2" id="MinStock" placeholder="Min Stock" readonly>
+                                        <label asp-for="MinStock">Min Stock</label>
+                                        <input type="text" asp-for="MinStock" maxlength="50" autocomplete="off" class="form-control form-control-border border-width-2" id="MinStock" placeholder="Min Stock" readonly>
                                         <span asp-validation-for="MinStock" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="MaxStock"></label>
-                                        <input type="text" asp-for="MaxStock" class="form-control form-control-border border-width-2" id="MaxStock" placeholder="Max Stock" readonly>
+                                        <label asp-for="MaxStock">Max Stock</label>
+                                        <input type="text" asp-for="MaxStock" maxlength="50" autocomplete="off" class="form-control form-control-border border-width-2" id="MaxStock" placeholder="Max Stock" readonly>
                                         <span asp-validation-for="MaxStock" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="BufferStock"></label>
-                                        <input type="text" asp-for="BufferStock" class="form-control form-control-border border-width-2" id="BufferStock" placeholder="Buffer Stock" readonly>
+                                        <label asp-for="BufferStock">Buffer Stock</label>
+                                        <input type="text" asp-for="BufferStock" maxlength="50" autocomplete="off" class="form-control form-control-border border-width-2" id="BufferStock" placeholder="Buffer Stock" readonly>
                                         <span asp-validation-for="BufferStock" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="Stock"></label>
-                                        <input type="text" asp-for="Stock" class="form-control form-control-border border-width-2" id="Stock" placeholder="Stock" readonly>
+                                        <label asp-for="Stock">Stock</label>
+                                        <input type="text" asp-for="Stock" maxlength="20" autocomplete="off"  class="form-control form-control-border border-width-2" id="Stock" placeholder="Stock" readonly>
                                         <span asp-validation-for="Stock" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="BuyPrice"></label>
-                                        <input type="text" asp-for="BuyPrice" class="form-control form-control-border border-width-2" id="BuyPrice" placeholder="Buy Price">
+                                        <label asp-for="BuyPrice">Buy Price</label>
+                                        <input type="text" asp-for="BuyPrice" maxlength="50" autocomplete="off" class="form-control form-control-border border-width-2" id="BuyPrice" placeholder="Buy Price">
                                         <span asp-validation-for="BuyPrice" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="RetailPrice"></label>
-                                        <input type="text" asp-for="RetailPrice" class="form-control form-control-border border-width-2" id="RetailPrice" placeholder="Retail Price">
+                                        <label asp-for="RetailPrice">Retail Price</label>
+                                        <input type="text" asp-for="RetailPrice" maxlength="50" autocomplete="off" class="form-control form-control-border border-width-2" id="RetailPrice" placeholder="Retail Price">
                                         <span asp-validation-for="RetailPrice" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="Cogs"></label>
-                                        <input type="text" asp-for="Cogs" class="form-control form-control-border border-width-2" id="Cogs" placeholder="Cogs">
+                                        <label asp-for="Cogs">Cogs</label>
+                                        <input type="text" asp-for="Cogs" maxlength="50" autocomplete="off" class="form-control form-control-border border-width-2" id="Cogs" placeholder="Cogs">
                                         <span asp-validation-for="Cogs" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="WarehouseLocationId"></label>
+                                        <label asp-for="WarehouseLocationId">Warehouse Location</label>
                                         <select class="form-control select2bs4" style="width: 100%;" asp-for="WarehouseLocationId" asp-items="@ViewBag.Warehouse">
                                             <option value="" hidden disabled selected>--Choose WarehouseLocation--</option>
                                         </select>
@@ -136,22 +136,22 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="StorageLocation"></label>
-                                        <input type="text" asp-for="StorageLocation" class="form-control form-control-border border-width-2" id="StorageLocation" placeholder="Storage Location">
+                                        <label asp-for="StorageLocation">Storage Location</label>
+                                        <input type="text" asp-for="StorageLocation" maxlength="50" autocomplete="off" class="form-control form-control-border border-width-2" id="StorageLocation" placeholder="Storage Location">
                                         <span asp-validation-for="StorageLocation" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="RackNumber"></label>
-                                        <input type="text" asp-for="RackNumber" class="form-control form-control-border border-width-2" id="RackNumber" placeholder="Rack Number">
+                                        <label asp-for="RackNumber">Rack Number</label>
+                                        <input type="text" asp-for="RackNumber" maxlength="50" autocomplete="off" class="form-control form-control-border border-width-2" id="RackNumber" placeholder="Rack Number">
                                         <span asp-validation-for="RackNumber" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="Note"></label>
-                                        <input type="text" asp-for="Note" class="form-control form-control-border border-width-2" id="Note" placeholder="Note">
+                                        <label asp-for="Note">Note</label>
+                                        <input type="text" asp-for="Note" maxlength="75" autocomplete="off" class="form-control form-control-border border-width-2" id="Note" placeholder="Note">
                                         <span asp-validation-for="Note" class="text-danger"></span>
                                     </div>
                                 </div>

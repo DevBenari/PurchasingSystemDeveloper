@@ -81,8 +81,8 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
         public async Task<IActionResult> Index(DateTime? tglAwalPencarian, DateTime? tglAkhirPencarian, string filterOptions)
         {
             ViewBag.Active = "MasterData";
-            var data = _userActiveRepository.GetAllUser();
-            var userLogin = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+
+            var data = _userActiveRepository.GetAllUser();            
 
             if (tglAwalPencarian.HasValue && tglAkhirPencarian.HasValue)
             {
@@ -124,26 +124,6 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                     default:
                         break;
                 }
-            }
-
-            var users = data.OrderByDescending(u => u.CreateDateTime).ToList();
-
-            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-            {
-                return Json(new
-                {
-                    data = users.Select(user => new {
-                        foto = "/UserPhoto/" + (user.Foto ?? "user.jpg"),
-                        createDate = user.CreateDateTime.ToString("dd MMMM yyyy"),
-                        userActiveId = user.UserActiveId,  // tetap kirim untuk rowCallback
-                        userCode = user.UserActiveCode ?? string.Empty,
-                        fullName = user.FullName ?? string.Empty,
-                        department = user.Department?.DepartmentName ?? string.Empty,
-                        position = user.Position?.PositionName ?? string.Empty,
-                        dateOfBirth = user.DateOfBirth.ToString("dd MMMM yyyy"),
-                        address = user.Address ?? string.Empty
-                    }).ToList()
-                });
             }
 
             ViewBag.tglAwalPencarian = tglAwalPencarian?.ToString("dd MMMM yyyy");

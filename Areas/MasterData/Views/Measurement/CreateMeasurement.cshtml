@@ -29,21 +29,21 @@
                             <div class="col-md-12">
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="MeasurementCode"></label>
+                                        <label asp-for="MeasurementCode">Measurement Code</label>
                                         <input type="text" asp-for="MeasurementCode" class="form-control form-control-border border-width-2" id="MeasurementCode" placeholder="Measurement Code" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="MeasurementName"></label>
-                                        <input maxlength="100" autocomplete="off" autofocus type="text" asp-for="MeasurementName" class="form-control form-control-border border-width-2" id="MeasurementName" placeholder="Measurement Name">
+                                        <label asp-for="MeasurementName">Measurement Name</label>
+                                        <input maxlength="50" autocomplete="off" autofocus type="text" asp-for="MeasurementName" class="form-control form-control-border border-width-2" id="MeasurementName" placeholder="Measurement Name">
                                         <span asp-validation-for="MeasurementName" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="Note"></label>
-                                        <input maxlength="100" autocomplete="off" autofocus type="text" asp-for="Note" class="form-control form-control-border border-width-2" id="Note" placeholder="Note">
+                                        <label asp-for="Note">Note</label>
+                                        <input maxlength="75" autocomplete="off" autofocus type="text" asp-for="Note" class="form-control form-control-border border-width-2" id="Note" placeholder="Note">
                                         <span asp-validation-for="Note" class="text-danger"></span>
                                     </div>
                                 </div>

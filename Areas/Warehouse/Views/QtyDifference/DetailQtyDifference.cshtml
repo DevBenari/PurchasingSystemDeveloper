@@ -142,20 +142,8 @@
                 <!-- start button footer -->
                 <div class="card card-orange">
                     <div class="card-body">
-                        @if (Model.ApproveStatusUser1 == null)
-                        {
-                            @****Perhatikan type nya jika submit akan berbeda hasil pada json, jadi pakai type button*@
-                            <input type="button" value="Save" id="submit" class="btn btn-primary bg-indigo float-left fw-bold">
-                            <a class="btn bg-indigo" id="btnubah">Change</a>
-                            <a class="btn bg-indigo" asp-action="PrintQtyDifference" asp-controller="QtyDifference" asp-area="Warehouse" asp-route-id="@Model.QtyDifferenceId"><i class="fas fa-print" style="color:white"></i></a>
-                            <a class="btn btn-default" id="btnbatalubah">Cancel Change</a>
-                            <a class="btn btn-default" id="btnbatal" asp-action="Index" asp-controller="QtyDifference">Cancel</a>
-                        }
-                        else
-                        {
-                            <a class="btn bg-indigo" asp-action="PrintQtyDifference" asp-controller="QtyDifference" asp-area="Warehouse" asp-route-id="@Model.QtyDifferenceId"><i class="fas fa-print" style="color:white"></i></a>
-                            <a class="btn btn-default" asp-action="Index" asp-controller="QtyDifference">Cancel</a>
-                        }
+                        <a class="btn bg-gray" asp-action="PrintQtyDifference" asp-controller="QtyDifference" asp-area="Warehouse" asp-route-id="@Model.QtyDifferenceId"><i class="far fa-file-alt" style="color:white"></i> Save As PDF</a>                        
+                        <a class="btn btn-default" asp-action="Index" asp-controller="QtyDifference">Cancel</a>
                     </div>
                 </div>
                 <!-- /.end button footer -->

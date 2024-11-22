@@ -29,20 +29,20 @@
                                 <input hidden asp-for="UnitLocationId" />
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="UnitLocationCode"></label>
+                                        <label asp-for="UnitLocationCode">Unit Location Code</label>
                                         <input type="text" asp-for="UnitLocationCode" class="form-control form-control-border border-width-2" id="UnitLocationCode" placeholder="Unit Location Code" readonly disabled>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="UnitLocationName"></label>
-                                        <input maxlength="100" autocomplete="off" autofocus type="text" asp-for="UnitLocationName" class="form-control form-control-border border-width-2" id="UnitLocationName" placeholder="Unit Location Name" disabled>
+                                        <label asp-for="UnitLocationName">Unit Location Name</label>
+                                        <input maxlength="75" autocomplete="off" autofocus type="text" asp-for="UnitLocationName" class="form-control form-control-border border-width-2" id="UnitLocationName" placeholder="Unit Location Name" disabled>
                                         <span asp-validation-for="UnitLocationName" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="UnitManagerId"></label>
+                                        <label asp-for="UnitManagerId">Unit Manager</label>
                                         <select asp-for="UnitManagerId" asp-items="@ViewBag.UnitManager" class="form-control select2bs4" id="UnitManagerId" style="width: 100%;" disabled>
                                             <option value="" hidden disabled selected>--Choice Unit Manager--</option>
                                         </select>
@@ -51,8 +51,8 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="Address"></label>
-                                        <input maxlength="100" autocomplete="off" type="text" asp-for="Address" class="form-control form-control-border border-width-2" id="Address" placeholder="Address" disabled>
+                                        <label asp-for="Address">Address</label>
+                                        <input maxlength="75" autocomplete="off" type="text" asp-for="Address" class="form-control form-control-border border-width-2" id="Address" placeholder="Address" disabled>
                                         <span asp-validation-for="Address" class="text-danger"></span>
                                     </div>
                                 </div>

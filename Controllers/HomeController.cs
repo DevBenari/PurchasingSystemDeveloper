@@ -282,14 +282,15 @@ namespace PurchasingSystemDeveloper.Controllers
             return View();
         }
 
-        [HttpPost]
-        public IActionResult MyProfile(UserActiveViewModel model)
-        {
-            if (model.Foto != null)
-            {
-                // Proses unggah gambar menggunakan fungsi ProcessUploadFile
-                var newPhotoPath = ProcessUploadFile(model);
+        [HttpGet]
+        [AllowAnonymous]
 
+        public IActionResult GetMonitoringProduct()
+        {
+            var warning = _productRepository.GetAllProduct().Where(product => product.Stock <= product.MinStock).Count();
+            var save    = _productRepository.GetAllProduct().Where(product => product.Stock >= product.MinStock).Count();
+            var urgent  = _productRepository.GetAllProduct().Where(product => product.Stock <= product.BufferStock).Count();
+            var result = new
                 // Cari user yang sedang login
                 var checkUserLogin = _userActiveRepository.GetAllUserLogin()
                     .FirstOrDefault(u => u.UserName == User.Identity.Name);
@@ -307,15 +308,12 @@ namespace PurchasingSystemDeveloper.Controllers
             }
             else
             {
-                TempData["ErrorMessage"] = "Please select a valid image file.";
-            }
-
-            // Kembali ke halaman profil setelah upload
-            return RedirectToAction("MyProfile");
+                Warning = warning,
+                Save = save,
+                Urgent = urgent
+            };
+            return Json(result);
         }
-
-
-
 
         [HttpPost]
         public async Task<IActionResult> GetProfile()

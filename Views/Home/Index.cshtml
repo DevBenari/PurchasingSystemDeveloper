@@ -222,36 +222,44 @@
                         <div class="card-header bg-indigo">
                             <h3 class="card-title fw-bold" style="color:#ffffff">Stock Monitoring Under Min Stock</h3>
                         </div>
-                        <div class="card-body table-responsive p-0">
-                            <table id="tblTemplate" class="table table-hover table-head-fixed text-nowrap">
+                        <div class="card-body p-0">
+                            <div class="p-5" id="chartPie"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-sm-6">
+                    <div class="card">
+                        <div class="card-header bg-indigo">
+                            <h3 class="card-title fw-bold" style="color:#ffffff">Stock Monitoring Under Min Stock</h3>
+                        </div>
+                        <div class="card-body table-responsive">
+                            <table id="table-medicine" class="table table-hover table-head-fixed text-nowrap p-2">
                                 <thead>
                                     <tr>
                                         <th>No</th>
                                         <th>Product Name</th>
-                                        <th>Supplier</th>
-                                        <th>Min Stock</th>
-                                        <th>Max Stock</th>
-                                        <th>Buffer Stock</th>
                                         <th>Stock</th>
                                     </tr>
                                 </thead>
                                 <tbody id="show_data">
                                     @foreach (var prd in Model.Products)
                                     {
-                                        <tr>
-                                            <td></td>
-                                            <td>@prd.ProductName</td>
-                                            <td>@prd.Supplier.SupplierName</td>
-                                            <td>@prd.MinStock</td>
-                                            <td>@prd.MaxStock</td>
-                                            <td>@prd.BufferStock</td>
-                                            <td>@prd.Stock</td>
-                                        </tr>
+                                    <tr>
+                                        <td></td>
+                                        <td>@prd.ProductName</td>
+                                        <td>@prd.Stock</td>
+                                    </tr>
                                     }
                                 </tbody>
                             </table>
                         </div>
                     </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div id="chart"></div>
+                        </div>
+                    </div>              
                 </div>
             </div>
         </div>
@@ -351,8 +359,151 @@
     </script>
     <script>
         $(document).ready(function () {
-            $('#tblTemplate').DataTable();
+            get_monitoring();
+            $('#table-medicine').DataTable({
+                pageLength: 9 // Menampilkan 10 baris per halaman
+            });
         });
+
+        function get_monitoring() {
+            $.get('@Url.Action("GetMonitoringProduct")', function (r) {
+                let UnderMinstock = r['warning'];
+                let AboveMinstock = r['save'];
+                let UnderBufferstock = r['urgent'];
+
+                var options = {
+                    chart: {
+                        type: 'donut', // Tipe chart donut
+                        height: 455
+                    },
+                    series: [UnderMinstock, AboveMinstock, UnderBufferstock], // Data nilai
+                    labels: ['Dibawah Minimal Stok', 'Diatas Minimal Stok', 'Dibawah Bufferstok'], // Label kategori
+                    colors: ['#E53D00', '#00E396', '#FEB019'],
+                    dataLabels: {
+                        enabled: true, // Aktifkan data labels
+                        style: {
+                            fontSize: '14px', // Ukuran font data labels
+                            fontWeight: 'bold'
+                        },
+                        dropShadow: {
+                            enabled: true // Tambahkan efek bayangan
+                        },
+                        formatter: function (val, opts) {
+                            return opts.w.config.series[opts.seriesIndex]; // Menampilkan nilai asli
+                        }
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function (val) {
+                                return val + " units"; // Menampilkan nilai asli di tooltip
+                            }
+                        }
+                    },
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '65%' // Ukuran lubang tengah
+                            },
+                            dataLabels: {
+                                offset: -10 // Menyesuaikan posisi label agar berada di atas segmen
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'top' // Posisi legend di bawah
+                    }
+                };
+
+                // Inisialisasi dan render chart
+                var chart = new ApexCharts(document.querySelector("#chartPie"), options);
+                chart.render();
+            })
+        }
+
+        var options = {
+            series: [{
+                name: 'Total Request',
+                data: [500, 750]
+            }, {
+                name: 'Total Order',
+                data: [500, 2000]
+            }, {
+                name: 'Purchase Completed',
+                data: [500, 2500]
+            }],
+            chart: {
+                type: 'bar',
+                height: 289
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: false,
+                    columnWidth: '55%',
+                    endingShape: 'rounded'
+                },
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                show: true,
+                width: 2,
+                colors: ['transparent']
+            },
+            xaxis: {
+                categories: ['Aug', 'Sep'],
+            },
+            yaxis: {
+                title: {
+                    text: 'Total Of Param'
+                }
+            },
+            fill: {
+                opacity: 1
+            },
+            tooltip: {
+                y: {
+                    formatter: function (val) {
+                        return val
+                    }
+                }
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+
+        var options = {
+            series: [{
+                name: 'September',
+                data: [20, 10, 10, 10, 2500]
+            }, {
+                name: 'Agustus',
+                data: [0, 0, 0, 0, 500]
+            }],
+            chart: {
+                type: 'bar',
+                height: 289
+            },
+            plotOptions: {
+                bar: {
+                    borderRadius: 4,
+                    borderRadiusApplication: 'end',
+                    horizontal: true,
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            xaxis: {
+                categories: ['Purchase Generating', 'Purchase Approval', 'Accounting Approval', 'Warehouse Approval', 'Purchase Completed']
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#barChart"), options);
+        chart.render();
+
+       
     </script>
     <style>
 

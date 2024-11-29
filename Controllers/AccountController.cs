@@ -168,8 +168,17 @@ namespace PurchasingSystemDeveloper.Controllers
                                     roleNames = (from role in _roleRepository.GetRoles()
                                                  join userRole in _groupRoleRepository.GetAllGroupRole()
                                                  on role.Id equals userRole.RoleId
-                                                 where userRole.DepartemenId == userId // Gunakan userId langsung
+                                                 where userRole.DepartemenId == userId 
                                                  select role.Name).ToList();
+                                    // ambil juga judul modul
+                                    roleNames = (from role in _roleRepository.GetRoles()
+                                                 join userRole in _groupRoleRepository.GetAllGroupRole()
+                                                 on role.Id equals userRole.RoleId
+                                                 where userRole.DepartemenId == userId
+                                                 select role.ConcurrencyStamp)
+                                                 .Distinct().ToList();
+
+
                                 }
                                 else
                                 {

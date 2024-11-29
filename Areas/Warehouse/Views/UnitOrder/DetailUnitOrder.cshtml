@@ -133,12 +133,14 @@
                         {
                             <a class="btn btn-success" asp-action="TransferUnit" asp-controller="UnitOrder" asp-area="Warehouse" asp-route-id="@Model.UnitOrderId">Transfer</a>
                             @*<a class="btn bg-indigo" asp-action="PrintWarehouseRequest" asp-controller="WarehouseRequest" asp-area="Warehouse" asp-route-id="@Model.WarehouseRequestId"><i class="fas fa-print" style="color:white"></i></a>*@
-                            <a class="btn btn-default" asp-action="Index" asp-controller="UnitOrder">Batal</a>
+                            @*<a class="btn btn-default" asp-action="Index" asp-controller="UnitOrder">Batal</a>*@
+                            <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "UnitOrder", new { area = "Warehouse" })">Cancel</div>
                         }
                         else
                         {
                             @*<a class="btn bg-indigo" asp-action="PrintWarehouseRequest" asp-controller="WarehouseRequest" asp-area="Warehouse" asp-route-id="@Model.WarehouseRequestId"><i class="fas fa-print" style="color:white"></i></a>*@
-                            <a class="btn btn-default" asp-action="Index" asp-controller="UnitOrder">Batal</a>
+                            @*<a class="btn btn-default" asp-action="Index" asp-controller="UnitOrder">Batal</a>*@
+                            <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "UnitOrder", new { area = "Warehouse" })">Cancel</div>
                         }
                     </div>
                 </div>

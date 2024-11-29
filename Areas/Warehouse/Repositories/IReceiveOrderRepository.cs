@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PurchasingSystemDeveloper.Areas.Order.Models;
 using PurchasingSystemDeveloper.Areas.Warehouse.Models;
 using PurchasingSystemDeveloper.Data;
 
@@ -50,6 +51,11 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Repositories
                     ReceiveOrderNumber = receiveOrder.ReceiveOrderNumber,
                     PurchaseOrderId = receiveOrder.PurchaseOrderId,
                     ReceiveById = receiveOrder.ReceiveById,
+                    ShippingNumber = receiveOrder.ShippingNumber,
+                    DeliveryServiceName = receiveOrder.DeliveryServiceName,
+                    DeliveryDate = receiveOrder.DeliveryDate,
+                    WaybillNumber = receiveOrder.WaybillNumber,
+                    InvoiceNumber = receiveOrder.InvoiceNumber,
                     Status = receiveOrder.Status,
                     Note = receiveOrder.Note,
                     ReceiveOrderDetails = receiveOrder.ReceiveOrderDetails
@@ -78,6 +84,11 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Repositories
                 ReceiveOrderNumber = receiveOrder.ReceiveOrderNumber,
                 PurchaseOrderId = receiveOrder.PurchaseOrderId,
                 ReceiveById = receiveOrder.ReceiveById,
+                ShippingNumber = receiveOrder.ShippingNumber,
+                DeliveryServiceName = receiveOrder.DeliveryServiceName,
+                DeliveryDate = receiveOrder.DeliveryDate,
+                WaybillNumber = receiveOrder.WaybillNumber,
+                InvoiceNumber = receiveOrder.InvoiceNumber,
                 Status = receiveOrder.Status,
                 Note = receiveOrder.Note,
                 ReceiveOrderDetails = receiveOrder.ReceiveOrderDetails
@@ -92,6 +103,43 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Repositories
                 .Include(r => r.ReceiveOrderDetails)
                 .Include(u => u.ApplicationUser)
                 .ToList();
+        }
+
+        public async Task<(IEnumerable<ReceiveOrder> receiveOrders, int totalCountReceiveOrders)> GetAllReceiveOrderPageSize(string searchTerm, int page, int pageSize, DateTimeOffset? startDate, DateTimeOffset? endDate)
+        {
+            var query = _context.ReceiveOrders
+                .Include(d => d.PurchaseOrder)
+                .Include(d => d.PurchaseOrderDetails)
+                .Include(r => r.ReceiveOrderDetails)
+                .Include(u => u.ApplicationUser)
+                .OrderByDescending(d => d.CreateDateTime)
+                .AsQueryable();
+
+            // Filter berdasarkan searchTerm jika ada
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(p => p.ReceiveOrderNumber.Contains(searchTerm) || p.PurchaseOrder.PurchaseOrderNumber.Contains(searchTerm) || p.ShippingNumber.Contains(searchTerm) || p.WaybillNumber.Contains(searchTerm) || p.InvoiceNumber.Contains(searchTerm));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime <= endDate.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            // Ambil data paginated
+            var receiveOrders = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (receiveOrders, totalCount);
         }
     }
 }

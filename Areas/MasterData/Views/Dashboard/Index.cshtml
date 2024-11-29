@@ -5,28 +5,20 @@
 
 <!-- Main content -->
 <section class="content">
-    <!-- Info boxes -->
     <div class="row">
         <div class="col-12">
-            <!-- Widget: user widget style 1 -->
             <div class="card card-widget widget-user">
-                <!-- Add the bg color to the header using any of the bg-* classes -->
                 <div class="widget-user-header bg-info">
                     <h1 class="widget-user-username"><b>@ViewBag.Title</b></h1>
-                    @*<h5 class="widget-user-desc">Founder & CEO</h5>*@
-                </div>
-                <div class="widget-user-image">
-                    @*<img class="img-circle elevation-2" src="../dist/img/user1-128x128.jpg" alt="User Avatar">*@
-                </div>                
+                </div>      
             </div>
-            <!-- /.widget-user -->
         </div>
     </div>
     <!-- /.row -->
     <div class="row mb-2">
         <div class="col-lg-3 col-6">
             <!-- small box -->
-            <a asp-controller="UserActive" asp-action="Index" asp-area="MasterData">
+            <div class="cursor-pointer" data-href="@Url.Action("RedirectToIndex", "UserActive", new { area = "MasterData" })">
                 <div class="small-box " style="background-color:#347FC4">
                     @*change color in adminlte.min.cs*@
                     <div class="inner">
@@ -37,11 +29,11 @@
                         <i class="fas fa-user-plus"></i>
                     </div>
                 </div>
-            </a>
+            </div>
         </div>        
         <div class="col-lg-3 col-6">
             <!-- small box -->
-            <a asp-controller="Supplier" asp-action="Index" asp-area="MasterData">
+            <div class="cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Supplier", new { area = "MasterData" })">
                 <div class="small-box " style="background-color:#347FC4">
                     @*change color in adminlte.min.cs*@
                     <div class="inner">
@@ -52,11 +44,11 @@
                         <i class="fas fa-users"></i>
                     </div>
                 </div>
-            </a>
+            </div>
         </div>
         <div class="col-lg-3 col-6">
             <!-- small box -->
-            <a asp-controller="UnitLocation" asp-action="Index" asp-area="MasterData">
+            <div class="cursor-pointer" data-href="@Url.Action("RedirectToIndex", "UnitLocation", new { area = "MasterData" })">
                 <div class="small-box " style="background-color:#347FC4">
                     @*change color in adminlte.min.cs*@
                     <div class="inner">
@@ -67,11 +59,11 @@
                         <i class="fas fa-route"></i>
                     </div>
                 </div>
-            </a>
-        </div>
+            </div>
+        </div>        
         <div class="col-lg-3 col-6">
             <!-- small box -->
-            <a asp-controller="WarehouseLocation" asp-action="Index" asp-area="MasterData">
+            <div class="cursor-pointer" data-href="@Url.Action("RedirectToIndex", "WarehouseLocation", new { area = "MasterData" })">
                 <div class="small-box " style="background-color:#347FC4">
                     @*change color in adminlte.min.cs*@
                     <div class="inner">
@@ -82,13 +74,13 @@
                         <i class="fa fa-building"></i>
                     </div>
                 </div>
-            </a>
+            </div>
         </div>
     </div>
     <div class="row mb-2">
         <div class="col-lg-3 col-6">
             <!-- small box -->
-            <a asp-controller="Product" asp-action="Index" asp-area="MasterData">
+            <div class="cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Product", new { area = "MasterData" })">
                 <div class="small-box " style="background-color:#347FC4">
                     @*change color in adminlte.min.cs*@
                     <div class="inner">
@@ -99,11 +91,11 @@
                         <i class="fas fa-heartbeat"></i>
                     </div>
                 </div>
-            </a>
+            </div>
         </div>
         <div class="col-lg-3 col-6">
             <!-- small box -->
-            <a asp-controller="Category" asp-action="Index" asp-area="MasterData">
+            <div class="cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Category", new { area = "MasterData" })">
                 <div class="small-box " style="background-color:#347FC4">
                     @*change color in adminlte.min.cs*@
                     <div class="inner">
@@ -114,11 +106,11 @@
                         <i class="fas fa-clone"></i>
                     </div>
                 </div>
-            </a>
+            </div>
         </div>
         <div class="col-lg-3 col-6">
             <!-- small box -->
-            <a asp-controller="Measurement" asp-action="Index" asp-area="MasterData">
+            <div class="cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Measurement", new { area = "MasterData" })">
                 <div class="small-box " style="background-color:#347FC4">
                     @*change color in adminlte.min.cs*@
                     <div class="inner">
@@ -129,11 +121,11 @@
                         <i class="fas fa-ruler-combined"></i>
                     </div>
                 </div>
-            </a>
+            </div>
         </div>
         <div class="col-lg-3 col-6">
             <!-- small box -->
-            <a asp-controller="Discount" asp-action="Index" asp-area="MasterData">
+            <div class="cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Discount", new { area = "MasterData" })">
                 <div class="small-box " style="background-color:#347FC4">
                     @*change color in adminlte.min.cs*@
                     <div class="inner">
@@ -144,9 +136,30 @@
                         <i class="fas fa-balance-scale-right"></i>
                     </div>
                 </div>
-            </a>
+            </div>
         </div>
     </div>
     <!-- /.row -->
 </section>
 <!-- /.content -->
+@section Scripts {
+    <style>
+        .cursor-pointer {
+            cursor: pointer; /* Tambahkan ini untuk mengubah kursor */
+        }
+    </style>
+
+    <script>
+        //Start Pengaturan Click Pada Button DIV Index
+        document.addEventListener("DOMContentLoaded", () => {
+            const rows = document.querySelectorAll("div[data-href]");
+
+            rows.forEach(row => {
+                row.addEventListener("click", () => {
+                    window.location.href = row.dataset.href;
+                });
+            });
+        });
+                    //End Pengaturan Click Pada Button DIV Index
+    </script>
+    }

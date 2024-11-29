@@ -72,8 +72,10 @@
                                     <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold" id="btnsimpan"><div style="color:#ffffff">Save</div></button>
                                     <a class="btn bg-indigo" id="btnubah">Change</a>
                                     <a class="btn btn-default" id="btnbatalubah">Cancel Change</a>
-                                    <a class="btn btn-danger" asp-action="DeleteWarehouseLocation" asp-controller="WarehouseLocation" asp-area="MasterData" asp-route-id="@Model.WarehouseLocationId" id="btnhapus">Delete</a>
-                                    <a class="btn btn-default" asp-action="Index" asp-controller="WarehouseLocation" asp-area="MasterData" id="btnbatal">Cancel</a>
+                                    @*<a class="btn btn-danger" asp-action="DeleteWarehouseLocation" asp-controller="WarehouseLocation" asp-area="MasterData" asp-route-id="@Model.WarehouseLocationId" id="btnhapus">Delete</a>
+                                    <a class="btn btn-default" asp-action="Index" asp-controller="WarehouseLocation" asp-area="MasterData" id="btnbatal">Cancel</a>*@
+                                    <div class="btn btn-danger" data-href="@Url.Action("RedirectToDelete", "WarehouseLocation", new { id = Model.WarehouseLocationId })">Delete</div>
+                                    <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "WarehouseLocation", new { area = "MasterData" })">Cancel</div>
                                 </div>
                             </div>
                             <div class="col-md-0"></div>

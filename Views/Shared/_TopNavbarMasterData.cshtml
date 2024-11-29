@@ -18,60 +18,74 @@
                 <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
                     <ul class="navbar-nav">
                         @if (User.Identity.Name == "superadmin@admin.com")
-                        {
+                        {                            
                             <li class="nav-item">
-                                <a class="btn btn-orange" style="color:#ffffff" asp-action="Index" asp-controller="Dashboard" asp-area="MasterData">Dashboard</a>
+                                <div class="btn btn-orange" style="color:#ffffff" data-href="@Url.Action("RedirectToIndex", "Dashboard", new { area = "MasterData" })">
+                                    Dashboard
+                                </div>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-orange" style="color:#ffffff" asp-action="Index" asp-controller="GroupRole" asp-area="MasterData">Role</a>
+                                <div class="btn btn-orange" style="color:#ffffff" data-href="@Url.Action("RedirectToIndex", "GroupRole", new { area = "MasterData" })">
+                                    Role
+                                </div>
                             </li>
                             <li class="nav-item dropdown">
                                 <button class="btn btn-orange dropdown-toggle" style="color:#ffffff" data-bs-toggle="dropdown" aria-expanded="false">Users</button>
                                 <ul class="dropdown-menu dropdown-menu-dark">
-                                    <li><a class="dropdown-item" asp-action="Index" asp-controller="UserActive" asp-area="MasterData">User</a></li>
-                                    <li><a class="dropdown-item" asp-action="Index" asp-controller="Position" asp-area="MasterData">Position</a></li>
-                                    <li><a class="dropdown-item" asp-action="Index" asp-controller="Department" asp-area="MasterData">Department</a></li>                                    
+                                    <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToIndex", "UserActive", new { area = "MasterData" })">User</div></li>
+                                    <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Position", new { area = "MasterData" })">Position</div></li>
+                                    <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Department", new { area = "MasterData" })">Department</div></li>
                                 </ul>
                             </li>
                             <li class="nav-item dropdown">
                                 <button class="btn btn-orange dropdown-toggle" style="color:#ffffff" data-bs-toggle="dropdown" aria-expanded="false">Supplier</button>
                                 <ul class="dropdown-menu dropdown-menu-dark">
-                                    <li><a class="dropdown-item" asp-action="Index" asp-controller="Supplier" asp-area="MasterData">Supplier PKS</a></li>
-                                    <li><a class="dropdown-item" asp-action="NonPks" asp-controller="Supplier" asp-area="MasterData">Supplier Non-PKS</a></li>
-                                    <li><a class="dropdown-item" asp-action="NonActive" asp-controller="Supplier" asp-area="MasterData">Supplier Non-Active</a></li>
+                                    <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Supplier", new { area = "MasterData" })">Supplier PKS</div></li>
+                                    <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToNonPks", "Supplier", new { area = "MasterData" })">Supplier Non-PKS</div></li>
+                                    <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToNonActive", "Supplier", new { area = "MasterData" })">Supplier Non-Active</div></li>
                                 </ul>
                             </li>
                             <li class="nav-item dropdown">
                                 <button class="btn btn-orange dropdown-toggle" style="color:#ffffff" data-bs-toggle="dropdown" aria-expanded="false">Product</button>
                                 <ul class="dropdown-menu dropdown-menu-dark">
-                                    <li><a class="dropdown-item" asp-action="Index" asp-controller="Product" asp-area="MasterData">Product</a></li>
-                                    <li><a class="dropdown-item" asp-action="Index" asp-controller="Category" asp-area="MasterData">Category</a></li>
-                                    <li><a class="dropdown-item" asp-action="Index" asp-controller="Measurement" asp-area="MasterData">Measurement</a></li>
-                                    <li><a class="dropdown-item" asp-action="Index" asp-controller="Discount" asp-area="MasterData">Discount</a></li>                                    
+                                    <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Product", new { area = "MasterData" })">Product</div></li>
+                                    <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Category", new { area = "MasterData" })">Category</div></li>
+                                    <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Measurement", new { area = "MasterData" })">Measurement</div></li>
+                                    <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Discount", new { area = "MasterData" })">Discount</div></li>
                                 </ul>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-orange" style="color:#ffffff" asp-action="Index" asp-controller="TermOfPayment" asp-area="MasterData">Term Of Payment</a>
+                                <div class="btn btn-orange" style="color:#ffffff" data-href="@Url.Action("RedirectToIndex", "TermOfPayment", new { area = "MasterData" })">
+                                    Term Of Payment
+                                </div>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-orange" style="color:#ffffff" asp-action="Index" asp-controller="Bank" asp-area="MasterData">Bank</a>
+                                <div class="btn btn-orange" style="color:#ffffff" data-href="@Url.Action("RedirectToIndex", "Bank", new { area = "MasterData" })">
+                                    Bank
+                                </div>
                             </li>
                             <li class="nav-item dropdown">
                                 <button class="btn btn-orange dropdown-toggle" style="color:#ffffff" data-bs-toggle="dropdown" aria-expanded="false">Warehouse</button>
                                 <ul class="dropdown-menu dropdown-menu-dark">
-                                    <li><a class="dropdown-item" asp-action="Index" asp-controller="WarehouseLocation" asp-area="MasterData">Warehouse Location</a></li>
-                                    <li><a class="dropdown-item" asp-action="Index" asp-controller="UnitLocation" asp-area="MasterData">Unit Location</a></li>
+                                    <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToIndex", "WarehouseLocation", new { area = "MasterData" })">Warehouse Location</div></li>
+                                    <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToIndex", "UnitLocation", new { area = "MasterData" })">Unit Location</div></li>
                                 </ul>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-orange" style="color:#ffffff" asp-action="Index" asp-controller="LeadTime" asp-area="MasterData">Lead Time</a>
+                                <div class="btn btn-orange" style="color:#ffffff" data-href="@Url.Action("RedirectToIndex", "LeadTime", new { area = "MasterData" })">
+                                    Lead Time
+                                </div>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-orange" style="color:#ffffff" asp-action="Index" asp-controller="InitialStock" asp-area="MasterData">Calculate Min-Max Stock</a>
+                                <div class="btn btn-orange" style="color:#ffffff" data-href="@Url.Action("RedirectToIndex", "InitialStock", new { area = "MasterData" })">
+                                    Calculate Min-Max Stock
+                                </div>
                             </li>
                             <li class="nav-item">
-                                <a class="btn btn-orange" style="color:#ffffff" asp-action="Index" asp-controller="Api" asp-area="MasterData">Get Data API</a>
-                            </li>                            
+                                <div class="btn btn-orange" style="color:#ffffff" data-href="@Url.Action("RedirectToIndex", "Api", new { area = "MasterData" })">
+                                    Get Data API
+                                </div>
+                            </li>
                         }
                         else
                         {
@@ -81,13 +95,17 @@
                                 if (roles.Contains("Dashboard"))
                                 {
                                     <li class="nav-item">
-                                        <a class="btn btn-orange" style="color:#ffffff" asp-action="Index" asp-controller="Dashboard" asp-area="MasterData">Dashboard</a>
+                                        <div class="btn btn-orange" style="color:#ffffff" data-href="@Url.Action("RedirectToIndex", "Dashboard", new { area = "MasterData" })">
+                                            Dashboard
+                                        </div>
                                     </li>
                                 }
                                 @if (roles.Contains("GroupRole"))
                                 {
                                     <li class="nav-item">
-                                        <a class="btn btn-orange" style="color:#ffffff" asp-action="Index" asp-controller="GroupRole" asp-area="MasterData">Role</a>
+                                        <div class="btn btn-orange" style="color:#ffffff" data-href="@Url.Action("RedirectToIndex", "GroupRole", new { area = "MasterData" })">
+                                            Role
+                                        </div>
                                     </li>
                                 }
                                 @if (roles.Any(role => role == "UserActive" || role == "Position" || role == "Department"))
@@ -97,15 +115,15 @@
                                         <ul class="dropdown-menu dropdown-menu-dark">
                                             @if (roles.Contains("UserActive"))
                                             {
-                                                <li><a class="dropdown-item" asp-action="Index" asp-controller="UserActive" asp-area="MasterData">User</a></li>
+                                                <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToIndex", "UserActive", new { area = "MasterData" })">User</div></li>
                                             }
                                             @if (roles.Contains("Position"))
                                             {
-                                                <li><a class="dropdown-item" asp-action="Index" asp-controller="Position" asp-area="MasterData">Position</a></li>
+                                                <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Position", new { area = "MasterData" })">Position</div></li>
                                             }
                                             @if (roles.Contains("Department"))
                                             {
-                                                <li><a class="dropdown-item" asp-action="Index" asp-controller="Department" asp-area="MasterData">Department</a></li>
+                                                <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Department", new { area = "MasterData" })">Department</div></li>
                                             }
                                         </ul>
                                     </li>
@@ -116,9 +134,9 @@
                                     <li class="nav-item dropdown">
                                         <button class="btn btn-orange dropdown-toggle" style="color:#ffffff" data-bs-toggle="dropdown" aria-expanded="false">Supplier</button>
                                         <ul class="dropdown-menu dropdown-menu-dark">
-                                            <li><a class="dropdown-item" asp-action="Index" asp-controller="Supplier" asp-area="MasterData">Supplier PKS</a></li>
-                                            <li><a class="dropdown-item" asp-action="NonPks" asp-controller="Supplier" asp-area="MasterData">Supplier Non-PKS</a></li>
-                                            <li><a class="dropdown-item" asp-action="NonActive" asp-controller="Supplier" asp-area="MasterData">Supplier Non-Active</a></li>
+                                            <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Supplier", new { area = "MasterData" })">Supplier PKS</div></li>
+                                            <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToNonPks", "Supplier", new { area = "MasterData" })">Supplier Non-PKS</div></li>
+                                            <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToNonActive", "Supplier", new { area = "MasterData" })">Supplier Non-Active</div></li>
                                         </ul>
                                     </li>
                                 }
@@ -129,19 +147,19 @@
                                         <ul class="dropdown-menu dropdown-menu-dark">
                                             @if (roles.Contains("Product"))
                                             {
-                                                <li><a class="dropdown-item" asp-action="Index" asp-controller="Product" asp-area="MasterData">Product</a></li>
+                                            <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Product", new { area = "MasterData" })">Product</div></li>
                                             }
                                             @if (roles.Contains("Category"))
                                             {
-                                                <li><a class="dropdown-item" asp-action="Index" asp-controller="Category" asp-area="MasterData">Category</a></li>
+                                            <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Category", new { area = "MasterData" })">Category</div></li>
                                             }
                                             @if (roles.Contains("Measurement"))
                                             {
-                                                <li><a class="dropdown-item" asp-action="Index" asp-controller="Measurement" asp-area="MasterData">Measurement</a></li>
+                                            <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Measurement", new { area = "MasterData" })">Measurement</div></li>
                                             }
                                             @if (roles.Contains("Discount"))
                                             {
-                                                <li><a class="dropdown-item" asp-action="Index" asp-controller="Discount" asp-area="MasterData">Discount</a></li>
+                                                <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Discount", new { area = "MasterData" })">Discount</div></li>
                                             }
                                         </ul>
                                     </li>
@@ -149,13 +167,17 @@
                                 if (roles.Contains("TermOfPayment"))
                                 {
                                     <li class="nav-item">
-                                        <a class="btn btn-orange" style="color:#ffffff" asp-action="Index" asp-controller="TermOfPayment" asp-area="MasterData">Term Of Payment</a>
+                                        <div class="btn btn-orange" style="color:#ffffff" data-href="@Url.Action("RedirectToIndex", "TermOfPayment", new { area = "MasterData" })">
+                                            Term Of Payment
+                                        </div>
                                     </li>
                                 }
                                 if (roles.Contains("Bank"))
                                 {
                                     <li class="nav-item">
-                                        <a class="btn btn-orange" style="color:#ffffff" asp-action="Index" asp-controller="Bank" asp-area="MasterData">Bank</a>
+                                        <div class="btn btn-orange" style="color:#ffffff" data-href="@Url.Action("RedirectToIndex", "Bank", new { area = "MasterData" })">
+                                            Bank
+                                        </div>
                                     </li>
                                 }
                                 @if (roles.Any(role => role == "WarehouseLocation" || role == "UnitLocation"))
@@ -163,27 +185,33 @@
                                     <li class="nav-item dropdown">
                                         <button class="btn btn-orange dropdown-toggle" style="color:#ffffff" data-bs-toggle="dropdown" aria-expanded="false">Warehouse</button>
                                         <ul class="dropdown-menu dropdown-menu-dark">
-                                            <li><a class="dropdown-item" asp-action="Index" asp-controller="WarehouseLocation" asp-area="MasterData">Warehouse Location</a></li>
-                                            <li><a class="dropdown-item" asp-action="Index" asp-controller="UnitLocation" asp-area="MasterData">Unit Location</a></li>
+                                            <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToIndex", "WarehouseLocation", new { area = "MasterData" })">Warehouse Location</div></li>
+                                            <li><div class="dropdown-item cursor-pointer" data-href="@Url.Action("RedirectToIndex", "UnitLocation", new { area = "MasterData" })">Unit Location</div></li>
                                         </ul>
                                     </li>
                                 }
                                 if (roles.Contains("LeadTime"))
                                 {
                                     <li class="nav-item">
-                                        <a class="btn btn-orange" style="color:#ffffff" asp-action="Index" asp-controller="LeadTime" asp-area="MasterData">Lead Time</a>
+                                        <div class="btn btn-orange" style="color:#ffffff" data-href="@Url.Action("RedirectToIndex", "LeadTime", new { area = "MasterData" })">
+                                            Lead Time
+                                        </div>
                                     </li>
                                 }
                                 if (roles.Contains("InitialStock"))
                                 {
                                     <li class="nav-item">
-                                        <a class="btn btn-orange" style="color:#ffffff" asp-action="Index" asp-controller="InitialStock" asp-area="MasterData">Calculate Min-Max Stock</a>
+                                        <div class="btn btn-orange" style="color:#ffffff" data-href="@Url.Action("RedirectToIndex", "InitialStock", new { area = "MasterData" })">
+                                            Calculate Min-Max Stock
+                                        </div>
                                     </li>
                                 }
                                 if (roles.Contains("Api"))
                                 {
                                     <li class="nav-item">
-                                        <a class="btn btn-orange" style="color:#ffffff" asp-action="Index" asp-controller="Api" asp-area="MasterData">Get Data API</a>
+                                        <div class="btn btn-orange" style="color:#ffffff" data-href="@Url.Action("RedirectToIndex", "Api", new { area = "MasterData" })">
+                                            Get Data API
+                                        </div>
                                     </li>
                                 }
                             }
@@ -197,6 +225,27 @@
     @if (IsSectionDefined("Scripts"))
     {
         @RenderSection("Scripts", required: true)
+    }
+    @section Scripts {
+        <style>
+            .cursor-pointer {                
+                cursor: pointer; /* Tambahkan ini untuk mengubah kursor */
+            }
+        </style>
+
+        <script>
+            //Start Pengaturan Click Pada Button DIV Index
+            document.addEventListener("DOMContentLoaded", () => {
+                const rows = document.querySelectorAll("div[data-href]");
+
+                rows.forEach(row => {
+                    row.addEventListener("click", () => {
+                        window.location.href = row.dataset.href;
+                    });
+                });
+            });
+            //End Pengaturan Click Pada Button DIV Index
+        </script>
     }
 </body>
 </html>

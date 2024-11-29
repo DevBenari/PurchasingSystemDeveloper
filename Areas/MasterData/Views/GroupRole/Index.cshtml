@@ -43,7 +43,32 @@
                         </div>
                     </form>
                 }
+                else
+                {
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card card-widget widget-user">
+                                <div class="card-header">
+                                    <div class="widget-user-header">
+                                        <h1 class="widget-user-username"><b>Seed Role User</b></h1>
+                                    </div>
+                                </div>
+                                <!-- /.card-header -->
+                            </div>
+                            <!-- /.card -->
+                        </div>
+                    </div>
+                }
 
+                @*<div class="row">
+                    <div class="col-12">
+                        <div class="card card-widget widget-user">
+                            <div class="widget-user-header bg-indigo">
+                                <h1 class="widget-user-username"><b>Seed Role User</b></h1>
+                            </div>
+                        </div>
+                    </div>
+                </div>*@
                 <!-- Card Body for Role Menus -->
                 <div class="row">
                     <div class="col-md-4 bg-white">
@@ -83,7 +108,7 @@
                                 </div>
                             </div>
                             <!-- /.card -->
-                        </div>                                                
+                        </div>
                     </div>
 
                     <div class="col-md-4 bg-white">
@@ -101,7 +126,7 @@
                                     </h3>
                                     <div class="card-tools">
                                         <button type="button" class="btn btn-success float-left fw-bold" id="moveButton">
-                                            Move All
+                                            Move All &rarr;
                                         </button>
                                     </div>
                                 </div>
@@ -145,6 +170,22 @@
     </div>
 </section>
 <!-- /.content -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            swal("Success", '@TempData["SuccessMessage"]', "success");
+        };
+    </script>
+}
+@if (TempData["WarningMessage"] != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            swal("Failed", '@TempData["WarningMessage"]', "warning");
+        };
+    </script>
+}
 <!-- Script Section -->
 <script src="~/admin/dist/js/signalr.min.js"></script>
 <script>
@@ -172,13 +213,13 @@
         newListItem.id = 'inboxItem';
         newListItem.setAttribute('name', folderCurrentConcurrencyStamp);
         newListItem.innerHTML = `
-        <a href="#" class="nav-link" onclick="toggleSubFolder('${folderCurrentConcurrencyStamp}')">
-            ${folderCurrentConcurrencyStamp}
-            <span class="float-right" id="inboxIcon"><i class="fas fa-plus" onclick="myCustomFunction('${folderCurrentConcurrencyStamp}')"></i></span>
-        </a>
-        <ul class="nav nav-pills flex-column ml-3 collapse show" id="${folderCurrentConcurrencyStamp}">
-        </ul>
-    `;
+            <a href="#" class="nav-link" onclick="toggleSubFolder('${folderCurrentConcurrencyStamp}')">
+                ${folderCurrentConcurrencyStamp}
+                <span class="float-right" id="inboxIcon"><i class="fas fa-plus" onclick="myCustomFunction('${folderCurrentConcurrencyStamp}')"></i></span>
+            </a>
+            <ul class="nav nav-pills flex-column ml-3 collapse show" id="${folderCurrentConcurrencyStamp}">
+            </ul>
+        `;
 
         const menuTitle = document.getElementById('menuTitle');
         if (menuTitle && menuTitle.textContent.trim() !== "") {
@@ -243,6 +284,34 @@
                     } else if (role.concurrencyStamp !== folderCurrentConcurrencyStamp) {
                         // Jika concurrencyStamp berubah, buat folder baru untuk grup sebelumnya
                         folderContent += `
+                                    <li class="nav-item active" id="inboxItem" name="${folderCurrentConcurrencyStamp}">
+                                        <a href="#" class="nav-link" onclick="toggleSubFolder('${folderCurrentConcurrencyStamp}')">
+                                            ${folderCurrentConcurrencyStamp}
+                                            <span class="float-right" id="inboxIcon"><i class="fas fa-plus" onclick="myCustomFunction('${folderCurrentConcurrencyStamp}')"></i></span>
+                                        </a>
+                                        <ul class="nav nav-pills flex-column ml-3 collapse" id="${folderCurrentConcurrencyStamp}">
+                                            ${folderArrayBody}
+                                        </ul>
+                                    </li>
+                                `;
+                        // Reset arrayBody untuk grup berikutnya
+                        folderArrayBody = '';
+                        folderCurrentConcurrencyStamp = role.concurrencyStamp;  // Update concurrencyStamp untuk grup berikutnya
+                    }
+
+                    folderArrayBody += `
+                                <li class="nav-item" id="${role.name}">
+                                    <input type="hidden" name="RoleId" value="${role.id}">
+                                    <a href="#" class="nav-link" onclick="moveToDiv2('${role.name}','${role.concurrencyStamp}')">
+                                        <i class="fas fa-inbox"></i> ${role.name}
+                                        <span class="float-right" id="inboxIcon"></span>
+                                    </a>
+                                </li>
+                            `;
+                });
+
+                if (folderArrayBody !== '') {
+                    folderContent += `
                                 <li class="nav-item active" id="inboxItem" name="${folderCurrentConcurrencyStamp}">
                                     <a href="#" class="nav-link" onclick="toggleSubFolder('${folderCurrentConcurrencyStamp}')">
                                         ${folderCurrentConcurrencyStamp}
@@ -253,34 +322,6 @@
                                     </ul>
                                 </li>
                             `;
-                        // Reset arrayBody untuk grup berikutnya
-                        folderArrayBody = '';
-                        folderCurrentConcurrencyStamp = role.concurrencyStamp;  // Update concurrencyStamp untuk grup berikutnya
-                    }
-
-                    folderArrayBody += `
-                            <li class="nav-item" id="${role.name}">
-                                <input type="hidden" name="RoleId" value="${role.id}">
-                                <a href="#" class="nav-link" onclick="moveToDiv2('${role.name}','${role.concurrencyStamp}')">
-                                    <i class="fas fa-inbox"></i> ${role.name}
-                                    <span class="float-right" id="inboxIcon"></span>
-                                </a>
-                            </li>
-                        `;
-                });
-
-                if (folderArrayBody !== '') {
-                    folderContent += `
-                            <li class="nav-item active" id="inboxItem" name="${folderCurrentConcurrencyStamp}">
-                                <a href="#" class="nav-link" onclick="toggleSubFolder('${folderCurrentConcurrencyStamp}')">
-                                    ${folderCurrentConcurrencyStamp}
-                                    <span class="float-right" id="inboxIcon"><i class="fas fa-plus" onclick="myCustomFunction('${folderCurrentConcurrencyStamp}')"></i></span>
-                                </a>
-                                <ul class="nav nav-pills flex-column ml-3 collapse" id="${folderCurrentConcurrencyStamp}">
-                                    ${folderArrayBody}
-                                </ul>
-                            </li>
-                        `;
                 }
                 $('#folderList').append(folderContent);
 
@@ -292,6 +333,34 @@
                     } else if (role.concurrencyStamp !== newFolderCurrentConcurrencyStamp) {
                         // Jika concurrencyStamp berubah, buat folder baru untuk grup sebelumnya
                         newFolderContent += `
+                                    <li class="nav-item active" id="inboxItem" name="${newFolderCurrentConcurrencyStamp}">
+                                        <a href="#" class="nav-link" onclick="toggleSubFolder('${newFolderCurrentConcurrencyStamp}')">
+                                            ${newFolderCurrentConcurrencyStamp}
+                                            <span class="float-right" id="inboxIcon"><i class="fas fa-plus" onclick="myCustomFunction('${newFolderCurrentConcurrencyStamp}')"></i></span>
+                                        </a>
+                                        <ul class="nav nav-pills flex-column ml-3 collapse" id="${newFolderCurrentConcurrencyStamp}">
+                                            ${newFolderArrayBody}
+                                        </ul>
+                                    </li>
+                                `;
+                        // Reset arrayBody untuk grup berikutnya
+                        newFolderArrayBody = '';
+                        newFolderCurrentConcurrencyStamp = role.concurrencyStamp;  // Update concurrencyStamp untuk grup berikutnya
+                    }
+
+                    newFolderArrayBody += `
+                                <li class="nav-item" id="${role.name}">
+                                    <input type="hidden" name="RoleId" value="${role.id}">
+                                    <a href="#" class="nav-link" onclick="moveToDiv2('${role.name}','${role.concurrencyStamp}')">
+                                        <i class="fas fa-inbox"></i> ${role.name}
+                                        <span class="float-right" id="inboxIcon"></span>
+                                    </a>
+                                </li>
+                            `;
+                });
+
+                if (newFolderArrayBody !== '') {
+                    newFolderContent += `
                                 <li class="nav-item active" id="inboxItem" name="${newFolderCurrentConcurrencyStamp}">
                                     <a href="#" class="nav-link" onclick="toggleSubFolder('${newFolderCurrentConcurrencyStamp}')">
                                         ${newFolderCurrentConcurrencyStamp}
@@ -302,34 +371,6 @@
                                     </ul>
                                 </li>
                             `;
-                        // Reset arrayBody untuk grup berikutnya
-                        newFolderArrayBody = '';
-                        newFolderCurrentConcurrencyStamp = role.concurrencyStamp;  // Update concurrencyStamp untuk grup berikutnya
-                    }
-
-                    newFolderArrayBody += `
-                            <li class="nav-item" id="${role.name}">
-                                <input type="hidden" name="RoleId" value="${role.id}">
-                                <a href="#" class="nav-link" onclick="moveToDiv2('${role.name}','${role.concurrencyStamp}')">
-                                    <i class="fas fa-inbox"></i> ${role.name}
-                                    <span class="float-right" id="inboxIcon"></span>
-                                </a>
-                            </li>
-                        `;
-                });
-
-                if (newFolderArrayBody !== '') {
-                    newFolderContent += `
-                            <li class="nav-item active" id="inboxItem" name="${newFolderCurrentConcurrencyStamp}">
-                                <a href="#" class="nav-link" onclick="toggleSubFolder('${newFolderCurrentConcurrencyStamp}')">
-                                    ${newFolderCurrentConcurrencyStamp}
-                                    <span class="float-right" id="inboxIcon"><i class="fas fa-plus" onclick="myCustomFunction('${newFolderCurrentConcurrencyStamp}')"></i></span>
-                                </a>
-                                <ul class="nav nav-pills flex-column ml-3 collapse" id="${newFolderCurrentConcurrencyStamp}">
-                                    ${newFolderArrayBody}
-                                </ul>
-                            </li>
-                        `;
                 }
 
                 $('#newFolderList').append(newFolderContent);
@@ -350,19 +391,19 @@
                 $.each(data, function (index, user) {
                     var foto = user.foto ? user.foto : 'user.jpg';
                     $('#userList').append(`
-                        <li style="background-color: #347FC4; cursor: pointer;">
-                            <a href="#">
-                                <img class="contacts-list-img" src="/UserPhoto/${foto}" alt="User Avatar">
-                                <input type="hidden" name="nmUser" value="${user.fullName}" />
-                                <input type="hidden" name="kdUser" value="${user.email}" />
-                                <div class="contacts-list-info">
-                                    <span class="contacts-list-name">
-                                        ${user.fullName}
-                                    </span>
-                                </div>
-                            </a>
-                        </li>
-                    `);
+                            <li style="background-color: #347FC4; cursor: pointer;">
+                                <a href="#">
+                                    <img class="contacts-list-img" src="/UserPhoto/${foto}" alt="User Avatar">
+                                    <input type="hidden" name="nmUser" value="${user.fullName}" />
+                                    <input type="hidden" name="kdUser" value="${user.email}" />
+                                    <div class="contacts-list-info">
+                                        <span class="contacts-list-name">
+                                            ${user.fullName}
+                                        </span>
+                                    </div>
+                                </a>
+                            </li>
+                        `);
                 });
 
                 $('#userList').on('click', 'li', function () {
@@ -429,7 +470,7 @@
         const folderItem = document.querySelector(`#folderList li[name="${folderId}"]`);
         const newFolderItem = document.querySelector(`#newFolderList li[name="${folderId}"]`);
 
-        
+
         const menuTitle = document.getElementById('menuTitle');
         if (menuTitle && menuTitle.textContent.trim() !== "") {
             if (folderItem) {
@@ -468,12 +509,12 @@
                 console.log('Elemen folderItem dan newFolderItem tidak ditemukan');
             }
         } else {
-            alert("Silahkan Pilih User Active.");
+            alert("Sorry, please select a user first !!!");
         }
 
         changeIconsToX();
     }
-    
+
     function changeIconsToX() {
         const icons = document.querySelectorAll('#newFolderList i.fas.fa-plus');
         const iconsNew = document.querySelectorAll('#folderList i.fas.fa-times');
@@ -512,24 +553,29 @@
     });
 
     document.getElementById('moveButton').addEventListener('click', function (event) {
-        event.preventDefault();
-
-        const folderItems = document.querySelectorAll(`#folderList #${folderId} li`);
-        const newFolderListUl = document.querySelector(`#newFolderList #${folderId}`);
+        event.preventDefault(); // Menghentikan aksi default dari button jika ada
 
         const folderList = document.getElementById('folderList');
         const newFolderList = document.getElementById('newFolderList');
 
         const menuTitle = document.getElementById('menuTitle');
+        // Memeriksa apakah menuTitle ada dan teksnya tidak kosong
         if (menuTitle && menuTitle.textContent.trim() !== "") {
-            while (folderList.firstChild) {
-                if (newFolderListUl) {
-                    folderItems.forEach(item => {
-                        newFolderListUl.appendChild(item);
-                    });
-                } else {
+            // Memeriksa apakah folderList memiliki anak
+            if (folderList.childElementCount > 0) {
+                // Pindahkan semua elemen dari folderList ke newFolderList
+                while (folderList.firstChild) {
                     newFolderList.appendChild(folderList.firstChild);
                 }
+                // Mengubah teks tombol ke arah kiri (<-)
+                this.innerHTML = '&larr; Move All';
+            } else if (newFolderList.childElementCount > 0) {
+                // Jika folderList kosong, pindahkan semua elemen dari newFolderList ke folderList
+                while (newFolderList.firstChild) {
+                    folderList.appendChild(newFolderList.firstChild);
+                }
+                // Mengubah teks tombol ke arah kanan (->)
+                this.innerHTML = 'Move All &rarr;';
             }
         }
     });

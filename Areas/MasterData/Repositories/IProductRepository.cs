@@ -67,8 +67,11 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Repositories
 
         public async Task<List<Product>> GetProducts()
         {
-            return await _context.Products.OrderBy(p => p.CreateDateTime).Select(Product => new Product()
-            {
+            return await _context.Products
+                .Include(s => s.Supplier)
+                .OrderBy(p => p.CreateDateTime)
+                //.Take(20)
+                .Select(Product => new Product() {
                 ProductId = Product.ProductId,
                 ProductCode = Product.ProductCode,
                 ProductName = Product.ProductName,
@@ -100,6 +103,44 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Repositories
                 .Include(d => d.Discount)
                 .Include(w => w.WarehouseLocation)
                 .AsNoTracking();
+        }
+
+        public async Task<(IEnumerable<Product> products, int totalCountProducts)> GetAllProductPageSize(string searchTerm, int page, int pageSize, DateTimeOffset? startDate, DateTimeOffset? endDate)
+        {
+            var query = _context.Products
+                .OrderByDescending(d => d.CreateDateTime)
+                .Include(p => p.Supplier)
+                .Include(c => c.Category)
+                .Include(m => m.Measurement)
+                .Include(d => d.Discount)
+                .Include(w => w.WarehouseLocation)
+                .AsQueryable();
+
+            // Filter berdasarkan searchTerm jika ada
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(p => p.ProductCode.Contains(searchTerm) || p.ProductName.Contains(searchTerm) || p.Supplier.SupplierName.Contains(searchTerm));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime <= endDate.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            // Ambil data paginated
+            var products = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (products, totalCount);
         }
 
         public Product Update(Product update)

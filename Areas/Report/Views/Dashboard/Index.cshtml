@@ -1,6 +1,58 @@
 ﻿@{
-    ViewData["Title"] = "Under Development";
-    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Dashboard Report";
+    Layout = "~/Views/Shared/_TopNavbarReport.cshtml";
 }
 
-<h1>Sorry, this page is still under development</h1>
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-widget widget-user">
+                <div class="widget-user-header bg-info">
+                    <h1 class="widget-user-username"><b>@ViewBag.Title</b></h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+    <div class="row mb-2">
+        <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="cursor-pointer" data-href="@Url.Action("RedirectToIndex", "ReportPurchaseOrder", new { area = "Report" })">
+                <div class="small-box " style="background-color:#347FC4">
+                    @*change color in adminlte.min.cs*@
+                    <div class="inner">
+                        <h4 class="fw-bold" style="color:#ffffff">Purchase Order</h4>
+                        <p style="color:#ffffff">Calculation</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-user-plus"></i>
+                    </div>
+                </div>
+            </div>
+        </div>        
+    </div>    
+    <!-- /.row -->
+</section>
+<!-- /.content -->
+@section Scripts {
+    <style>
+        .cursor-pointer {
+            cursor: pointer; /* Tambahkan ini untuk mengubah kursor */
+        }
+    </style>
+
+    <script>
+        //Start Pengaturan Click Pada Button DIV Index
+        document.addEventListener("DOMContentLoaded", () => {
+            const rows = document.querySelectorAll("div[data-href]");
+
+            rows.forEach(row => {
+                row.addEventListener("click", () => {
+                    window.location.href = row.dataset.href;
+                });
+            });
+        });
+                            //End Pengaturan Click Pada Button DIV Index
+    </script>
+    }

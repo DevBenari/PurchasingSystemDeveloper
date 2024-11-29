@@ -17,7 +17,7 @@
 <section class="content">
     <div class="row">
         <div class="col-md-12 bg-white">
-            <form enctype="multipart/form-data" asp-controller="Product" asp-action="CreateProduct" method="post" class="form-horizontal">
+            <form enctype="multipart/form-data" asp-controller="Product" asp-action="RedirectToCreate" method="post" class="form-horizontal">
                 <div class="card-header bg-cyan">
                     <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
                 </div>
@@ -168,7 +168,7 @@
                             <div class="col-md-0"></div>
                             <div class="col-md-12">
                                 <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold"><div style="color:#ffffff">Save</div></button>
-                                <a class="btn btn-default" asp-action="Index" asp-controller="Product">Cancel</a>
+                                <a class="btn btn-default" asp-action="RedirectToIndex" asp-controller="Product">Cancel</a>
                             </div>
                             <div class="col-md-0"></div>
                         </div>

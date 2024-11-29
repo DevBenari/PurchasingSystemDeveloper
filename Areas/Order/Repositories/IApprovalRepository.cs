@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PurchasingSystemDeveloper.Areas.MasterData.Models;
 using PurchasingSystemDeveloper.Areas.Order.Models;
 using PurchasingSystemDeveloper.Data;
 
@@ -119,6 +120,42 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
                 .Include(t => t.PurchaseRequest)
                 .Include(a1 => a1.UserApprove)
                 .ToList();
+        }
+
+        public async Task<(IEnumerable<Approval> approvals, int totalCountApprovals)> GetAllApprovalPageSize(string searchTerm, int page, int pageSize, DateTimeOffset? startDate, DateTimeOffset? endDate)
+        {
+            var query = _context.Approvals
+                .Include(u => u.ApplicationUser)
+                .Include(t => t.PurchaseRequest)
+                .Include(a1 => a1.UserApprove)
+                .OrderByDescending(d => d.CreateDateTime)
+                .AsQueryable();
+
+            // Filter berdasarkan searchTerm jika ada
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(p => p.PurchaseRequestNumber.Contains(searchTerm));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime <= endDate.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            // Ambil data paginated
+            var approvals = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (approvals, totalCount);
         }
 
         public IEnumerable<Approval> GetChartBeforeExpired(Guid Id)

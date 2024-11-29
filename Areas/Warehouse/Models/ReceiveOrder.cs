@@ -14,6 +14,11 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Models
         public string ReceiveOrderNumber { get; set; }
         public Guid? PurchaseOrderId { get; set; }
         public string ReceiveById { get; set; }
+        public string ShippingNumber { get; set; }
+        public string DeliveryServiceName { get; set; }
+        public string DeliveryDate { get; set; }
+        public string WaybillNumber { get; set; }
+        public string InvoiceNumber { get; set; }
         public string Status { get; set; }
         public string? Note { get; set; }        
         public List<ReceiveOrderDetail> ReceiveOrderDetails { get; set; } = new List<ReceiveOrderDetail>();
@@ -35,6 +40,7 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Models
         public string ProductNumber { get; set; }
         public string ProductName { get; set; }
         public string Measure { get; set; }
+        public string Condition { get; set; } //Good Condition, Damage & Pending Inspection
         public int QtyOrder { get; set; }
         public int QtyReceive { get; set; }
 

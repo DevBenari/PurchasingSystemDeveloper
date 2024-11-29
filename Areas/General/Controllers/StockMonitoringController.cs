@@ -2,18 +2,18 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using PurchasingSystemStaging.Areas.MasterData.Models;
-using PurchasingSystemStaging.Areas.MasterData.Repositories;
-using PurchasingSystemStaging.Areas.Order.Repositories;
-using PurchasingSystemStaging.Controllers;
-using PurchasingSystemStaging.Data;
-using PurchasingSystemStaging.Hubs;
-using PurchasingSystemStaging.Models;
-using PurchasingSystemStaging.Repositories;
+using PurchasingSystemDeveloper.Areas.MasterData.Models;
+using PurchasingSystemDeveloper.Areas.MasterData.Repositories;
+using PurchasingSystemDeveloper.Areas.Order.Repositories;
+using PurchasingSystemDeveloper.Controllers;
+using PurchasingSystemDeveloper.Data;
+using PurchasingSystemDeveloper.Hubs;
+using PurchasingSystemDeveloper.Models;
+using PurchasingSystemDeveloper.Repositories;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace PurchasingSystemStaging.Areas.General.Controllers
+namespace PurchasingSystemDeveloper.Areas.General.Controllers
 {
     [Area("General")]
     [Route("General/[Controller]/[Action]")]

@@ -1,0 +1,170 @@
+﻿/*Start Pagination Index*/
+.pagination-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.pagination {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+    .pagination li {
+        margin: 0;
+    }
+
+.pagination-link {
+    text-decoration: none;
+    padding: 10px 15px;
+    border: 2px solid #347FC4;
+    border-radius: 20px;
+    color: #347FC4;
+    font-size: 14px;
+    transition: all 0.3s ease-in-out;
+    display: inline-block;
+    cursor: pointer; /* Tambahkan ini untuk mengubah kursor */
+}
+
+    .pagination-link:hover {
+        background-color: #347FC4;
+        color: white;
+        transform: scale(1.1);
+    }
+
+.pagination .active .pagination-link {
+    background-color: #347FC4;
+    color: white;
+    font-weight: bold;
+    border-color: #347FC4;
+}
+
+.pagination-info {
+    font-size: 16px;
+    margin-bottom: 10px;
+    text-align: center;
+    color: #555;
+}
+
+.pagination-block-navigation {
+    margin-top: 15px;
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.pagination-link-block {
+    text-decoration: none;
+    padding: 8px 20px;
+    border: 2px solid #28a745;
+    border-radius: 20px;
+    color: #28a745;
+    font-size: 14px;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer; /* Tambahkan ini untuk mengubah kursor */
+}
+
+    .pagination-link-block:hover {
+        background-color: #28a745;
+        color: white;
+        transform: scale(1.1);
+    }
+
+/*End Pagination Index*/
+
+/*Start Table Index*/
+span.error {
+    display: block;
+    color: #347FC4;
+    font-size: 90%;
+}
+
+tr.error {
+    background-color: rgba(255,0,0,0.35);
+}
+
+.container td {
+    vertical-align: top;
+}
+
+.tablecontainer table {
+    width: 100%;
+    border-collapse: collapse;
+    border-top: 1px solid #BFAEAE;
+    border-right: 1px solid #BFAEAE;
+}
+
+.tablecontainer th {
+    border-bottom: 2px solid #BFAEAE;
+}
+
+.tablecontainer th, .tablecontainer td {
+    text-align: center;
+    border-left: 1px solid #BFAEAE;
+    padding: 5px;
+    border-bottom: 1px solid #BFAEAE;
+}
+
+.ui-widget {
+    font-size: 12px !important;
+}
+/*End Table Index*/
+
+/*Start Efek Input DateRange Index*/
+/* Gaya untuk input tanggal */
+.date-input {
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #007BFF;
+    border-radius: 5px;
+    outline: none;
+    transition: 0.3s ease-in-out;
+}
+
+    /* Fokus pada input */
+    .date-input:focus {
+        border-color: #0056b3;
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+    }
+
+/* Gaya untuk label */
+.date-label {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    display: block;
+    color: #333;
+}
+
+/* Gaya container */
+.date-container {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+}
+
+/* Gaya untuk tombol */
+.btn-submit {
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s ease-in-out;
+}
+
+    /* Hover pada tombol */
+    .btn-submit:hover {
+        background-color: #0056b3;
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+    }
+/*End Efek Input DateRange Index*/

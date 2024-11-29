@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PurchasingSystemDeveloper.Areas.Order.Models;
 using PurchasingSystemDeveloper.Areas.Warehouse.Models;
 using PurchasingSystemDeveloper.Data;
 
@@ -144,6 +145,44 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Repositories
                 .Include(t => t.WarehouseLocation)
                 .Include(y => y.UserApprove1)
                 .ToList();
+        }
+
+        public async Task<(IEnumerable<UnitOrder> unitOrders, int totalCountUnitOrders)> GetAllUnitOrderPageSize(string searchTerm, int page, int pageSize, DateTimeOffset? startDate, DateTimeOffset? endDate)
+        {
+            var query = _context.UnitOrders
+                .Include(d => d.UnitOrderDetails)
+                .Include(u => u.ApplicationUser)
+                .Include(p => p.UnitLocation)
+                .Include(t => t.WarehouseLocation)
+                .Include(y => y.UserApprove1)
+                .OrderByDescending(d => d.CreateDateTime)
+                .AsQueryable();
+
+            // Filter berdasarkan searchTerm jika ada
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(p => p.UnitOrderNumber.Contains(searchTerm));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime <= endDate.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            // Ambil data paginated
+            var unitOrders = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (unitOrders, totalCount);
         }
 
         public async Task<UnitOrder> Update(UnitOrder update)

@@ -101,6 +101,111 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Repositories
                 .AsNoTracking();
         }
 
+        public async Task<(IEnumerable<Supplier> suppliers, int totalCountSuppliers)> GetAllSupplierPageSize(string searchTerm, int page, int pageSize, DateTimeOffset? startDate, DateTimeOffset? endDate)
+        {
+            var query = _context.Suppliers
+                .OrderByDescending(d => d.CreateDateTime)
+                .Where(s => s.IsActive == true && s.IsPKS == true)
+                .Include(l => l.LeadTime)
+                .AsQueryable();
+
+            // Filter berdasarkan searchTerm jika ada
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(p => p.SupplierCode.Contains(searchTerm) || p.SupplierName.Contains(searchTerm));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime <= endDate.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            // Ambil data paginated
+            var suppliers = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (suppliers, totalCount);
+        }
+
+        public async Task<(IEnumerable<Supplier> suppliers, int totalCountSuppliers)> GetAllSupplierNonActivePageSize(string searchTerm, int page, int pageSize, DateTimeOffset? startDate, DateTimeOffset? endDate)
+        {
+            var query = _context.Suppliers
+                .OrderByDescending(d => d.CreateDateTime)
+                .Where(s => s.IsActive == false)
+                .Include(l => l.LeadTime)
+                .AsQueryable();
+
+            // Filter berdasarkan searchTerm jika ada
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(p => p.SupplierCode.Contains(searchTerm) || p.SupplierName.Contains(searchTerm));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime <= endDate.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            // Ambil data paginated
+            var suppliers = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (suppliers, totalCount);
+        }
+
+        public async Task<(IEnumerable<Supplier> suppliers, int totalCountSuppliers)> GetAllSupplierNonPksPageSize(string searchTerm, int page, int pageSize, DateTimeOffset? startDate, DateTimeOffset? endDate)
+        {
+            var query = _context.Suppliers
+                .OrderByDescending(d => d.CreateDateTime)
+                .Where(s => s.IsPKS == false && s.IsActive == true)
+                .Include(l => l.LeadTime)
+                .AsQueryable();
+
+            // Filter berdasarkan searchTerm jika ada
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(p => p.SupplierCode.Contains(searchTerm) || p.SupplierName.Contains(searchTerm));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime <= endDate.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            // Ambil data paginated
+            var suppliers = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (suppliers, totalCount);
+        }
+
         public Supplier Update(Supplier update)
         {
             var Supplier = _context.Suppliers.Attach(update);

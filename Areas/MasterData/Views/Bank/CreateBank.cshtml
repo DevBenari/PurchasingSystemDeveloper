@@ -43,7 +43,7 @@
                                 <div class="form-group row">
                                     <div class="col-sm-12">
                                         <label asp-for="AccountNumber">Account Number</label>
-                                        <input maxlength="50" autocomplete="off" type="text" asp-for="AccountNumber" class="form-control form-control-border border-width-2" id="AccountNumber" placeholder="Account Number">
+                                        <input maxlength="50" autocomplete="off" type="number" asp-for="AccountNumber" class="form-control form-control-border border-width-2" id="AccountNumber" placeholder="Account Number">
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -73,7 +73,7 @@
                             <div class="col-md-0"></div>
                             <div class="col-md-12">
                                 <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold"><div style="color:#ffffff">Save</div></button>
-                                <a class="btn btn-default" asp-action="Index" asp-controller="Bank">Cancel</a>
+                                <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "Bank")">Cancel</div>
                             </div>
                             <div class="col-md-0"></div>
                         </div>

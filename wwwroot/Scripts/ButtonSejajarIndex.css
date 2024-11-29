@@ -1,0 +1,44 @@
+﻿body {
+    .date-container
+
+{
+    display: flex; /* Elemen tersusun horizontal */
+    align-items: center; /* Sejajar vertikal */
+    gap: 10px; /* Jarak antar elemen */
+}
+
+/* Gaya untuk layar besar (default) */
+.date-input {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    border: 2px solid #007BFF;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s ease-in-out;
+}
+
+#btn-search {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+/* Media query untuk layar kecil */
+@media (max-width: 768px) {
+    .date-container {
+        flex-direction: column; /* Elemen tersusun vertikal */
+        gap: 15px;
+    }
+
+    #btn-search {
+        width: 100%; /* Tombol memenuhi lebar container */
+    }
+}
+
+}

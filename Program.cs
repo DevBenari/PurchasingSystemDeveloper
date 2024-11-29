@@ -14,8 +14,15 @@ using PurchasingSystemDeveloper.Data;
 using PurchasingSystemDeveloper.Hubs;
 using PurchasingSystemDeveloper.Models;
 using PurchasingSystemDeveloper.Repositories;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var cultureInfo = new CultureInfo("id-ID");
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
+builder.Services.AddSingleton<UrlMappingService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -111,6 +118,11 @@ builder.Services.AddScoped<IApprovalUnitRequestRepository>();
 //Initialize Fast Report
 FastReport.Utils.RegisteredObjects.AddConnection(typeof(MsSqlDataConnection));
 var app = builder.Build();
+
+builder.Services.AddDataProtection();
+
+// Tambahkan middleware untuk dekripsi URL
+app.UseMiddleware<DecryptUrlMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

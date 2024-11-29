@@ -36,7 +36,6 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
                 .Include(a1 => a1.UserApprove1)
                 .Include(a2 => a2.UserApprove2)
                 .Include(a3 => a3.UserApprove3)
-                //.Include(e => e.DueDate)
                 .FirstOrDefault(p => p.PurchaseOrderId == Id);
 
             if (PurchaseOrder != null)
@@ -70,8 +69,6 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
                     Status = PurchaseOrder.Status,
                     QtyTotal = PurchaseOrder.QtyTotal,
                     GrandTotal = PurchaseOrder.GrandTotal,
-                    //DueDateId = PurchaseOrder.DueDateId,
-                    //DueDate = PurchaseOrder.DueDate,
                     Note = PurchaseOrder.Note,
                     PurchaseOrderDetails = PurchaseOrder.PurchaseOrderDetails,
                 };
@@ -90,7 +87,6 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
                 .Include(a1 => a1.UserApprove1)
                 .Include(a2 => a2.UserApprove2)
                 .Include(a3 => a3.UserApprove3)
-                //.Include(e => e.DueDate)
                 .FirstOrDefaultAsync(a => a.PurchaseOrderId == Id);
         }
 
@@ -125,8 +121,6 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
                 Status = PurchaseOrder.Status,
                 QtyTotal = PurchaseOrder.QtyTotal,
                 GrandTotal = PurchaseOrder.GrandTotal,
-                //DueDateId = PurchaseOrder.DueDateId,
-                //DueDate = PurchaseOrder.DueDate,
                 Note = PurchaseOrder.Note,
                 PurchaseOrderDetails = PurchaseOrder.PurchaseOrderDetails,
             }).ToListAsync();
@@ -163,8 +157,6 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
                 Status = PurchaseOrder.Status,
                 QtyTotal = PurchaseOrder.QtyTotal,
                 GrandTotal = PurchaseOrder.GrandTotal,
-                //DueDateId = PurchaseOrder.DueDateId,
-                //DueDate = PurchaseOrder.DueDate,
                 Note = PurchaseOrder.Note,
                 PurchaseOrderDetails = PurchaseOrder.PurchaseOrderDetails,
             }).ToListAsync();
@@ -179,8 +171,46 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
                 .Include(a1 => a1.UserApprove1)
                 .Include(a2 => a2.UserApprove2)
                 .Include(a3 => a3.UserApprove3)
-                //.Include(e => e.DueDate)
                 .ToList();
+        }
+
+        public async Task<(IEnumerable<PurchaseOrder> purchaseOrders, int totalCountPurchaseOrders)> GetAllPurchaseOrderPageSize(string searchTerm, int page, int pageSize, DateTimeOffset? startDate, DateTimeOffset? endDate)
+        {
+            var query = _context.PurchaseOrders
+                .Include(d => d.PurchaseOrderDetails)
+                .Include(u => u.ApplicationUser)
+                .Include(t => t.TermOfPayment)
+                .Include(a1 => a1.UserApprove1)
+                .Include(a2 => a2.UserApprove2)
+                .Include(a3 => a3.UserApprove3)
+                .OrderByDescending(d => d.CreateDateTime)
+                .AsQueryable();
+
+            // Filter berdasarkan searchTerm jika ada
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(p => p.PurchaseRequestNumber.Contains(searchTerm) || p.PurchaseOrderNumber.Contains(searchTerm));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime <= endDate.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            // Ambil data paginated
+            var purchaseOrders = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (purchaseOrders, totalCount);
         }
 
         public async Task<PurchaseOrder> Update(PurchaseOrder update)

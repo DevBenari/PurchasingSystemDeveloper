@@ -22,6 +22,11 @@ using System.Security.Claims;
 using System.Web.Helpers;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.DataProtection;
+using System.Security.Cryptography;
+using System.Text;
+using System.IO;
+using System.Web.WebPages;
 
 namespace PurchasingSystemDeveloper.Controllers
 {
@@ -42,7 +47,10 @@ namespace PurchasingSystemDeveloper.Controllers
         private readonly IApprovalQtyDifferenceRepository _approvalQtyDifferenceRepository;
         private readonly IUnitRequestRepository _unitRequestRepository;
         private readonly IApprovalUnitRequestRepository _approvalUnitRequestRepository;
-
+        private readonly IPurchaseOrderRepository _purchaseOrderRepository;
+        
+        private readonly IDataProtector _protector;
+        private readonly UrlMappingService _urlMappingService;
         private readonly IHostingEnvironment _hostingEnvironment;
 
         public HomeController(ILogger<HomeController> logger,
@@ -58,11 +66,14 @@ namespace PurchasingSystemDeveloper.Controllers
             IApprovalRepository approvalRepository,
             IQtyDifferenceRepository qtyDifferenceRepository,
             IApprovalQtyDifferenceRepository approvalQtyDifferenceRepository,
-
-            IHostingEnvironment hostingEnvironment,
-            
             IUnitRequestRepository unitRequestRepository,
-            IApprovalUnitRequestRepository approvalUnitRequestRepository)
+            IApprovalUnitRequestRepository approvalUnitRequestRepository,
+            IPurchaseOrderRepository purchaseOrderRepository,
+
+            IDataProtectionProvider provider,
+            UrlMappingService urlMappingService,
+            IHostingEnvironment hostingEnvironment
+        )
         {
             _logger = logger;
             _applicationDbContext = context;
@@ -77,23 +88,72 @@ namespace PurchasingSystemDeveloper.Controllers
             _approvalRepository = approvalRepository;
             _qtyDifferenceRepository = qtyDifferenceRepository;
             _approvalQtyDifferenceRepository = approvalQtyDifferenceRepository;
-
-            _hostingEnvironment = hostingEnvironment;
-
             _unitRequestRepository = unitRequestRepository;
             _approvalUnitRequestRepository = approvalUnitRequestRepository;
+            _purchaseOrderRepository = purchaseOrderRepository;
 
+            _protector = provider.CreateProtector("UrlProtector");
+            _urlMappingService = urlMappingService;
+            _hostingEnvironment = hostingEnvironment;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult RedirectToIndex()
+        {
+            try
+            {
+                // Bangun originalPath dengan format tanggal ISO 8601
+                string originalPath = $"Page:Home/Index";
+                string encryptedPath = _protector.Protect(originalPath);
+
+                // Hash GUID-like code (SHA256 truncated to 36 characters)
+                string guidLikeCode = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(encryptedPath)))
+                    .Replace('+', '-')
+                    .Replace('/', '_')
+                    .Substring(0, 36);
+
+                // Simpan mapping GUID-like code ke encryptedPath di penyimpanan sementara (misalnya, cache)
+                _urlMappingService.InMemoryMapping[guidLikeCode] = encryptedPath;
+
+                return Redirect("/" + guidLikeCode);
+            }
+            catch
+            {
+                // Jika enkripsi gagal, kembalikan view
+                return View();
+            }            
+        }
+
+        public async Task<IActionResult> Index(string filterOptions = "", string searchTerm = "", DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, int page = 1, int pageSize = 10)
         {
             ViewBag.Active = "Dashboard";
+            ViewBag.SearchTerm = searchTerm;
+            ViewBag.SelectedFilter = filterOptions;
+
+            // Format tanggal untuk input[type="date"]
+            ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
+            ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
+
+            // Format tanggal untuk tampilan (Indonesia)
+            ViewBag.StartDateReadable = startDate?.ToString("dd MMMM yyyy");
+            ViewBag.EndDateReadable = endDate?.ToString("dd MMMM yyyy");
+
+            // Normalisasi tanggal untuk mengabaikan waktu
+            if (startDate.HasValue) startDate = startDate.Value.Date;
+            if (endDate.HasValue) endDate = endDate.Value.Date.AddDays(1).AddTicks(-1); // Sampai akhir hari
+
+            // Tentukan range tanggal berdasarkan filterOptions
+            if (!string.IsNullOrEmpty(filterOptions))
+            {
+                (startDate, endDate) = GetDateRangeHelper.GetDateRange(filterOptions);
+            }
 
             var checkUserLogin = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
             var getUserActive = _userActiveRepository.GetAllUser().Where(c => c.UserActiveCode == checkUserLogin.KodeUser).FirstOrDefault();
             var userLogin = _userActiveRepository.GetAllUserLogin().Where(u => u.IsOnline == true).ToList();
             var user = _userActiveRepository.GetAllUser().Where(u => u.FullName == checkUserLogin.NamaUser).FirstOrDefault();
-            var product = _productRepository.GetAllProduct().Where(p => p.Stock < p.MinStock).ToList();
+            var data = await _productRepository
+                .GetAllProductPageSize(searchTerm, page, pageSize, startDate, endDate)
+                /*.Where(p => p.Stock < p.MinStock).ToList()*/;
 
             if (user == null && checkUserLogin.Email == "superadmin@admin.com")
             {
@@ -108,7 +168,7 @@ namespace PurchasingSystemDeveloper.Controllers
                 {
                     dashboard.UserActiveViewModels = viewModel;
                     dashboard.UserOnlines = userLogin;
-                    dashboard.Products = product;
+                    dashboard.Products = data.products;
                 }
 
                 return View(dashboard);
@@ -138,8 +198,8 @@ namespace PurchasingSystemDeveloper.Controllers
                 {
                     dashboard.UserActiveViewModels = viewModel;
                     dashboard.UserOnlines = userLogin;
-                    dashboard.Products = product;
-                }                
+                    dashboard.Products = data.products;
+                }
 
                 var userOnline = _userActiveRepository.GetAllUserLogin().Where(u => u.IsOnline == true).GroupBy(u => u.Id).Select(y => new
                 {
@@ -191,10 +251,36 @@ namespace PurchasingSystemDeveloper.Controllers
                     WarehouseTransferId = y.Key,
                     CountOfWarehouseTransfers = y.Count()
                 }).ToList();
-                ViewBag.CountWarehouseTransfer = countWarehouseTransfer.Count;
+                ViewBag.CountWarehouseTransfer = countWarehouseTransfer.Count;                
 
                 return View(dashboard);
             }
+        }
+
+        public IActionResult RedirectToProfile()
+        {
+            try
+            {
+                // Bangun originalPath dengan format tanggal ISO 8601
+                string originalPath = $"Page:Home/MyProfile";
+                string encryptedPath = _protector.Protect(originalPath);
+
+                // Hash GUID-like code (SHA256 truncated to 36 characters)
+                string guidLikeCode = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(encryptedPath)))
+                    .Replace('+', '-')
+                    .Replace('/', '_')
+                    .Substring(0, 36);
+
+                // Simpan mapping GUID-like code ke encryptedPath di penyimpanan sementara (misalnya, cache)
+                _urlMappingService.InMemoryMapping[guidLikeCode] = encryptedPath;
+
+                return Redirect("/" + guidLikeCode);
+            }
+            catch
+            {
+                // Jika enkripsi gagal, kembalikan view
+                return View();
+            }            
         }
 
         [HttpGet]
@@ -326,6 +412,38 @@ namespace PurchasingSystemDeveloper.Controllers
             return Json(data);
         }
 
+        public IActionResult GetMonitoringProduct()
+        {
+            var alldata = _productRepository.GetAllProduct();
+            var warning = alldata.Where(product => product.Stock < product.MinStock).Count(); // Data Stock Dibawah Minimal Stock (Minstock) bukan termasuk data stock yang save
+            var save = alldata.Where(product => product.Stock >= product.MinStock).Count(); // Data Stock Sama Atau Diatas Minimal Stock (Minstock) termasuk data stock yang aman
+
+            //var warning = _productRepository.GetAllProduct().Where(product => product.Stock <= product.MinStock).Count();
+            //var save = _productRepository.GetAllProduct().Where(product => product.Stock >= product.MinStock).Count();
+            
+            var result = new
+            {
+                Warning = warning,
+                Save = save
+            };
+            return Json(result);
+        }
+
+        public IActionResult GetMonitoringStatus()
+        {
+            var completed = _purchaseOrderRepository.GetAllPurchaseOrder().Where(po => po.Status.StartsWith("RO")).Count();
+            var inorder = _purchaseOrderRepository.GetAllPurchaseOrder().Where(po => po.Status == "In Order").Count();
+            var cancelled = _purchaseOrderRepository.GetAllPurchaseOrder().Where(po => po.Status == "Cancelled").Count();
+            var result = new
+            {
+                Completed = completed,
+                Inorder = inorder,
+                Cancelled = cancelled
+            };
+            return Json(result);
+        }
+
+
         [HttpGet]
         public async Task<IActionResult> ResetPassword(string password)
         {
@@ -411,6 +529,7 @@ namespace PurchasingSystemDeveloper.Controllers
             else 
             {
                 var getUserActiveId = _userActiveRepository.GetAllUser().Where(u => u.UserActiveCode == getUserId.KodeUser).FirstOrDefault().UserActiveId;
+                var getUserActiveCode = _userActiveRepository.GetAllUser().Where(u => u.UserActiveCode == getUserId.KodeUser).FirstOrDefault().UserActiveCode;
                 var loggerDataPR = new List<object>();
                 var loggerDataQtyDiff = new List<object>();
                 var loggerDataUnitReq = new List<object>();
@@ -436,7 +555,7 @@ namespace PurchasingSystemDeveloper.Controllers
 
                 foreach (var logger in DataPR)
                 {
-                    if (logger.ApproveStatusUser1 == null)
+                    if (logger.ApproveStatusUser1 == null && logger.ApplicationUser.KodeUser == getUserActiveCode)
                     {
                         var getUserApproveId = _approvalRepository.GetAllApproval().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User1" && u.PurchaseRequestNumber == logger.PurchaseRequestNumber).FirstOrDefault().ApprovalId;
 
@@ -449,7 +568,7 @@ namespace PurchasingSystemDeveloper.Controllers
                         };
                         loggerDataPR.Add(detail);
                     }
-                    else if (logger.ApproveStatusUser1 == "Approve" && logger.ApproveStatusUser2 == null)
+                    else if (logger.ApproveStatusUser1 == "Approve" && logger.ApproveStatusUser2 == null && logger.ApplicationUser.KodeUser == getUserActiveCode)
                     {
                         var getUserApproveId = _approvalRepository.GetAllApproval().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User2" && u.PurchaseRequestNumber == logger.PurchaseRequestNumber).FirstOrDefault().ApprovalId;
 
@@ -462,7 +581,7 @@ namespace PurchasingSystemDeveloper.Controllers
                         };
                         loggerDataPR.Add(detail);
                     }
-                    else if (logger.ApproveStatusUser1 == "Approve" && logger.ApproveStatusUser2 == "Approve" && logger.ApproveStatusUser3 == null)
+                    else if (logger.ApproveStatusUser1 == "Approve" && logger.ApproveStatusUser2 == "Approve" && logger.ApproveStatusUser3 == null && logger.ApplicationUser.KodeUser == getUserActiveCode)
                     {
                         var getUserApproveId = _approvalRepository.GetAllApproval().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User3" && u.PurchaseRequestNumber == logger.PurchaseRequestNumber).FirstOrDefault().ApprovalId;
 
@@ -479,7 +598,7 @@ namespace PurchasingSystemDeveloper.Controllers
 
                 foreach (var logger in DataQtyDiff)
                 {
-                    if (logger.ApproveStatusUser1 == null)
+                    if (logger.ApproveStatusUser1 == null && logger.ApplicationUser.KodeUser == getUserActiveCode)
                     {
                         var getUserApproveId = _approvalQtyDifferenceRepository.GetAllApproval().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User1" && u.QtyDifferenceId == logger.QtyDifferenceId).FirstOrDefault().ApprovalQtyDifferenceId;
 
@@ -492,7 +611,7 @@ namespace PurchasingSystemDeveloper.Controllers
                         };
                         loggerDataQtyDiff.Add(detail);
                     }
-                    else if (logger.ApproveStatusUser1 == "Approve" && logger.ApproveStatusUser2 == null)
+                    else if (logger.ApproveStatusUser1 == "Approve" && logger.ApproveStatusUser2 == null && logger.ApplicationUser.KodeUser == getUserActiveCode)
                     {
                         var getUserApproveId = _approvalQtyDifferenceRepository.GetAllApproval().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User2" && u.QtyDifferenceId == logger.QtyDifferenceId).FirstOrDefault().ApprovalQtyDifferenceId;
 
@@ -509,7 +628,7 @@ namespace PurchasingSystemDeveloper.Controllers
 
                 foreach (var logger in DataUnitReq)
                 {
-                    if (logger.ApproveStatusUser1 == null)
+                    if (logger.ApproveStatusUser1 == null && logger.ApplicationUser.KodeUser == getUserActiveCode)
                     {
                         var getUserApproveId = _approvalUnitRequestRepository.GetAllApprovalRequest().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User1" && u.UnitRequestId == logger.UnitRequestId).FirstOrDefault().ApprovalUnitRequestId;
 
@@ -524,9 +643,16 @@ namespace PurchasingSystemDeveloper.Controllers
                     }
                 }
 
-                var totalNotification = DataPR.Count + DataQtyDiff.Count + DataUnitReq.Count;
-
-                return Json(new { success = true, totalJsonAllNotification = totalNotification, loggerDataJsonPR = loggerDataPR, loggerDataJsonQtyDiff = loggerDataQtyDiff, loggerDataJsonUnitReq = loggerDataUnitReq });
+                if (loggerDataPR.Count == 0 && loggerDataQtyDiff.Count == 0 && loggerDataUnitReq.Count == 0)
+                {
+                    var totalNotification = 0;
+                    return Json(new { success = true, totalJsonAllNotification = totalNotification, loggerDataJsonPR = loggerDataPR, loggerDataJsonQtyDiff = loggerDataQtyDiff, loggerDataJsonUnitReq = loggerDataUnitReq });
+                }
+                else 
+                {
+                    var totalNotification = DataPR.Count + DataQtyDiff.Count + DataUnitReq.Count;
+                    return Json(new { success = true, totalJsonAllNotification = totalNotification, loggerDataJsonPR = loggerDataPR, loggerDataJsonQtyDiff = loggerDataQtyDiff, loggerDataJsonUnitReq = loggerDataUnitReq });
+                }                
             }                       
         }
 

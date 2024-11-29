@@ -1,4 +1,4 @@
-﻿using FastReport.Data;
+using FastReport.Data;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

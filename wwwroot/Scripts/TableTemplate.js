@@ -2,9 +2,12 @@
     var table = new DataTable('#tblTemplate', {
         columnDefs: [
             {
-                searchable: false,
-                orderable: false,
-                targets: 0
+                paging: true,
+                searching: true,
+                ordering: true,
+                info: true,
+                pageLength: 10,
+                lengthChange: false
             }
         ]
     });

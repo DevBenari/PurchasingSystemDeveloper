@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Elfie.Model.Map;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +30,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
         private readonly IMeasurementRepository _measurementRepository;
         private readonly IDiscountRepository _discountRepository;
         private readonly ISupplierRepository _supplierRepository;
-        public readonly IWarehouseLocationRepository _warehouseLocationRepository;
+        private readonly IWarehouseLocationRepository _warehouseLocationRepository;
 
         private readonly IDataProtector _protector;
         private readonly UrlMappingService _urlMappingService;

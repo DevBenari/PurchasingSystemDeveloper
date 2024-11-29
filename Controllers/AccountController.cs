@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +13,8 @@ using PurchasingSystemDeveloper.Repositories;
 using PurchasingSystemDeveloper.ViewModels;
 using System.Reflection;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace PurchasingSystemDeveloper.Controllers
 {
@@ -25,6 +28,9 @@ namespace PurchasingSystemDeveloper.Controllers
         private readonly IRoleRepository _roleRepository;
         private readonly IGroupRoleRepository _groupRoleRepository;
 
+        private readonly IDataProtector _protector;
+        private readonly UrlMappingService _urlMappingService;
+
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
@@ -32,7 +38,10 @@ namespace PurchasingSystemDeveloper.Controllers
             IUserActiveRepository userActiveRepository,
             IRoleRepository roleRepository,
             IGroupRoleRepository groupRoleRepository,
-            ILogger<AccountController> logger)
+            ILogger<AccountController> logger,
+
+            IDataProtectionProvider provider,
+            UrlMappingService urlMappingService)
         {
             _applicationDbContext = applicationDbContext;
             _signInManager = signInManager;
@@ -41,6 +50,9 @@ namespace PurchasingSystemDeveloper.Controllers
             _logger = logger;
             _roleRepository = roleRepository;
             _groupRoleRepository = groupRoleRepository;
+
+            _protector = provider.CreateProtector("UrlProtector");
+            _urlMappingService = urlMappingService;
         }
 
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
@@ -81,8 +93,7 @@ namespace PurchasingSystemDeveloper.Controllers
             await _signInManager.SignOutAsync();
 
             return Ok();
-        }
-
+        }        
 
         [HttpGet]
         [AllowAnonymous]
@@ -90,7 +101,7 @@ namespace PurchasingSystemDeveloper.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("RedirectToIndex", "Home");
             }
             else
             {
@@ -101,9 +112,9 @@ namespace PurchasingSystemDeveloper.Controllers
 
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
+        public async Task<IActionResult> Login(LoginViewModel model/*, string returnUrl = null*/)
         {
-            returnUrl ??= Url.Content("~/");
+            //returnUrl ??= Url.Content("~/");
 
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
@@ -111,7 +122,7 @@ namespace PurchasingSystemDeveloper.Controllers
             {
                 if (User.Identity.IsAuthenticated)
                 {
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("RedirectToIndex", "Home");
                 }
                 else {
                     var user = await _signInManager.UserManager.FindByNameAsync(model.Email);
@@ -194,13 +205,13 @@ namespace PurchasingSystemDeveloper.Controllers
                             await _userManager.UpdateAsync(user);
 
                             _logger.LogInformation("User logged in.");
-                            return RedirectToAction("Index", "Home");
+                            return RedirectToAction("RedirectToIndex", "Home");
                         }
 
-                        if (result.RequiresTwoFactor)
-                        {
-                            return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, model.RememberMe });
-                        }
+                        //if (result.RequiresTwoFactor)
+                        //{
+                        //    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, model.RememberMe });
+                        //}
 
                         if (result.IsLockedOut)
                         {
@@ -255,7 +266,7 @@ namespace PurchasingSystemDeveloper.Controllers
             await HttpContext.SignOutAsync("CookieAuth");
 
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("RedirectToIndex", "Home");
         }
     }
 }

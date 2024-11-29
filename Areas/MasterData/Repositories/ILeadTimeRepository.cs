@@ -60,6 +60,39 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Repositories
                 .AsNoTracking();
         }
 
+        public async Task<(IEnumerable<LeadTime> leadTimes, int totalCountLeadTimes)> GetAllLeadTimePageSize(string searchTerm, int page, int pageSize, DateTimeOffset? startDate, DateTimeOffset? endDate)
+        {
+            var query = _context.LeadTimes
+                .OrderByDescending(d => d.CreateDateTime)                
+                .AsQueryable();
+
+            // Filter berdasarkan searchTerm jika ada
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(p => p.LeadTimeCode.Contains(searchTerm) || Convert.ToString(p.LeadTimeValue).Contains(searchTerm));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime <= endDate.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            // Ambil data paginated
+            var leadTimes = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (leadTimes, totalCount);
+        }
+
         public LeadTime Update(LeadTime update)
         {
             var LeadTime = _context.LeadTimes.Attach(update);

@@ -62,6 +62,39 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Repositories
                 .AsNoTracking();
         }
 
+        public async Task<(IEnumerable<Discount> discounts, int totalCountDiscounts)> GetAllDiscountPageSize(string searchTerm, int page, int pageSize, DateTimeOffset? startDate, DateTimeOffset? endDate)
+        {
+            var query = _context.Discounts
+                .OrderByDescending(d => d.CreateDateTime)                
+                .AsQueryable();
+
+            // Filter berdasarkan searchTerm jika ada
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(p => p.DiscountCode.Contains(searchTerm) || Convert.ToString(p.DiscountValue).Contains(searchTerm));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime <= endDate.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            // Ambil data paginated
+            var discounts = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (discounts, totalCount);
+        }
+
         public Discount Update(Discount update)
         {
             var Discount = _context.Discounts.Attach(update);

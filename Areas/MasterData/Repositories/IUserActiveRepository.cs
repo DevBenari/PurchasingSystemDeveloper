@@ -93,6 +93,41 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Repositories
                 .AsNoTracking();
         }
 
+        public async Task<(IEnumerable<UserActive> userActives, int totalCountUserActives)> GetAllUserActivePageSize(string searchTerm, int page, int pageSize, DateTimeOffset? startDate, DateTimeOffset? endDate)
+        {
+            var query = _context.UserActives
+                .OrderByDescending(d => d.CreateDateTime)
+                .Include(p => p.Department)
+                .Include(c => c.Position)
+                .AsQueryable();
+
+            // Filter berdasarkan searchTerm jika ada
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(p => p.FullName.Contains(searchTerm) || p.Email.Contains(searchTerm));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime <= endDate.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            // Ambil data paginated
+            var userActives = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (userActives, totalCount);
+        }
+
         public UserActive Update(UserActive update)
         {
             var user = _context.UserActives.Attach(update);

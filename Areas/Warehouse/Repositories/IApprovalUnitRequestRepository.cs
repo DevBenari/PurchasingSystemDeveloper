@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PurchasingSystemDeveloper.Areas.Order.Models;
 using PurchasingSystemDeveloper.Areas.Transaction.Models;
 using PurchasingSystemDeveloper.Areas.Warehouse.Models;
 using PurchasingSystemDeveloper.Data;
@@ -117,6 +118,44 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Repositories
                 .Include(t => t.ApplicationUser)
                 .Include(s => s.UserApprove)
                 .ToList();
+        }
+
+        public async Task<(IEnumerable<ApprovalUnitRequest> approvalUnitRequests, int totalCountApprovalUnitRequests)> GetAllApprovalUnitRequestPageSize(string searchTerm, int page, int pageSize, DateTimeOffset? startDate, DateTimeOffset? endDate)
+        {
+            var query = _context.ApprovalUnitRequests
+                .Include(d => d.UnitRequest)
+                .Include(u => u.UnitLocation)
+                .Include(a => a.WarehouseLocation)
+                .Include(t => t.ApplicationUser)
+                .Include(s => s.UserApprove)
+                .OrderByDescending(d => d.CreateDateTime)
+                .AsQueryable();
+
+            // Filter berdasarkan searchTerm jika ada
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(p => p.UnitRequestNumber.Contains(searchTerm));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime <= endDate.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            // Ambil data paginated
+            var approvalUnitRequests = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (approvalUnitRequests, totalCount);
         }
 
         public async Task<ApprovalUnitRequest> Update(ApprovalUnitRequest update)

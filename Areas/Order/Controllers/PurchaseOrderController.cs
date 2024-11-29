@@ -1,6 +1,7 @@
 ﻿using FastReport.Data;
 using FastReport.Export.PdfSimple;
 using FastReport.Web;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -15,6 +16,9 @@ using PurchasingSystemDeveloper.Data;
 using PurchasingSystemDeveloper.Models;
 using PurchasingSystemDeveloper.Repositories;
 using System.Data;
+using System.Globalization;
+using System.Security.Cryptography;
+using System.Text;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace PurchasingSystemDeveloper.Areas.Order.Controllers
@@ -34,6 +38,8 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
         private readonly IPurchaseOrderRepository _purchaseOrderRepository;
         private readonly IQtyDifferenceRepository _qtyDifferenceRepository;
 
+        private readonly IDataProtector _protector;
+        private readonly UrlMappingService _urlMappingService;
         private readonly IHostingEnvironment _hostingEnvironment;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IConfiguration _configuration;
@@ -51,6 +57,8 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
             IPurchaseOrderRepository purchaseOrderRepository,
             IQtyDifferenceRepository qtyDifferenceRepository,
 
+            IDataProtectionProvider provider,
+            UrlMappingService urlMappingService,
             IHostingEnvironment hostingEnvironment,
             IWebHostEnvironment webHostEnvironment,
             IConfiguration configuration
@@ -67,6 +75,8 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
             _purchaseOrderRepository = purchaseOrderRepository;
             _qtyDifferenceRepository = qtyDifferenceRepository;
 
+            _protector = provider.CreateProtector("UrlProtector");
+            _urlMappingService = urlMappingService;
             _hostingEnvironment = hostingEnvironment;
             _webHostEnvironment = webHostEnvironment;
             _configuration = configuration;
@@ -96,24 +106,99 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
             return new JsonResult(qtyDiffDetail);
         }
 
-        [HttpGet]
-        public IActionResult Index()
+        public IActionResult RedirectToIndex(string filterOptions = "", string searchTerm = "", DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, int page = 1, int pageSize = 10)
         {
-            ViewBag.Active = "PurchaseOrder";
-            var data = _purchaseOrderRepository.GetAllPurchaseOrder();
-            return View(data);
+            try
+            {
+                // Format tanggal tanpa waktu
+                string startDateString = startDate.HasValue ? startDate.Value.ToString("yyyy-MM-dd") : "";
+                string endDateString = endDate.HasValue ? endDate.Value.ToString("yyyy-MM-dd") : "";
+
+                // Bangun originalPath dengan format tanggal ISO 8601
+                string originalPath = $"Page:Order/PurchaseOrder/Index?filterOptions={filterOptions}&searchTerm={searchTerm}&startDate={startDateString}&endDate={endDateString}&page={page}&pageSize={pageSize}";
+                string encryptedPath = _protector.Protect(originalPath);
+
+                // Hash GUID-like code (SHA256 truncated to 36 characters)
+                string guidLikeCode = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(encryptedPath)))
+                    .Replace('+', '-')
+                    .Replace('/', '_')
+                    .Substring(0, 36);
+
+                // Simpan mapping GUID-like code ke encryptedPath di penyimpanan sementara (misalnya, cache)
+                _urlMappingService.InMemoryMapping[guidLikeCode] = encryptedPath;
+
+                return Redirect("/" + guidLikeCode);
+            }
+            catch
+            {
+                // Jika enkripsi gagal, kembalikan view
+                return Redirect(Request.Path);
+            }            
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Index(DateTime tglAwalPencarian, DateTime tglAkhirPencarian)
+        [HttpGet]
+        public async Task<IActionResult> Index(string filterOptions = "", string searchTerm = "", DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, int page = 1, int pageSize = 10)
         {
             ViewBag.Active = "PurchaseOrder";
-            ViewBag.tglAwalPencarian = tglAwalPencarian.ToString("dd MMMM yyyy");
-            ViewBag.tglAkhirPencarian = tglAkhirPencarian.ToString("dd MMMM yyyy");
+            ViewBag.SearchTerm = searchTerm;
+            ViewBag.SelectedFilter = filterOptions;
 
-            var data = _purchaseOrderRepository.GetAllPurchaseOrder().Where(r => r.CreateDateTime.Date >= tglAwalPencarian && r.CreateDateTime.Date <= tglAkhirPencarian).ToList();
-            return View(data);
-        }        
+            // Format tanggal untuk input[type="date"]
+            ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
+            ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
+
+            // Format tanggal untuk tampilan (Indonesia)
+            ViewBag.StartDateReadable = startDate?.ToString("dd MMMM yyyy");
+            ViewBag.EndDateReadable = endDate?.ToString("dd MMMM yyyy");
+
+            // Normalisasi tanggal untuk mengabaikan waktu
+            if (startDate.HasValue) startDate = startDate.Value.Date;
+            if (endDate.HasValue) endDate = endDate.Value.Date.AddDays(1).AddTicks(-1); // Sampai akhir hari
+
+            // Tentukan range tanggal berdasarkan filterOptions
+            if (!string.IsNullOrEmpty(filterOptions))
+            {
+                (startDate, endDate) = GetDateRangeHelper.GetDateRange(filterOptions);
+            }
+
+            var data = await _purchaseOrderRepository.GetAllPurchaseOrderPageSize(searchTerm, page, pageSize, startDate, endDate);
+
+            var model = new Pagination<PurchaseOrder>
+            {
+                Items = data.purchaseOrders,
+                TotalCount = data.totalCountPurchaseOrders,
+                PageSize = pageSize,
+                CurrentPage = page,
+            };
+
+            return View(model);
+        }
+
+        public IActionResult RedirectToDetail(Guid Id)
+        {
+            try
+            {
+                // Enkripsi path URL untuk "Index"
+                string originalPath = $"Detail:Order/PurchaseOrder/DetailPurchaseOrder/{Id}";
+                string encryptedPath = _protector.Protect(originalPath);
+
+                // Hash GUID-like code (SHA256 truncated to 36 characters)
+                string guidLikeCode = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(encryptedPath)))
+                    .Replace('+', '-')
+                    .Replace('/', '_')
+                    .Substring(0, 36);
+
+                // Simpan mapping GUID-like code ke encryptedPath di penyimpanan sementara (misalnya, cache)
+                _urlMappingService.InMemoryMapping[guidLikeCode] = encryptedPath;
+
+                return Redirect("/" + guidLikeCode);
+            }
+            catch
+            {
+                // Jika enkripsi gagal, kembalikan view
+                return Redirect(Request.Path);
+            }            
+        }
 
         [HttpGet]
         public async Task<IActionResult> DetailPurchaseOrder(Guid Id)
@@ -153,6 +238,8 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
             };
 
             var ItemsList = new List<PurchaseOrderDetail>();
+
+            var culture = new CultureInfo("id-ID");
 
             foreach (var item in purchaseOrder.PurchaseOrderDetails)
             {

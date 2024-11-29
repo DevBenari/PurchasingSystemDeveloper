@@ -24,14 +24,6 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
         {
             ViewBag.Active = "Warehouse";
 
-            //Khusus Badge pada Menu dengan Statement Berdasarkan Status Approve
-            //var countPurchaseRequestStatus = _applicationDbContext.PurchaseRequests.Where(p => p.Status == "Not Approved").GroupBy(u => u.PurchaseRequestId).Select(y => new
-            //{
-            //    PurchaseRequestId = y.Key,
-            //    CountOfPurchaseRequests = y.Count()
-            //}).ToList();
-
-            //ViewBag.CountPurchaseRequestStatus = countPurchaseRequestStatus.Count;
             return View();
         }
     }

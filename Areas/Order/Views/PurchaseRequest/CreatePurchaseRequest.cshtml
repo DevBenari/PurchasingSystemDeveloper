@@ -289,7 +289,8 @@
                     <div class="card-body">
                         @****Perhatikan type nya jika submit akan berbeda hasil pada json, jadi pakai type button*@
                         <input type="button" value="Save" id="submit" class="btn btn-primary bg-indigo float-left fw-bold">
-                        <a class="btn btn-default" asp-action="Index" asp-controller="PurchaseRequest">Cancel</a>
+                        <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "PurchaseRequest")">Cancel</div>
+                        @* <a class="btn btn-default" asp-action="Index" asp-controller="PurchaseRequest">Cancel</a> *@
                     </div>
                 </div>
                 <!-- /.end button footer -->
@@ -315,7 +316,7 @@
                 theme: 'bootstrap4'
             })
         })
-    </script>
+    </script>    
 
     <script>
         $(document).ready(function () {

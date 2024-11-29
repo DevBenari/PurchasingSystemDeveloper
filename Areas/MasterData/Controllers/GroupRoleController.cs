@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +15,9 @@ using Microsoft.AspNetCore.Hosting;
 using System.Reflection;
 using PurchasingSystemDeveloper.Controllers;
 using System;
+using System.Text;
+using Microsoft.AspNetCore.DataProtection;
+using System.Security.Cryptography;
 
 namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
 {
@@ -31,14 +34,19 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
         private readonly IRoleRepository _roleRepository;
         private readonly IHubContext<ChatHub> _hubContext;
 
+        private readonly IDataProtector _protector;
+        private readonly UrlMappingService _urlMappingService;
+
         public GroupRoleController(ApplicationDbContext applicationDbContext,
             IUserActiveRepository userActiveRepository,
             SignInManager<ApplicationUser> signInManager,
             RoleManager<IdentityRole> roleManager,
             IGroupRoleRepository groupRoleRepository,
             IRoleRepository roleRepository,
+            IHubContext<ChatHub> hubContext,
 
-            IHubContext<ChatHub> hubContext
+            IDataProtectionProvider provider,
+            UrlMappingService urlMappingService
         )
         {
             _applicationDbContext = applicationDbContext;
@@ -48,16 +56,47 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             _userActiveRepository = userActiveRepository;
             _groupRoleRepository = groupRoleRepository;
             _roleRepository = roleRepository;
+
+            _protector = provider.CreateProtector("UrlProtector");
+            _urlMappingService = urlMappingService;
+        }
+
+        public IActionResult RedirectToIndex()
+        {
+            try
+            {
+                // Bangun originalPath dengan format tanggal ISO 8601
+                string originalPath = $"Page:MasterData/GroupRole/Index";
+                string encryptedPath = _protector.Protect(originalPath);
+
+                // Hash GUID-like code (SHA256 truncated to 36 characters)
+                string guidLikeCode = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(encryptedPath)))
+                    .Replace('+', '-')
+                    .Replace('/', '_')
+                    .Substring(0, 36);
+
+                // Simpan mapping GUID-like code ke encryptedPath di penyimpanan sementara (misalnya, cache)
+                _urlMappingService.InMemoryMapping[guidLikeCode] = encryptedPath;
+
+                return Redirect("/" + guidLikeCode);
+            }
+            catch
+            {
+                // Jika enkripsi gagal, kembalikan view
+                return View();
+            }            
         }
 
         public IActionResult Index()
         {
+            ViewBag.Active = "MasterData";
             return View(); // Kirim data role ke view
-        }
+        }      
 
         [HttpGet]
         public async Task<IActionResult> CreateRole()
         {
+            ViewBag.Active = "MasterData";
             var roles = await _roleManager.Roles
                       .Select(r => new
                       {
@@ -68,89 +107,86 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                       .ToListAsync();
             // Kirim data role langsung ke view
             return View(roles);
-        }
-        public void DeleteUserRoleByDepartmentId(string departemenId)
-{
-    // Cari semua user roles yang terkait dengan departemenId (UserId)
-    var userRoles = _applicationDbContext.UserRoles
-                                          .Where(ur => ur.UserId == departemenId)
-                                          .ToList();
-
-    if (userRoles.Any())
-    {
-        // Hapus semua user roles terkait
-        _applicationDbContext.UserRoles.RemoveRange(userRoles);
-        _applicationDbContext.SaveChanges();  // Simpan perubahan ke database
-    }
-}
+        }        
 
         [HttpPost]
         public async Task<IActionResult> CreateRole(GroupRoleViewModel vm)
         {
+            ViewBag.Active = "MasterData";
             var dateNow = DateTimeOffset.Now;
             var setDateNow = DateTimeOffset.Now.ToString("yyMMdd");
 
             var getUser = _userActiveRepository.GetAllUserLogin()
                 .FirstOrDefault(u => u.UserName == vm.DepartemenId);
 
-            var departemenId = getUser.Id;
-            var roleIds = vm.RoleId;
-            // Hapus semua user roles terkait
-            _groupRoleRepository.DeleteByDepartmentId(departemenId);
-            var userRoles = _applicationDbContext.UserRoles
-                                                  .Where(ur => ur.UserId == departemenId)
-                                                  .ToList();
-            if (userRoles.Any())
+            if (getUser == null)
             {
-                _applicationDbContext.UserRoles.RemoveRange(userRoles);
-                _applicationDbContext.SaveChanges();  // Simpan perubahan ke database
+                TempData["WarningMessage"] = "Sorry, please select a user first !!!";
+                return RedirectToAction("RedirectToIndex"); // atau aksi lain sesuai kebutuhan                
             }
-            // End Hapus 
-
-            if (ModelState.IsValid)
+            else
             {
-                // Simpan ID Peran
-                foreach (var roleId in roleIds)
+                var departemenId = getUser.Id;
+                var roleIds = vm.RoleId;
+                // Hapus semua user roles terkait
+                _groupRoleRepository.DeleteByDepartmentId(departemenId);
+                var userRoles = _applicationDbContext.UserRoles
+                                                      .Where(ur => ur.UserId == departemenId)
+                                                      .ToList();
+                if (userRoles.Any())
                 {
-                    var groupRole = new GroupRole
-                    {
-                        DepartemenId = departemenId,
-                        RoleId = roleId, // Gunakan roleId dari loop
-                        CreateDateTime = DateTime.Now,
-                        CreateBy = new Guid(getUser.Id)
-                    };
+                    _applicationDbContext.UserRoles.RemoveRange(userRoles);
+                    _applicationDbContext.SaveChanges();  // Simpan perubahan ke database
+                }
+                // End Hapus 
 
-                    _groupRoleRepository.Tambah(groupRole);
-                    
-
-                    var role = await _roleManager.FindByIdAsync(roleId.ToString());
-                    if (role != null)
+                if (ModelState.IsValid)
+                {
+                    // Simpan ID Peran
+                    foreach (var roleId in roleIds)
                     {
-                        // Membuat entri baru untuk AspNetUserRoles
-                        var userRole = new IdentityUserRole<string>
+                        var groupRole = new GroupRole
                         {
-                            UserId = getUser.Id,  // Menggunakan UserId dari pengguna
-                            RoleId = roleId.ToString()  // Menggunakan RoleId sebagai string
+                            DepartemenId = departemenId,
+                            RoleId = roleId, // Gunakan roleId dari loop
+                            CreateDateTime = DateTime.Now,
+                            CreateBy = new Guid(getUser.Id)
                         };
 
-                        // Menambahkan entri ke tabel AspNetUserRoles
-                        _applicationDbContext.UserRoles.Add(userRole);
-                        await _applicationDbContext.SaveChangesAsync();  // Menyimpan perubahan ke database
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", $"Role dengan ID {roleId} tidak ditemukan.");
-                        return View();
+                        _groupRoleRepository.Tambah(groupRole);
+
+
+                        var role = await _roleManager.FindByIdAsync(roleId.ToString());
+                        if (role != null)
+                        {
+                            // Membuat entri baru untuk AspNetUserRoles
+                            var userRole = new IdentityUserRole<string>
+                            {
+                                UserId = getUser.Id,  // Menggunakan UserId dari pengguna
+                                RoleId = roleId.ToString()  // Menggunakan RoleId sebagai string
+                            };
+
+                            // Menambahkan entri ke tabel AspNetUserRoles
+                            _applicationDbContext.UserRoles.Add(userRole);
+                            await _applicationDbContext.SaveChangesAsync();  // Menyimpan perubahan ke database
+                        }
+                        else
+                        {
+                            ModelState.AddModelError("", $"Role dengan ID {roleId} tidak ditemukan.");
+                            return View();
+                        }
                     }
                 }
-            }
-            return RedirectToAction("Index"); // atau aksi lain sesuai kebutuhan
 
+                TempData["SuccessMessage"] = "Role successfully assigned to user";
+                return RedirectToAction("RedirectToIndex"); // atau aksi lain sesuai kebutuhan
+            }                        
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateRoleNavbar()
         {
+            ViewBag.Active = "MasterData";
             var controllers = Assembly.GetExecutingAssembly().GetTypes()
                 .Where(type => typeof(Controller).IsAssignableFrom(type) && !type.IsAbstract)
                 .ToList();
@@ -199,12 +235,26 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             return Json(new { success = true, message = "Role untuk semua controller berhasil dibuat." });
         }
 
+        public void DeleteUserRoleByDepartmentId(string departemenId)
+        {
+            // Cari semua user roles yang terkait dengan departemenId (UserId)
+            var userRoles = _applicationDbContext.UserRoles
+                                                  .Where(ur => ur.UserId == departemenId)
+                                                  .ToList();
+
+            if (userRoles.Any())
+            {
+                // Hapus semua user roles terkait
+                _applicationDbContext.UserRoles.RemoveRange(userRoles);
+                _applicationDbContext.SaveChanges();  // Simpan perubahan ke database
+            }
+        }
 
         [HttpGet]
         [AllowAnonymous]
         public IActionResult LoadRoles(string Email)
         {
-
+            ViewBag.Active = "MasterData";
             if (!string.IsNullOrEmpty(Email))
             {
                 var userId = _userActiveRepository.GetAllUserLogin()

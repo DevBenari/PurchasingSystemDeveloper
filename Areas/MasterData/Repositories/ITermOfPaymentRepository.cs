@@ -62,6 +62,39 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Repositories
                 .AsNoTracking();
         }
 
+        public async Task<(IEnumerable<TermOfPayment> termOfPayments, int totalCountTermOfPayments)> GetAllTermOfPaymentPageSize(string searchTerm, int page, int pageSize, DateTimeOffset? startDate, DateTimeOffset? endDate)
+        {
+            var query = _context.TermOfPayments
+                .OrderByDescending(d => d.CreateDateTime)                
+                .AsQueryable();
+
+            // Filter berdasarkan searchTerm jika ada
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(p => p.TermOfPaymentCode.Contains(searchTerm) || p.TermOfPaymentName.Contains(searchTerm));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime <= endDate.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            // Ambil data paginated
+            var termOfPayments = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (termOfPayments, totalCount);
+        }
+
         public TermOfPayment Update(TermOfPayment update)
         {
             var TermOfPayment = _context.TermOfPayments.Attach(update);

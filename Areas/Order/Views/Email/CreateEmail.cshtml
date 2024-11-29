@@ -15,50 +15,37 @@
         <div class="col-md-12">
             <div class="card card-cyan">
                 <div class="card-header">
-                    <h3 class="card-title" style="color:#ffffff">@ViewBag.Title</h3>
-                    <div class="card-tools">
-                        <div class="card-tools">
-                            @if (signInManager.IsSignedIn(User))
-                            {
-                                <a class="btn btn-tool bg-indigo" asp-action="CreateEmail" asp-controller="Email" asp-area="Order">
-                                    <i class="fas fa-plus"></i>
-                                </a>
-                            }
-                        </div>
-                    </div>
+                    <h3 class="card-title" style="color:#ffffff">@ViewBag.Title</h3>                    
                 </div>
                 <div class="card-body">
                     <form method="post" asp-action="CreateEmail" asp-controller="Email" class="needs-validation" novalidate="" enctype="multipart/form-data">                       
                         <div class="card-body">
+                            <input asp-for="Status" type="hidden" value="Terkirim" />
+
                             <div class="form-group">
-                                <input class="form-control" asp-for="To" placeholder="To:" />
-                                <input asp-for="Status" type="hidden" value="Terkirim" />
-                                @* <input asp-for="AttachmentFileName" type="hidden" value="Terkirim" /> *@
+                                <input class="form-control" asp-for="To" placeholder="To:" />                                
+                                <span asp-validation-for="To" class="text-danger"></span>
                             </div>
                             <div class="form-group">
                                 <input class="form-control" asp-for="Subject" placeholder="Subject:" />
+                                <span asp-validation-for="Subject" class="text-danger"></span>
                             </div>
                             <div class="form-group">
                                 <textarea class="form-control" asp-for="Message" style="height: 300px" placeholder="Your message"></textarea>
-                            </div>
+                                <span asp-validation-for="Message" class="text-danger"></span>
+                            </div>                            
                             <div class="form-group">
-                                @*<div class="btn btn-default btn-file">
-                                <i class="fas fa-paperclip"></i> Attachment
-                                <input asp-for="Document" class="form-control custom-file-input" />
-                                <label class="custom-file-label">Choose Document...</label>
-                                </div>*@
                                 <div class="custom-file">
                                     <input asp-for="Document" class="form-control custom-file-input">
                                     <label class="custom-file-label">Choose Document...</label>
                                 </div>
                                 <span asp-validation-for="Document" class="text-danger"></span>
-                                @*<input type="hidden" name="AttachmentFileName" id="hiddenFileName" />*@
                             </div>
                         </div>
                         <!-- /.card-body -->
                         <div class="card-footer">
-                            <button type="submit" class="btn btn-primary"><i class="far fa-envelope"></i> Send</button>
-                            <a class="btn btn-default" asp-action="Index" asp-controller="Email">Cancel</a>
+                            <button type="submit" class="btn btn-primary bg-indigo"><i class="far fa-envelope"></i> Send</button>
+                            <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "Email")">Cancel</div>
                         </div>
                     </form>
                 </div>                
@@ -78,23 +65,6 @@
                 $(this).next('.custom-file-label').html(fileName);
             });
         });
-    </script>
-
-    @*<script>
-        function updateFileName() {
-            const fileInput = document.getElementById('fileInput');
-            const fileNameDisplay = document.getElementById('fileName');
-            const hiddenFileName = document.getElementById('hiddenFileName');
-
-            if (fileInput.files.length > 0) {
-                const fileName = fileInput.files[0].name;
-                fileNameDisplay.textContent = fileName; // Menampilkan nama file
-                hiddenFileName.value = fileName; // Mengisi elemen tersembunyi dengan nama file
-            } else {
-                fileNameDisplay.textContent = "No file chosen"; // Tampilkan pesan jika tidak ada file
-                hiddenFileName.value = ""; // Kosongkan elemen tersembunyi
-            }
-        }
-    </script>*@
+    </script>   
 }
 

@@ -140,6 +140,44 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Repositories
                 .ToList();
         }
 
+        public async Task<(IEnumerable<WarehouseTransfer> warehouseTransfers, int totalCountWarehouseTransfers)> GetAllWarehouseTransferPageSize(string searchTerm, int page, int pageSize, DateTimeOffset? startDate, DateTimeOffset? endDate)
+        {
+            var query = _context.WarehouseTransfers
+                .Include(d => d.WarehouseTransferDetails)
+                .Include(u => u.ApplicationUser)
+                .Include(p => p.UnitLocation)
+                .Include(t => t.WarehouseLocation)
+                .Include(y => y.UserApprove1)
+                .OrderByDescending(d => d.CreateDateTime)
+                .AsQueryable();
+
+            // Filter berdasarkan searchTerm jika ada
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(p => p.UnitOrderNumber.Contains(searchTerm) || p.UnitLocation.UnitLocationName.Contains(searchTerm) || p.WarehouseLocation.WarehouseLocationName.Contains(searchTerm));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime <= endDate.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            // Ambil data paginated
+            var warehouseTransfers = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (warehouseTransfers, totalCount);
+        }
+
         public async Task<WarehouseTransfer> Update(WarehouseTransfer update)
         {
             var WarehouseTransfer = _context.WarehouseTransfers.Attach(update);

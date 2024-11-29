@@ -108,9 +108,9 @@
                                                 <td class="text-left"><input class="detsupplier" asp-for="@Model.PurchaseRequestDetails[i].Supplier" type="hidden" value="@Model.PurchaseRequestDetails[i].Supplier">@Model.PurchaseRequestDetails[i].Supplier</td>
                                                 <td class="text-left"><input class="detsatuan" asp-for="@Model.PurchaseRequestDetails[i].Measurement" type="hidden" value="@Model.PurchaseRequestDetails[i].Measurement">@Model.PurchaseRequestDetails[i].Measurement</td>
                                                 <td class="text-center row-qty"><input class="text-center detqty" asp-for="@Model.PurchaseRequestDetails[i].Qty" type="hidden" value="@Model.PurchaseRequestDetails[i].Qty">@Model.PurchaseRequestDetails[i].Qty</td>
-                                                <td class="text-right"><input class="detprice" asp-for="@Model.PurchaseRequestDetails[i].Price" type="hidden" value="@Model.PurchaseRequestDetails[i].Price">@Model.PurchaseRequestDetails[i].Price</td>
+                                                <td class="text-right"><input class="detprice" asp-for="@Model.PurchaseRequestDetails[i].Price" type="hidden" value="@Model.PurchaseRequestDetails[i].Price">@Model.PurchaseRequestDetails[i].Price.ToString("C0", new System.Globalization.CultureInfo("id-ID"))</td>
                                                 <td class="text-right"><input class="detdiskon" asp-for="@Model.PurchaseRequestDetails[i].Discount" type="hidden" value="@Model.PurchaseRequestDetails[i].Discount">@Model.PurchaseRequestDetails[i].Discount</td>
-                                                <td class="text-right row-total"><input class="detsubtotal" asp-for="@Model.PurchaseRequestDetails[i].SubTotal" type="hidden" value="@Model.PurchaseRequestDetails[i].SubTotal">@Model.PurchaseRequestDetails[i].SubTotal</td>
+                                                <td class="text-right row-total"><input class="detsubtotal" asp-for="@Model.PurchaseRequestDetails[i].SubTotal" type="hidden" value="@Model.PurchaseRequestDetails[i].SubTotal">@Model.PurchaseRequestDetails[i].SubTotal.ToString("C0", new System.Globalization.CultureInfo("id-ID"))</td>
                                             </tr>
                                         }
                                     </tbody>
@@ -119,7 +119,7 @@
                                             <th colspan="5" class="text-right">Total Qty</th>
                                             <td id="producttotalqty" class="text-left productTotalQty">@Model.QtyTotal</td>
                                             <th colspan="2" class="text-right">Grand Total</th>
-                                            <td id="productgrandtotal" class="text-right productGrandTotal">@Math.Truncate(@Model.GrandTotal)</td>
+                                            <td id="productgrandtotal" class="text-right productGrandTotal">@Math.Truncate(@Model.GrandTotal).ToString("C0", new System.Globalization.CultureInfo("id-ID"))</td>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -133,23 +133,27 @@
                             {
                                 <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold" id="btnapprove" value="Approve"><div style="color:#ffffff">Approve</div></button>
                                 <button type="submit" class="btn btn-primary bg-danger float-left fw-bold" id="btnreject" value="Reject"><div style="color:#ffffff">Reject</div></button>
-                                <a class="btn btn-default" asp-action="Index" asp-controller="Approval" asp-area="Order" id="btnbatal">Cancel</a>
+                                @*<a class="btn btn-default" asp-action="Index" asp-controller="Approval" asp-area="Order" id="btnbatal">Cancel</a>*@
+                                <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "Approval", new { area = "Order" })">Cancel</div>
                             }
                             else if (Model.ApprovalStatusUser == "User2" && Model.Status == "User1Approve" && Model.UserApprove == User.Identity.Name)
                             {
                                 <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold" id="btnapprove" value="Approve"><div style="color:#ffffff">Approve</div></button>
                                 <button type="submit" class="btn btn-primary bg-danger float-left fw-bold" id="btnreject" value="Reject"><div style="color:#ffffff">Reject</div></button>
-                                <a class="btn btn-default" asp-action="Index" asp-controller="Approval" asp-area="Order" id="btnbatal">Cancel</a>
+                                @*<a class="btn btn-default" asp-action="Index" asp-controller="Approval" asp-area="Order" id="btnbatal">Cancel</a>*@
+                                <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "Approval", new { area = "Order" })">Cancel</div>
                             }
                             else if (Model.ApprovalStatusUser == "User3" && Model.Status == "User2Approve" && Model.UserApprove == User.Identity.Name)
                             {
                                 <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold" id="btnapprove" value="Approve"><div style="color:#ffffff">Approve</div></button>
                                 <button type="submit" class="btn btn-primary bg-danger float-left fw-bold" id="btnreject" value="Reject"><div style="color:#ffffff">Reject</div></button>
-                                <a class="btn btn-default" asp-action="Index" asp-controller="Approval" asp-area="Order" id="btnbatal">Cancel</a>
+                                @*<a class="btn btn-default" asp-action="Index" asp-controller="Approval" asp-area="Order" id="btnbatal">Cancel</a>*@
+                                <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "Approval", new { area = "Order" })">Cancel</div>
                             }
                             else
                             {
-                                <a class="btn btn-default" asp-action="Index" asp-controller="Approval" asp-area="Order" id="btnbatal">Cancel</a>
+                                @*<a class="btn btn-default" asp-action="Index" asp-controller="Approval" asp-area="Order" id="btnbatal">Cancel</a>*@
+                                <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "Approval", new { area = "Order" })">Cancel</div>
                             }
                         </div>
                     </div>

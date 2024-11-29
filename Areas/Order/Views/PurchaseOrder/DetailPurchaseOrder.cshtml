@@ -156,9 +156,9 @@
                                             <td class="text-left"><input class="detSupplier" asp-for="@Model.PurchaseOrderDetails[i].Supplier" type="hidden" value="@Model.PurchaseOrderDetails[i].Supplier">@Model.PurchaseOrderDetails[i].Supplier</td>
                                             <td class="text-left"><input class="detMeasurement" asp-for="@Model.PurchaseOrderDetails[i].Measurement" type="hidden" value="@Model.PurchaseOrderDetails[i].Measurement">@Model.PurchaseOrderDetails[i].Measurement</td>
                                             <td class="text-center row-qty"><input class="detQty" asp-for="@Model.PurchaseOrderDetails[i].Qty" type="hidden" value="@Model.PurchaseOrderDetails[i].Qty">@Model.PurchaseOrderDetails[i].Qty</td>
-                                            <td class="text-right"><input class="detPrice" asp-for="@Model.PurchaseOrderDetails[i].Price" type="hidden" value="@Model.PurchaseOrderDetails[i].Price">@Model.PurchaseOrderDetails[i].Price</td>
+                                            <td class="text-right"><input class="detPrice" asp-for="@Model.PurchaseOrderDetails[i].Price" type="hidden" value="@Model.PurchaseOrderDetails[i].Price">@Model.PurchaseOrderDetails[i].Price.ToString("C0", new System.Globalization.CultureInfo("id-ID"))</td>
                                             <td class="text-right"><input class="detDiscount" asp-for="@Model.PurchaseOrderDetails[i].Discount" type="hidden" value="@Model.PurchaseOrderDetails[i].Discount">@Model.PurchaseOrderDetails[i].Discount</td>
-                                            <td class="text-right row-total"><input class="detSubTotal" asp-for="@Model.PurchaseOrderDetails[i].SubTotal" type="hidden" value="@Model.PurchaseOrderDetails[i].SubTotal">@Model.PurchaseOrderDetails[i].SubTotal</td>
+                                            <td class="text-right row-total"><input class="detSubTotal" asp-for="@Model.PurchaseOrderDetails[i].SubTotal" type="hidden" value="@Model.PurchaseOrderDetails[i].SubTotal">@Model.PurchaseOrderDetails[i].SubTotal.ToString("C0", new System.Globalization.CultureInfo("id-ID"))</td>
                                         </tr>
                                     }
                                 </tbody>
@@ -167,7 +167,7 @@
                                         <th colspan="5" class="text-right">Total Qty</th>
                                         <td id="producttotalqty" class="text-center productTotalQty">@Model.QtyTotal</td>
                                         <th colspan="2" class="text-right">Grand Total</th>
-                                        <td id="productgrandtotal" class="text-right productGrandTotal">@Math.Truncate(@Model.GrandTotal)</td>
+                                        <td id="productgrandtotal" class="text-right productGrandTotal">@Math.Truncate(@Model.GrandTotal).ToString("C0", new System.Globalization.CultureInfo("id-ID"))</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -179,7 +179,8 @@
                 <div class="card card-orange">
                     <div class="card-body">
                         <a class="btn bg-gray" asp-action="PrintPurchaseOrder" asp-controller="PurchaseOrder" asp-area="Order" asp-route-id="@Model.PurchaseOrderId"><i class="far fa-file-alt" style="color:white"></i> Save As PDF</a>                        
-                        <a class="btn btn-default" asp-action="Index" asp-controller="PurchaseOrder">Cancel</a>
+                        @*<a class="btn btn-default" asp-action="Index" asp-controller="PurchaseOrder">Cancel</a>*@
+                        <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "PurchaseOrder", new { area = "Order" })">Cancel</div>
                     </div>
                 </div>
                 <!-- /.end button footer -->

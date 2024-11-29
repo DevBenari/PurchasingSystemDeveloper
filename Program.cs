@@ -1,15 +1,12 @@
 using FastReport.Data;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using PurchasingSystemDeveloper.Areas.MasterData.Repositories;
-using PurchasingSystemDeveloper.Areas.MasterData.Services;
 using PurchasingSystemDeveloper.Areas.Order.Repositories;
 using PurchasingSystemDeveloper.Areas.Transaction.Repositories;
 using PurchasingSystemDeveloper.Areas.Warehouse.Repositories;
@@ -17,9 +14,15 @@ using PurchasingSystemDeveloper.Data;
 using PurchasingSystemDeveloper.Hubs;
 using PurchasingSystemDeveloper.Models;
 using PurchasingSystemDeveloper.Repositories;
-using System.Text;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var cultureInfo = new CultureInfo("id-ID");
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
+builder.Services.AddSingleton<UrlMappingService>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -90,8 +93,6 @@ builder.Services.AddScoped<IDepartmentRepository>();
 builder.Services.AddScoped<IPositionRepository>();
 builder.Services.AddScoped<IGroupRoleRepository>();
 builder.Services.AddSignalR();
-
-builder.Services.AddScoped<ApiServices>();
 #endregion
 
 #region Areas Order
@@ -118,6 +119,11 @@ builder.Services.AddScoped<IApprovalUnitRequestRepository>();
 FastReport.Utils.RegisteredObjects.AddConnection(typeof(MsSqlDataConnection));
 var app = builder.Build();
 
+builder.Services.AddDataProtection();
+
+// Tambahkan middleware untuk dekripsi URL
+app.UseMiddleware<DecryptUrlMiddleware>();
+
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
@@ -127,7 +133,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 //Tambahan Baru
-app.UseRouting(); //
 app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
@@ -209,6 +214,7 @@ app.Use(async (context, next) =>
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.UseRouting();
 
 app.UseFastReport();
 

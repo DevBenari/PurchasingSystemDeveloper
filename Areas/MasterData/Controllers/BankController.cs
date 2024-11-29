@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,9 @@ using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
 using PurchasingSystemDeveloper.Data;
 using PurchasingSystemDeveloper.Models;
 using PurchasingSystemDeveloper.Repositories;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Text;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
@@ -22,6 +26,8 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
         private readonly IUserActiveRepository _userActiveRepository;
         private readonly IBankRepository _bankRepository;
 
+        private readonly IDataProtector _protector;
+        private readonly UrlMappingService _urlMappingService;
         private readonly IHostingEnvironment _hostingEnvironment;
 
         public BankController(
@@ -31,6 +37,8 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             IBankRepository BankRepository,
             IUserActiveRepository userActiveRepository,
 
+            IDataProtectionProvider provider,
+            UrlMappingService urlMappingService,
             IHostingEnvironment hostingEnvironment
         )
         {
@@ -40,74 +48,116 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             _bankRepository = BankRepository;
             _userActiveRepository = userActiveRepository;
 
+            _protector = provider.CreateProtector("UrlProtector");
+            _urlMappingService = urlMappingService;
             _hostingEnvironment = hostingEnvironment;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Index()
+        //[Authorize(Roles = "IndexBank")]
+        public IActionResult RedirectToIndex(string filterOptions = "", string searchTerm = "", DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, int page = 1, int pageSize = 10)
         {
-            ViewBag.Active = "MasterData";
-            var data = _bankRepository.GetAllBank();
-            return View(data);
+            try
+            {
+                // Format tanggal tanpa waktu
+                string startDateString = startDate.HasValue ? startDate.Value.ToString("yyyy-MM-dd") : "";
+                string endDateString = endDate.HasValue ? endDate.Value.ToString("yyyy-MM-dd") : "";
+
+                // Bangun originalPath dengan format tanggal ISO 8601
+                string originalPath = $"Page:MasterData/Bank/Index?filterOptions={filterOptions}&searchTerm={searchTerm}&startDate={startDateString}&endDate={endDateString}&page={page}&pageSize={pageSize}";
+                string encryptedPath = _protector.Protect(originalPath);
+
+                // Hash GUID-like code (SHA256 truncated to 36 characters)
+                string guidLikeCode = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(encryptedPath)))
+                    .Replace('+', '-')
+                    .Replace('/', '_')
+                    .Substring(0, 36);
+
+                // Simpan mapping GUID-like code ke encryptedPath di penyimpanan sementara (misalnya, cache)
+                _urlMappingService.InMemoryMapping[guidLikeCode] = encryptedPath;
+
+                return Redirect("/" + guidLikeCode);
+            }
+            catch
+            {
+                // Jika enkripsi gagal, kembalikan view
+                return Redirect(Request.Path);
+            }            
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Index(DateTime? tglAwalPencarian, DateTime? tglAkhirPencarian, string filterOptions)
+        [HttpGet]
+        //[Authorize(Roles = "IndexBank")]
+        public async Task<IActionResult> Index(string filterOptions = "", string searchTerm = "", DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, int page = 1, int pageSize = 10)
         {
             ViewBag.Active = "MasterData";
-
-            var data = _bankRepository.GetAllBank();
-
-            if (tglAwalPencarian.HasValue && tglAkhirPencarian.HasValue)
-            {
-                data = data.Where(u => u.CreateDateTime.Date >= tglAwalPencarian.Value.Date &&
-                                       u.CreateDateTime.Date <= tglAkhirPencarian.Value.Date);
-            }
-            else if (!string.IsNullOrEmpty(filterOptions))
-            {
-                var today = DateTime.Today;
-                switch (filterOptions)
-                {
-                    case "Today":
-                        data = data.Where(u => u.CreateDateTime.Date == today);
-                        break;
-                    case "Last Day":
-                        data = data.Where(x => x.CreateDateTime.Date == today.AddDays(-1));
-                        break;
-
-                    case "Last 7 Days":
-                        var last7Days = today.AddDays(-7);
-                        data = data.Where(x => x.CreateDateTime.Date >= last7Days && x.CreateDateTime.Date <= today);
-                        break;
-
-                    case "Last 30 Days":
-                        var last30Days = today.AddDays(-30);
-                        data = data.Where(x => x.CreateDateTime.Date >= last30Days && x.CreateDateTime.Date <= today);
-                        break;
-
-                    case "This Month":
-                        var firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
-                        data = data.Where(x => x.CreateDateTime.Date >= firstDayOfMonth && x.CreateDateTime.Date <= today);
-                        break;
-
-                    case "Last Month":
-                        var firstDayOfLastMonth = today.AddMonths(-1).Date.AddDays(-(today.Day - 1));
-                        var lastDayOfLastMonth = today.Date.AddDays(-today.Day);
-                        data = data.Where(x => x.CreateDateTime.Date >= firstDayOfLastMonth && x.CreateDateTime.Date <= lastDayOfLastMonth);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            ViewBag.tglAwalPencarian = tglAwalPencarian?.ToString("dd MMMM yyyy");
-            ViewBag.tglAkhirPencarian = tglAkhirPencarian?.ToString("dd MMMM yyyy");
+            ViewBag.SearchTerm = searchTerm;
             ViewBag.SelectedFilter = filterOptions;
-            return View(data);
+
+            // Format tanggal untuk input[type="date"]
+            ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
+            ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
+
+            // Format tanggal untuk tampilan (Indonesia)
+            ViewBag.StartDateReadable = startDate?.ToString("dd MMMM yyyy");
+            ViewBag.EndDateReadable = endDate?.ToString("dd MMMM yyyy");
+
+            // Normalisasi tanggal untuk mengabaikan waktu
+            if (startDate.HasValue) startDate = startDate.Value.Date;
+            if (endDate.HasValue) endDate = endDate.Value.Date.AddDays(1).AddTicks(-1); // Sampai akhir hari
+
+            // Tentukan range tanggal berdasarkan filterOptions
+            if (!string.IsNullOrEmpty(filterOptions))
+            {
+                (startDate, endDate) = GetDateRangeHelper.GetDateRange(filterOptions);
+            }
+
+            var data = await _bankRepository.GetAllBankPageSize(searchTerm, page, pageSize, startDate, endDate);
+
+            var model = new Pagination<Bank>
+            {
+                Items = data.banks,
+                TotalCount = data.totalCountBanks,
+                PageSize = pageSize,
+                CurrentPage = page,
+            };
+
+            // Sertakan semua parameter untuk pagination
+            ViewBag.FilterOptions = filterOptions;
+            ViewBag.StartDateParam = startDate?.ToString("yyyy-MM-dd");
+            ViewBag.EndDateParam = endDate?.ToString("yyyy-MM-dd");
+            ViewBag.PageSize = pageSize;
+
+            return View(model);
+        }
+
+        //[Authorize(Roles = "CreateBank")]
+        public IActionResult RedirectToCreate()
+        {
+            try
+            {
+                // Enkripsi path URL untuk "Index"
+                string originalPath = $"Create:MasterData/Bank/CreateBank";
+                string encryptedPath = _protector.Protect(originalPath);
+
+                // Hash GUID-like code (SHA256 truncated to 36 characters)
+                string guidLikeCode = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(encryptedPath)))
+                    .Replace('+', '-')
+                    .Replace('/', '_')
+                    .Substring(0, 36);
+
+                // Simpan mapping GUID-like code ke encryptedPath di penyimpanan sementara (misalnya, cache)
+                _urlMappingService.InMemoryMapping[guidLikeCode] = encryptedPath;
+
+                return Redirect("/" + guidLikeCode);
+            }
+            catch
+            {
+                // Jika enkripsi gagal, kembalikan view
+                return Redirect(Request.Path);
+            }            
         }
 
         [HttpGet]
-        [Authorize(Roles = "CreateBank")]
+        //[Authorize(Roles = "CreateBank")]
         public async Task<ViewResult> CreateBank()
         {
             ViewBag.Active = "MasterData";
@@ -138,6 +188,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
         }
 
         [HttpPost]
+        //[Authorize(Roles = "CreateBank")]
         public async Task<IActionResult> CreateBank(BankViewModel vm)
         {
             var dateNow = DateTimeOffset.Now;
@@ -187,7 +238,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                     {
                         _bankRepository.Tambah(Bank);
                         TempData["SuccessMessage"] = "Name " + vm.BankName + " Saved";
-                        return RedirectToAction("Index", "Bank");
+                        return RedirectToAction("RedirectToIndex", "Bank");
                     }
                     else
                     {
@@ -207,7 +258,35 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             }            
         }
 
+        //[Authorize(Roles = "DetailBank")]
+        public IActionResult RedirectToDetail(Guid Id)
+        {
+            try
+            {
+                // Enkripsi path URL untuk "Index"
+                string originalPath = $"Detail:MasterData/Bank/DetailBank/{Id}";
+                string encryptedPath = _protector.Protect(originalPath);
+
+                // Hash GUID-like code (SHA256 truncated to 36 characters)
+                string guidLikeCode = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(encryptedPath)))
+                    .Replace('+', '-')
+                    .Replace('/', '_')
+                    .Substring(0, 36);
+
+                // Simpan mapping GUID-like code ke encryptedPath di penyimpanan sementara (misalnya, cache)
+                _urlMappingService.InMemoryMapping[guidLikeCode] = encryptedPath;
+
+                return Redirect("/" + guidLikeCode);
+            }
+            catch
+            {
+                // Jika enkripsi gagal, kembalikan view
+                return Redirect(Request.Path);
+            }            
+        }
+        
         [HttpGet]
+        //[Authorize(Roles = "DetailBank")]
         public async Task<IActionResult> DetailBank(Guid Id)
         {
             ViewBag.Active = "MasterData";
@@ -232,6 +311,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
         }
 
         [HttpPost]
+        //[Authorize(Roles = "DetailBank")]
         public async Task<IActionResult> DetailBank(BankViewModel viewModel)
         {
             if (ModelState.IsValid)
@@ -258,7 +338,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                         _applicationDbContext.SaveChanges();
 
                         TempData["SuccessMessage"] = "Name " + viewModel.BankName + " Success Changes";
-                        return RedirectToAction("Index", "Bank");
+                        return RedirectToAction("RedirectToIndex", "Bank");
                     }
                     else
                     {
@@ -278,7 +358,35 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             }
         }
 
+        //[Authorize(Roles = "DeleteBank")]
+        public IActionResult RedirectToDelete(Guid Id)
+        {
+            try
+            {
+                // Enkripsi path URL untuk "Index"
+                string originalPath = $"Delete:MasterData/Bank/DeleteBank/{Id}";
+                string encryptedPath = _protector.Protect(originalPath);
+
+                // Hash GUID-like code (SHA256 truncated to 36 characters)
+                string guidLikeCode = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(encryptedPath)))
+                    .Replace('+', '-')
+                    .Replace('/', '_')
+                    .Substring(0, 36);
+
+                // Simpan mapping GUID-like code ke encryptedPath di penyimpanan sementara (misalnya, cache)
+                _urlMappingService.InMemoryMapping[guidLikeCode] = encryptedPath;
+
+                return Redirect("/" + guidLikeCode);
+            }
+            catch
+            {
+                // Jika enkripsi gagal, kembalikan view
+                return Redirect(Request.Path);
+            }            
+        }
+
         [HttpGet]
+        //[Authorize(Roles = "DeleteBank")]
         public async Task<IActionResult> DeleteBank(Guid Id)
         {
             ViewBag.Active = "MasterData";
@@ -299,6 +407,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
         }
 
         [HttpPost]
+        //[Authorize(Roles = "DeleteBank")]
         public async Task<IActionResult> DeleteBank(BankViewModel vm)
         {
             //Hapus Data Profil
@@ -308,7 +417,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             _applicationDbContext.SaveChanges();
 
             TempData["SuccessMessage"] = "Name " + vm.BankName + " Success Deleted";
-            return RedirectToAction("Index", "Bank");
+            return RedirectToAction("RedirectToIndex", "Bank");
         }
     }
 }

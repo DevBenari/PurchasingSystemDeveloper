@@ -1,5 +1,6 @@
 ﻿@using PurchasingSystemDeveloper.Areas.MasterData.Models;
 @using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
+@using PurchasingSystemDeveloper.Repositories;
 
 @{
     ViewData["Title"] = "Dashboard";
@@ -63,18 +64,18 @@
                     <table id="tblTemplate2" class="table table-hover table-head-fixed text-nowrap">
                         <thead>
                             <tr>
-                                <th>Name</th>
-                                <th>Status</th>
+                                <th class="text-left" style="width: 5%;">Name</th>
+                                <th class="text-left" style="width: 5%;">Status</th>
                             </tr>
                         </thead>
                         <tbody id="show_data">
                             @foreach (var user in Model.UserOnlines)
                             {
                                 <tr>
-                                    <td>@user.NamaUser</td>
+                                    <td class ="text-left">@user.NamaUser</td>
                                     @if (@user.IsOnline == true)
                                     {
-                                        <td><i class='fas fa-circle' style='color:greenyellow'></i> Online</td>
+                                        <td class="text-left"><i class='fas fa-circle' style='color:greenyellow'></i> Online</td>
                                     }
                                 </tr>
                             }
@@ -191,11 +192,35 @@
             </div>
 
             <div class="row">
-                <div class="col-sm-12">
+                <div class="col-sm-6">
                     <div class="card">
                         <div class="card-header bg-indigo">
                             <h3 class="card-title fw-bold" style="color:#ffffff">Stock Monitoring Under Min Stock</h3>
                         </div>
+                        <div class="card-body p-0">
+                            <div class="p-5" id="chartPie"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="card">
+                        <div class="card-header bg-indigo">
+                            <h3 class="card-title fw-bold" style="color:#ffffff">Status Purchase Order</h3>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="p-5" id="chartStatusPie"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            @*<div class="row">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header bg-indigo">
+                            <h3 class="card-title fw-bold" style="color:#ffffff">Stock Monitoring Under Min Stock</h3>
+                        </div>                        
                         <div class="card-body table-responsive p-0">
                             <table id="tblTemplate" class="table table-hover table-head-fixed text-nowrap">
                                 <thead>
@@ -227,19 +252,138 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>*@
         </div>
     </div>    
 </section>
 
 @section Scripts{
     <script src="~/scripts/TableTemplate.js"></script>
-    <script src="~/scripts/TableTemplate2.js"></script>   
+    <script src="~/scripts/TableTemplate2.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
         $(document).ready(function () {
             $('#tblTemplate').DataTable();
         });
     </script>
+
+    <script>
+        $(document).ready(function () {
+            get_monitoring();
+            get_status();
+            $('#table-medicine').DataTable({
+                pageLength: 9 // Menampilkan 10 baris per halaman
+            });
+        });
+
+        function get_monitoring() {
+            $.get('@Url.Action("GetMonitoringProduct")', function (r) {
+                let UnderMinstock = r['warning'];
+                let AboveMinstock = r['save'];
+
+                console.log(UnderMinstock, AboveMinstock);
+
+                var options = {
+                    chart: {
+                        type: 'donut', // Tipe chart donut
+                        height: 455
+                    },
+                    series: [UnderMinstock, AboveMinstock], // Data nilai
+                    labels: ['Dibawah Minimal Stok', 'Diatas Minimal Stok'], // Label kategori
+                    colors: ['#E53D00', '#00E396'],
+                    dataLabels: {
+                        enabled: true, // Aktifkan data labels
+                        style: {
+                            fontSize: '14px', // Ukuran font data labels
+                            fontWeight: 'bold'
+                        },
+                        dropShadow: {
+                            enabled: true // Tambahkan efek bayangan
+                        },
+                        formatter: function (val, opts) {
+                            return opts.w.config.series[opts.seriesIndex]; // Menampilkan nilai asli
+                        }
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function (val) {
+                                return val + " units"; // Menampilkan nilai asli di tooltip
+                            }
+                        }
+                    },
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '65%' // Ukuran lubang tengah
+                            },
+                            dataLabels: {
+                                offset: -10 // Menyesuaikan posisi label agar berada di atas segmen
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'top' // Posisi legend di bawah
+                    }
+                };
+
+                // Inisialisasi dan render chart
+                var chart = new ApexCharts(document.querySelector("#chartPie"), options);
+                chart.render();
+            })
+        }
+
+        function get_status() {
+            $.get('@Url.Action("GetMonitoringStatus")', function (r) {
+                let inorder = r['inorder'];
+                let completed = r['completed'];
+                let cancelled = r['cancelled'];
+
+                var options = {
+                    series: [inorder, completed, cancelled],
+                    labels: ["In Order", "completed", "Cancelled"],
+                    chart: {
+                        height: 455,
+                        type: 'donut',
+                    },
+                    plotOptions: {
+                        pie: {
+                            startAngle: -90,
+                            endAngle: 270
+                        }
+                    },
+                    dataLabels: {
+                        formatter: function (val, opts) {
+                            return opts.w.config.series[opts.seriesIndex]; // Menampilkan nilai asli
+                        }
+                    },
+                    fill: {
+                        type: 'gradient'
+                    },
+                    legend: {
+                        // formatter: function (val, opts) {
+                        //     return val + " - " + opts.w.globals.series[opts.seriesIndex]
+                        // },
+                        position: 'top'
+                    },
+                    responsive: [{
+                        breakpoint: 480,
+                        options: {
+                            chart: {
+                                width: 300
+                            },
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }]
+                };
+
+                var chart = new ApexCharts(document.querySelector("#chartStatusPie"), options);
+                chart.render();
+            })
+        }
+    </script>
+
     <style>
 
         * {

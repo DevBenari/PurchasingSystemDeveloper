@@ -3,6 +3,7 @@ using FastReport.Data;
 using FastReport.Export.PdfSimple;
 using FastReport.Web;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -18,10 +19,13 @@ using PurchasingSystemDeveloper.Areas.Order.ViewModels;
 using PurchasingSystemDeveloper.Areas.Transaction.Repositories;
 using PurchasingSystemDeveloper.Data;
 using PurchasingSystemDeveloper.Models;
+using PurchasingSystemDeveloper.Repositories;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics.Metrics;
 using System.Reflection.Metadata.Ecma335;
+using System.Security.Cryptography;
+using System.Text;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 namespace PurchasingSystemDeveloper.Areas.Order.Controllers
 {
@@ -37,6 +41,9 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
         private readonly IPurchaseRequestRepository _purchaseRequestRepository;
         private readonly IUserActiveRepository _userActiveRepository;
 
+        private readonly IDataProtector _protector;
+        private readonly UrlMappingService _urlMappingService;
+
         public KeyPerformanceIndicatorController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
@@ -44,7 +51,10 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
             IApprovalRepository approvalRepository,
             IPurchaseOrderRepository purchaseOrderRepository,
             IPurchaseRequestRepository purchaseRequestRepository,
-            IUserActiveRepository userActiveRepository
+            IUserActiveRepository userActiveRepository,
+
+            IDataProtectionProvider provider,
+            UrlMappingService urlMappingService
         )
         {
             _userManager = userManager;
@@ -54,12 +64,42 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
             _purchaseOrderRepository = purchaseOrderRepository;
             _purchaseRequestRepository = purchaseRequestRepository;
             _userActiveRepository = userActiveRepository;
+
+            _protector = provider.CreateProtector("UrlProtector");
+            _urlMappingService = urlMappingService;
+        }
+
+        public IActionResult RedirectToIndex()
+        {
+            try
+            {
+                ViewBag.Active = "KeyPerformanceIndikator";
+                string originalPath = $"Page:Order/KeyPerformanceIndicator/Index";
+                string encryptedPath = _protector.Protect(originalPath);
+
+                // Hash GUID-like code (SHA256 truncated to 36 characters)
+                string guidLikeCode = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(encryptedPath)))
+                    .Replace('+', '-')
+                    .Replace('/', '_')
+                    .Substring(0, 36);
+
+                // Simpan mapping GUID-like code ke encryptedPath di penyimpanan sementara (misalnya, cache)
+                _urlMappingService.InMemoryMapping[guidLikeCode] = encryptedPath;
+
+                return Redirect("/" + guidLikeCode);
+            }
+            catch
+            {
+                // Jika enkripsi gagal, kembalikan view
+                return Redirect(Request.Path);
+            }            
         }
 
         [HttpGet]
         public IActionResult Index()
         {
             ViewBag.Active = "KeyPerformanceIndikator";
+
             var data = _purchaseRequestRepository.GetAllPurchaseRequest();
 
             var checkUserLogin = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
@@ -107,6 +147,7 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
         [HttpPost]
         public async Task<IActionResult> PostData(Selected model)
         {
+            ViewBag.Active = "KeyPerformanceIndikator";
             var getUserLogin = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
             var getUserActive = _userActiveRepository.GetAllUser().Where(c => c.UserActiveCode == getUserLogin.KodeUser).FirstOrDefault();
             var user = await _userManager.GetUserAsync(User);
@@ -174,6 +215,7 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
 
         public async Task<IActionResult> KpiJson(Selected model)
         {
+            ViewBag.Active = "KeyPerformanceIndikator";
             var getUserLogin = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
 
             if (getUserLogin.Email == "superadmin@admin.com")

@@ -382,6 +382,16 @@
                                         </div>
                                     </li>
                                 }
+                                
+                                @* if (roles.Contains("ServicesApi"))
+                                {
+                                    <li class="nav-header">Reporting</li>
+                                    <li class="@(ViewBag.Active == "Api" ? "nav-item menu-open active":"")">
+                                        <div class="nav-link cursor-pointer" style="color:#ffffff" is-active-route data-href="@Url.Action("Index", "ServicesApi", new { area = "Api" })">
+                                            <i class="nav-icon fas fa-file-alt" style="color:#FFFFFF"></i> Api
+                                        </div>
+                                    </li>
+                                } *@
                             }
                         }                        
                     </ul>

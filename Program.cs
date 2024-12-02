@@ -1,11 +1,14 @@
 using FastReport.Data;
+using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using PurchasingSystemDeveloper.Areas.MasterData.Repositories;
 using PurchasingSystemDeveloper.Areas.Order.Repositories;
 using PurchasingSystemDeveloper.Areas.Transaction.Repositories;
@@ -15,6 +18,7 @@ using PurchasingSystemDeveloper.Hubs;
 using PurchasingSystemDeveloper.Models;
 using PurchasingSystemDeveloper.Repositories;
 using System.Globalization;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,8 +29,32 @@ CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 builder.Services.AddSingleton<UrlMappingService>();
 
 // Add services to the container.
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add(new IgnoreAntiforgeryTokenAttribute());
+});
 
+// Konfigurasi JWT
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(key)
+    };
+});
 
 //Tambahan Baru
 builder.Services.AddHttpClient();
@@ -59,7 +87,7 @@ builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(30);
     options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;    
+    options.Cookie.IsEssential = true;
 });
 
 //Script Auto Show Login Account First Time
@@ -151,7 +179,7 @@ app.Use(async (context, next) =>
         if (!string.IsNullOrEmpty(username))
         {
             // Middleware Session And Cookie
-            UpdateDataForExpiredSession(username, app, context, returnUrl);            
+            UpdateDataForExpiredSession(username, app, context, returnUrl);
 
             context.Response.Redirect(loginUrl);
             return;
@@ -160,18 +188,18 @@ app.Use(async (context, next) =>
     else
     {
         // Jika session masih aktif, perbarui waktu "LastActivity"
-        context.Session.SetString("LastActivity", DateTimeOffset.Now.ToString());        
+        context.Session.SetString("LastActivity", DateTimeOffset.Now.ToString());
     }
 
     // Periksa apakah pengguna terautentikasi
     if (context.User.Identity?.IsAuthenticated == true)
     {
-        // Coba ambil `LastActivity` dari session
+        // Coba ambil LastActivity dari session
         var lastActivity = context.Session.GetString("LastActivity");
 
         if (lastActivity == null)
         {
-            // Set `LastActivity` pada aktivitas pertama setelah login
+            // Set LastActivity pada aktivitas pertama setelah login
             context.Session.SetString("LastActivity", now.ToString("o"));
         }
         else if (DateTime.TryParse(lastActivity, out var lastActivityTime))
@@ -186,7 +214,7 @@ app.Use(async (context, next) =>
                 context.Response.Headers["X-Session-Time-Remaining"] = timeRemaining.TotalSeconds.ToString();
             }
 
-            // Perbarui `LastActivity` jika session belum habis
+            // Perbarui LastActivity jika session belum habis
             if (timeRemaining.TotalSeconds > 0)
             {
                 context.Session.SetString("LastActivity", now.ToString("o"));
@@ -230,26 +258,6 @@ app.UseEndpoints(endpoints =>
         pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 });
 
-app.MapRazorPages();
-
-using (var scope = app.Services.CreateScope())
-{
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-    //var roles = new[] {
-    //    #region Area Master Data Menu Role Pengguna
-    //    "Role", "IndexRole", "CreateRole", "DetailRole", "DeleteRole",
-    //    #endregion
-        
-    //};
-
-    //foreach (var role in roles)
-    //{
-    //    if (!await roleManager.RoleExistsAsync(role))
-    //        await roleManager.CreateAsync(new IdentityRole(role));
-    //}
-}
-
 app.Run();
 
 void AddScope()
@@ -264,14 +272,14 @@ async void UpdateDataForExpiredSession(string username, WebApplication app, Http
     // Logika update data
     // Tambahkan logika lain sesuai kebutuhan, misalnya memperbarui status user di database
     using (var scope = app.Services.CreateScope())
-    { 
+    {
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var signInManager = scope.ServiceProvider.GetRequiredService<SignInManager<ApplicationUser>>();
 
         //Cari User
         var user = dbContext.Users.FirstOrDefault(u => u.Email == username);
         if (user != null)
-        {            
+        {
             user.IsOnline = false;
             dbContext.SaveChanges();
         }

@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
+using FastReport.Data;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Data.SqlClient;
+using Microsoft.Data.SqlClient.Server;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using PurchasingSystemDeveloper.Areas.MasterData.Models;
@@ -10,7 +13,12 @@ using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
 using PurchasingSystemDeveloper.Data;
 using PurchasingSystemDeveloper.Models;
 using PurchasingSystemDeveloper.Repositories;
+using System.IO.Compression;
 using System.Net.Http;
+using System.Security.Cryptography;
+using System.Text;
+using System.Web.WebPages;
+using System.Windows.Forms;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
@@ -31,7 +39,9 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
         private readonly IDiscountRepository _discountRepository;
         private readonly IWarehouseLocationRepository _warehouseLocationRepository;
         private readonly HttpClient _httpClient;
-
+        
+        private readonly IDataProtector _protector;
+        private readonly UrlMappingService _urlMappingService;
         private readonly IHostingEnvironment _hostingEnvironment;
 
         public ProductController(
@@ -48,6 +58,8 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             IWarehouseLocationRepository warehouseLocationRepository,
             HttpClient httpClient,
 
+            IDataProtectionProvider provider,
+            UrlMappingService urlMappingService,
             IHostingEnvironment hostingEnvironment
         )
         {
@@ -63,72 +75,110 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             _discountRepository = discountRepository;
             _warehouseLocationRepository = warehouseLocationRepository;
             _httpClient = httpClient;
-
+            
+            _protector = provider.CreateProtector("UrlProtector");
+            _urlMappingService = urlMappingService;
             _hostingEnvironment = hostingEnvironment;
+        }
+        
+        public IActionResult RedirectToIndex(string filterOptions = "", string searchTerm = "", DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, int page = 1, int pageSize = 10)
+        {
+            try
+            {
+                // Format tanggal tanpa waktu
+                string startDateString = startDate.HasValue ? startDate.Value.ToString("yyyy-MM-dd") : "";
+                string endDateString = endDate.HasValue ? endDate.Value.ToString("yyyy-MM-dd") : "";
+
+                // Bangun originalPath dengan format tanggal ISO 8601
+                string originalPath = $"Page:MasterData/Product/Index?filterOptions={filterOptions}&searchTerm={searchTerm}&startDate={startDateString}&endDate={endDateString}&page={page}&pageSize={pageSize}";
+                string encryptedPath = _protector.Protect(originalPath);
+
+                // Hash GUID-like code (SHA256 truncated to 36 characters)
+                string guidLikeCode = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(encryptedPath)))
+                    .Replace('+', '-')
+                    .Replace('/', '_')
+                    .Substring(0, 36);
+
+                // Simpan mapping GUID-like code ke encryptedPath di penyimpanan sementara (misalnya, cache)
+                _urlMappingService.InMemoryMapping[guidLikeCode] = encryptedPath;
+
+                return Redirect("/" + guidLikeCode);
+            }
+            catch
+            {
+                // Jika enkripsi gagal, kembalikan view
+                return Redirect(Request.Path);
+            }            
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
-        {
+        public async Task<IActionResult> Index(string filterOptions = "", string searchTerm = "", DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, int page = 1, int pageSize = 10)
+        {            
             ViewBag.Active = "MasterData";
-            var data = _productRepository.GetAllProduct();
-            return View(data);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Index(DateTime? tglAwalPencarian, DateTime? tglAkhirPencarian, string filterOptions)
-        {
-            ViewBag.Active = "MasterData";
-
-            var data = _productRepository.GetAllProduct();
-
-            if(tglAwalPencarian.HasValue && tglAkhirPencarian.HasValue)
-            {
-                data = data.Where(u => u.CreateDateTime.Date >= tglAwalPencarian.Value.Date &&
-                                       u.CreateDateTime.Date <= tglAkhirPencarian.Value.Date);
-            }
-            else if (!string.IsNullOrEmpty(filterOptions))
-            {
-                var today = DateTime.Today;
-                switch (filterOptions)
-                {
-                    case "Today":
-                        data = data.Where(u => u.CreateDateTime.Date == today);
-                        break;
-                    case "Last Day":
-                        data = data.Where(x => x.CreateDateTime.Date == today.AddDays(-1));
-                        break;
-
-                    case "Last 7 Days":
-                        var last7Days = today.AddDays(-7);
-                        data = data.Where(x => x.CreateDateTime.Date >= last7Days && x.CreateDateTime.Date <= today);
-                        break;
-
-                    case "Last 30 Days":
-                        var last30Days = today.AddDays(-30);
-                        data = data.Where(x => x.CreateDateTime.Date >= last30Days && x.CreateDateTime.Date <= today);
-                        break;
-
-                    case "This Month":
-                        var firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
-                        data = data.Where(x => x.CreateDateTime.Date >= firstDayOfMonth && x.CreateDateTime.Date <= today);
-                        break;
-
-                    case "Last Month":
-                        var firstDayOfLastMonth = today.AddMonths(-1).Date.AddDays(-(today.Day - 1));
-                        var lastDayOfLastMonth = today.Date.AddDays(-today.Day);
-                        data = data.Where(x => x.CreateDateTime.Date >= firstDayOfLastMonth && x.CreateDateTime.Date <= lastDayOfLastMonth);
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            ViewBag.tglAwalPencarian = tglAwalPencarian?.ToString("dd MMMM yyyy");
-            ViewBag.tglAkhirPencarian = tglAkhirPencarian?.ToString("dd MMMM yyyy");
+            ViewBag.SearchTerm = searchTerm;
             ViewBag.SelectedFilter = filterOptions;
 
-            return View(data);
+            // Format tanggal untuk input[type="date"]
+            ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
+            ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
+
+            // Format tanggal untuk tampilan (Indonesia)
+            ViewBag.StartDateReadable = startDate?.ToString("dd MMMM yyyy");
+            ViewBag.EndDateReadable = endDate?.ToString("dd MMMM yyyy");
+
+            // Normalisasi tanggal untuk mengabaikan waktu
+            if (startDate.HasValue) startDate = startDate.Value.Date;
+            if (endDate.HasValue) endDate = endDate.Value.Date.AddDays(1).AddTicks(-1); // Sampai akhir hari
+
+            // Tentukan range tanggal berdasarkan filterOptions
+            if (!string.IsNullOrEmpty(filterOptions))
+            {
+                (startDate, endDate) = GetDateRangeHelper.GetDateRange(filterOptions);
+            }
+
+            var data = await _productRepository.GetAllProductPageSize(searchTerm, page, pageSize, startDate, endDate);
+
+            var model = new Pagination<Product>
+            {
+                Items = data.products,
+                TotalCount = data.totalCountProducts,
+                PageSize = pageSize,
+                CurrentPage = page,
+            };
+
+            // Sertakan semua parameter untuk pagination
+            ViewBag.FilterOptions = filterOptions;
+            ViewBag.StartDateParam = startDate?.ToString("yyyy-MM-dd");
+            ViewBag.EndDateParam = endDate?.ToString("yyyy-MM-dd");
+            ViewBag.PageSize = pageSize;
+
+            return View(model);
+        }
+             
+        public IActionResult RedirectToCreate()
+        {
+            try
+            {
+                // Enkripsi path URL untuk "Index"
+                string originalPath = $"Create:MasterData/Product/CreateProduct";
+                string encryptedPath = _protector.Protect(originalPath);
+
+                // Hash GUID-like code (SHA256 truncated to 36 characters)
+                string guidLikeCode = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(encryptedPath)))
+                    .Replace('+', '-')
+                    .Replace('/', '_')
+                    .Substring(0, 36);
+
+                // Simpan mapping GUID-like code ke encryptedPath di penyimpanan sementara (misalnya, cache)
+                _urlMappingService.InMemoryMapping[guidLikeCode] = encryptedPath;
+
+                return Redirect("/" + guidLikeCode);
+            }
+            catch
+            {
+                // Jika enkripsi gagal, kembalikan view
+                return Redirect(Request.Path);
+            }            
         }
 
         [HttpGet]
@@ -268,6 +318,32 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             }                       
         }
 
+        public IActionResult RedirectToDetail(Guid Id)
+        {
+            try
+            {
+                // Enkripsi path URL untuk "Index"
+                string originalPath = $"Detail:MasterData/Product/DetailProduct/{Id}";
+                string encryptedPath = _protector.Protect(originalPath);
+
+                // Hash GUID-like code (SHA256 truncated to 36 characters)
+                string guidLikeCode = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(encryptedPath)))
+                    .Replace('+', '-')
+                    .Replace('/', '_')
+                    .Substring(0, 36);
+
+                // Simpan mapping GUID-like code ke encryptedPath di penyimpanan sementara (misalnya, cache)
+                _urlMappingService.InMemoryMapping[guidLikeCode] = encryptedPath;
+
+                return Redirect("/" + guidLikeCode);
+            }
+            catch
+            {
+                // Jika enkripsi gagal, kembalikan view
+                return Redirect(Request.Path);
+            }            
+        }
+
         [HttpGet]
         public async Task<IActionResult> DetailProduct(Guid Id)
         {
@@ -380,6 +456,32 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             ViewBag.Discount = new SelectList(await _discountRepository.GetDiscounts(), "DiscountId", "DiscountValue", SortOrder.Ascending);
             ViewBag.Warehouse = new SelectList(await _warehouseLocationRepository.GetWarehouseLocations(), "WarehouseLocationId", "WarehouseLocationName", SortOrder.Ascending);
             return View(viewModel);
+        }
+
+        public IActionResult RedirectToDelete(Guid Id)
+        {
+            try
+            {
+                // Enkripsi path URL untuk "Index"
+                string originalPath = $"Delete:MasterData/Product/DeleteProduct/{Id}";
+                string encryptedPath = _protector.Protect(originalPath);
+
+                // Hash GUID-like code (SHA256 truncated to 36 characters)
+                string guidLikeCode = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(encryptedPath)))
+                    .Replace('+', '-')
+                    .Replace('/', '_')
+                    .Substring(0, 36);
+
+                // Simpan mapping GUID-like code ke encryptedPath di penyimpanan sementara (misalnya, cache)
+                _urlMappingService.InMemoryMapping[guidLikeCode] = encryptedPath;
+
+                return Redirect("/" + guidLikeCode);
+            }
+            catch
+            {
+                // Jika enkripsi gagal, kembalikan view
+                return Redirect(Request.Path);
+            }            
         }
 
         [HttpGet]

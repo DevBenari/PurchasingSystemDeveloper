@@ -66,6 +66,40 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Repositories
                 .AsNoTracking();
         }
 
+        public async Task<(IEnumerable<WarehouseLocation> warehouseLocations, int totalCountWarehouseLocations)> GetAllWarehouseLocationPageSize(string searchTerm, int page, int pageSize, DateTimeOffset? startDate, DateTimeOffset? endDate)
+        {
+            var query = _context.WarehouseLocations
+                .OrderByDescending(d => d.CreateDateTime)
+                .Include(u => u.WarehouseManager)
+                .AsQueryable();
+
+            // Filter berdasarkan searchTerm jika ada
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(p => p.WarehouseLocationCode.Contains(searchTerm) || p.WarehouseLocationName.Contains(searchTerm) || p.WarehouseManager.FullName.Contains(searchTerm));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime <= endDate.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            // Ambil data paginated
+            var warehouseLocations = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (warehouseLocations, totalCount);
+        }
+
         public WarehouseLocation Update(WarehouseLocation update)
         {
             var WarehouseLocation = _context.WarehouseLocations.Attach(update);

@@ -1,0 +1,40 @@
+﻿/* General button styles */
+.btn-orange {
+    background-color: #ff6600;
+    border: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+    .btn-orange:hover {
+        background-color: #e65c00;
+        transform: scale(1.05);
+    }
+
+/* Dropdown menu animation */
+.dropdown-menu {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Active link styling */
+.menu-link.active {
+    background-color: #ff6600;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.menu-link:hover {
+    background-color: #e65c00;
+    color: #ffffff;
+}

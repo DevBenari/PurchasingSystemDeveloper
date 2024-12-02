@@ -2199,6 +2199,18 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.Property<DateTimeOffset>("DeleteDateTime")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("DeliveryDate")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("DeliveryServiceName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InvoiceNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("IsCancel")
                         .HasColumnType("bit");
 
@@ -2219,6 +2231,10 @@ namespace PurchasingSystemDeveloper.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ShippingNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -2228,6 +2244,10 @@ namespace PurchasingSystemDeveloper.Migrations
 
                     b.Property<DateTimeOffset>("UpdateDateTime")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("WaybillNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ReceiveOrderId");
 
@@ -2243,6 +2263,10 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.Property<Guid>("ReceivedOrderDetailId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Condition")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CreateBy")
                         .HasColumnType("uniqueidentifier");

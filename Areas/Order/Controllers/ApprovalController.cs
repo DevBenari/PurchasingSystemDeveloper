@@ -1,4 +1,5 @@
 ﻿﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -15,6 +16,8 @@ using PurchasingSystemDeveloper.Data;
 using PurchasingSystemDeveloper.Hubs;
 using PurchasingSystemDeveloper.Models;
 using PurchasingSystemDeveloper.Repositories;
+using System.Security.Cryptography;
+using System.Text;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace PurchasingSystemDeveloper.Areas.Order.Controllers
@@ -34,6 +37,8 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
         private readonly IPurchaseOrderRepository _purchaseOrderRepository;
         private readonly IHubContext<ChatHub> _hubContext;
 
+        private readonly IDataProtector _protector;
+        private readonly UrlMappingService _urlMappingService;
         private readonly IHostingEnvironment _hostingEnvironment;
 
         public ApprovalController(
@@ -48,6 +53,8 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
             IPurchaseOrderRepository purchaseOrderRepository,
             IHubContext<ChatHub> hubContext,
 
+            IDataProtectionProvider provider,
+            UrlMappingService urlMappingService,
             IHostingEnvironment hostingEnvironment
         )
         {
@@ -62,35 +69,113 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
             _purchaseOrderRepository = purchaseOrderRepository;
             _hubContext = hubContext;
 
+            _protector = provider.CreateProtector("UrlProtector");
+            _urlMappingService = urlMappingService;
             _hostingEnvironment = hostingEnvironment;
         }
 
+        public IActionResult RedirectToIndex(string filterOptions = "", string searchTerm = "", DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, int page = 1, int pageSize = 10)
+        {
+            try
+            {
+                // Format tanggal tanpa waktu
+                string startDateString = startDate.HasValue ? startDate.Value.ToString("yyyy-MM-dd") : "";
+                string endDateString = endDate.HasValue ? endDate.Value.ToString("yyyy-MM-dd") : "";
+
+                // Bangun originalPath dengan format tanggal ISO 8601
+                string originalPath = $"Page:Order/Approval/Index?filterOptions={filterOptions}&searchTerm={searchTerm}&startDate={startDateString}&endDate={endDateString}&page={page}&pageSize={pageSize}";
+                string encryptedPath = _protector.Protect(originalPath);
+
+                // Hash GUID-like code (SHA256 truncated to 36 characters)
+                string guidLikeCode = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(encryptedPath)))
+                    .Replace('+', '-')
+                    .Replace('/', '_')
+                    .Substring(0, 36);
+
+                // Simpan mapping GUID-like code ke encryptedPath di penyimpanan sementara (misalnya, cache)
+                _urlMappingService.InMemoryMapping[guidLikeCode] = encryptedPath;
+
+                return Redirect("/" + guidLikeCode);
+            }
+            catch
+            {
+                // Jika enkripsi gagal, kembalikan view
+                return Redirect(Request.Path);
+            }            
+        }
+
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string filterOptions = "", string searchTerm = "", DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, int page = 1, int pageSize = 10)
         {
             ViewBag.Active = "Approval";
+            ViewBag.SearchTerm = searchTerm;
+            ViewBag.SelectedFilter = filterOptions;
+
+            // Format tanggal untuk input[type="date"]
+            ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
+            ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
+
+            // Format tanggal untuk tampilan (Indonesia)
+            ViewBag.StartDateReadable = startDate?.ToString("dd MMMM yyyy");
+            ViewBag.EndDateReadable = endDate?.ToString("dd MMMM yyyy");
+
+            // Normalisasi tanggal untuk mengabaikan waktu
+            if (startDate.HasValue) startDate = startDate.Value.Date;
+            if (endDate.HasValue) endDate = endDate.Value.Date.AddDays(1).AddTicks(-1); // Sampai akhir hari
+
+            // Tentukan range tanggal berdasarkan filterOptions
+            if (!string.IsNullOrEmpty(filterOptions))
+            {
+                (startDate, endDate) = GetDateRangeHelper.GetDateRange(filterOptions);
+            }
 
             var getUserLogin = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
             
             if (getUserLogin.Email == "superadmin@admin.com")
             {
-                var data = _approvalRepository.GetAllApproval();
+                var data = await _approvalRepository.GetAllApprovalPageSize(searchTerm, page, pageSize, startDate, endDate);
 
-                foreach (var item in data)
+                foreach (var item in data.approvals)
                 {
-                    var remainingDay = DateTimeOffset.Now.Date - item.CreateDateTime.Date;
-                    var updateData = _approvalRepository.GetAllApproval().Where(u => u.ApprovalId == item.ApprovalId).FirstOrDefault();
-
-                    if (updateData.RemainingDay != 0)
+                    if (item.Status == "Approve")
                     {
-                        updateData.RemainingDay = item.ExpiredDay - remainingDay.Days;
+                        var updateData = _approvalRepository.GetAllApproval().Where(u => u.ApprovalId == item.ApprovalId).FirstOrDefault();
+
+                        updateData.RemainingDay = 0;
 
                         _applicationDbContext.Approvals.Update(updateData);
                         _applicationDbContext.SaveChanges();
                     }
+                    else
+                    {
+                        var remainingDay = DateTimeOffset.Now.Date - item.CreateDateTime.Date;
+                        var updateData = _approvalRepository.GetAllApproval().Where(u => u.ApprovalId == item.ApprovalId).FirstOrDefault();
+
+                        if (updateData.RemainingDay != 0)
+                        {
+                            updateData.RemainingDay = item.ExpiredDay - remainingDay.Days;
+
+                            _applicationDbContext.Approvals.Update(updateData);
+                            _applicationDbContext.SaveChanges();
+                        }
+                    }                        
                 }
 
-                return View(data);
+                var model = new Pagination<Approval>
+                {
+                    Items = data.approvals,
+                    TotalCount = data.totalCountApprovals,
+                    PageSize = pageSize,
+                    CurrentPage = page,
+                };
+
+                // Sertakan semua parameter untuk pagination
+                ViewBag.FilterOptions = filterOptions;
+                ViewBag.StartDateParam = startDate?.ToString("yyyy-MM-dd");
+                ViewBag.EndDateParam = endDate?.ToString("yyyy-MM-dd");
+                ViewBag.PageSize = pageSize;
+
+                return View(model);
             }
             else
             {
@@ -115,21 +200,49 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
                     itemList.AddRange(getUser2Approve);
                     itemList.AddRange(getUser3Approve);
 
+                    //Cek apakah sudah di Approve? Jika belum jalankan Remaining Day, jika sudah lewatkan Remaining Day
+
                     foreach (var item in itemList)
                     {
-                        var remainingDay = DateTimeOffset.Now.Date - item.CreateDateTime.Date;
-                        var updateData = _approvalRepository.GetAllApproval().Where(u => u.ApprovalId == item.ApprovalId).FirstOrDefault();
-
-                        if (updateData.RemainingDay != 0)
+                        if (item.Status == "Approve")
                         {
-                            updateData.RemainingDay = item.ExpiredDay - remainingDay.Days;
+                            var updateData = _approvalRepository.GetAllApproval().Where(u => u.ApprovalId == item.ApprovalId).FirstOrDefault();
+
+                            updateData.RemainingDay = 0;
 
                             _applicationDbContext.Approvals.Update(updateData);
                             _applicationDbContext.SaveChanges();
                         }
+                        else
+                        {
+                            var remainingDay = DateTimeOffset.Now.Date - item.CreateDateTime.Date;
+                            var updateData = _approvalRepository.GetAllApproval().Where(u => u.ApprovalId == item.ApprovalId).FirstOrDefault();
+
+                            if (updateData.RemainingDay != 0)
+                            {
+                                updateData.RemainingDay = item.ExpiredDay - remainingDay.Days;
+
+                                _applicationDbContext.Approvals.Update(updateData);
+                                _applicationDbContext.SaveChanges();
+                            }
+                        }                        
                     }
 
-                    return View(itemList);
+                    var model = new Pagination<Approval>
+                    {
+                        Items = itemList,
+                        TotalCount = itemList.Count,
+                        PageSize = pageSize,
+                        CurrentPage = page,
+                    };
+
+                    // Sertakan semua parameter untuk pagination
+                    ViewBag.FilterOptions = filterOptions;
+                    ViewBag.StartDateParam = startDate?.ToString("yyyy-MM-dd");
+                    ViewBag.EndDateParam = endDate?.ToString("yyyy-MM-dd");
+                    ViewBag.PageSize = pageSize;
+
+                    return View(model);
                 }
                 else if (getUser1 != null && getUser2 != null)
                 {
@@ -141,19 +254,45 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
 
                     foreach (var item in itemList)
                     {
-                        var remainingDay = DateTimeOffset.Now.Date - item.CreateDateTime.Date;
-                        var updateData = _approvalRepository.GetAllApproval().Where(u => u.ApprovalId == item.ApprovalId).FirstOrDefault();
-
-                        if (updateData.RemainingDay != 0)
+                        if (item.Status == "Approve")
                         {
-                            updateData.RemainingDay = item.ExpiredDay - remainingDay.Days;
+                            var updateData = _approvalRepository.GetAllApproval().Where(u => u.ApprovalId == item.ApprovalId).FirstOrDefault();
+
+                            updateData.RemainingDay = 0;
 
                             _applicationDbContext.Approvals.Update(updateData);
                             _applicationDbContext.SaveChanges();
                         }
+                        else
+                        {
+                            var remainingDay = DateTimeOffset.Now.Date - item.CreateDateTime.Date;
+                            var updateData = _approvalRepository.GetAllApproval().Where(u => u.ApprovalId == item.ApprovalId).FirstOrDefault();
+
+                            if (updateData.RemainingDay != 0)
+                            {
+                                updateData.RemainingDay = item.ExpiredDay - remainingDay.Days;
+
+                                _applicationDbContext.Approvals.Update(updateData);
+                                _applicationDbContext.SaveChanges();
+                            }
+                        }                            
                     }
 
-                    return View(itemList);
+                    var model = new Pagination<Approval>
+                    {
+                        Items = itemList,
+                        TotalCount = itemList.Count,
+                        PageSize = pageSize,
+                        CurrentPage = page,
+                    };
+
+                    // Sertakan semua parameter untuk pagination
+                    ViewBag.FilterOptions = filterOptions;
+                    ViewBag.StartDateParam = startDate?.ToString("yyyy-MM-dd");
+                    ViewBag.EndDateParam = endDate?.ToString("yyyy-MM-dd");
+                    ViewBag.PageSize = pageSize;
+
+                    return View(model);
                 }
                 else if (getUser1 != null)
                 {
@@ -163,35 +302,76 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
 
                     foreach (var item in itemList)
                     {
-                        var remainingDay = DateTimeOffset.Now.Date - item.CreateDateTime.Date;
-                        var updateData = _approvalRepository.GetAllApproval().Where(u => u.ApprovalId == item.ApprovalId).FirstOrDefault();
-
-                        if (updateData.RemainingDay != 0)
+                        if (item.Status == "Approve")
                         {
-                            updateData.RemainingDay = item.ExpiredDay - remainingDay.Days;
+                            var updateData = _approvalRepository.GetAllApproval().Where(u => u.ApprovalId == item.ApprovalId).FirstOrDefault();
+
+                            updateData.RemainingDay = 0;
 
                             _applicationDbContext.Approvals.Update(updateData);
                             _applicationDbContext.SaveChanges();
                         }
+                        else
+                        {
+                            var remainingDay = DateTimeOffset.Now.Date - item.CreateDateTime.Date;
+                            var updateData = _approvalRepository.GetAllApproval().Where(u => u.ApprovalId == item.ApprovalId).FirstOrDefault();
+
+                            if (updateData.RemainingDay != 0)
+                            {
+                                updateData.RemainingDay = item.ExpiredDay - remainingDay.Days;
+
+                                _applicationDbContext.Approvals.Update(updateData);
+                                _applicationDbContext.SaveChanges();
+                            }
+                        }                            
                     }
 
-                    return View(itemList);
+                    var model = new Pagination<Approval>
+                    {
+                        Items = itemList,
+                        TotalCount = itemList.Count,
+                        PageSize = pageSize,
+                        CurrentPage = page,
+                    };
+
+                    // Sertakan semua parameter untuk pagination
+                    ViewBag.FilterOptions = filterOptions;
+                    ViewBag.StartDateParam = startDate?.ToString("yyyy-MM-dd");
+                    ViewBag.EndDateParam = endDate?.ToString("yyyy-MM-dd");
+                    ViewBag.PageSize = pageSize;
+
+                    return View(model);
                 }
             }
             return View();
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Index(DateTime tglAwalPencarian, DateTime tglAkhirPencarian)
+        public IActionResult RedirectToDetail(Guid Id)
         {
-            ViewBag.Active = "Approval";
-            ViewBag.tglAwalPencarian = tglAwalPencarian.ToString("dd MMMM yyyy");
-            ViewBag.tglAkhirPencarian = tglAkhirPencarian.ToString("dd MMMM yyyy");
+            try
+            {
+                // Enkripsi path URL untuk "Index"
+                string originalPath = $"Detail:Order/Approval/DetailApproval/{Id}";
+                string encryptedPath = _protector.Protect(originalPath);
 
-            var data = _approvalRepository.GetAllApproval().Where(r => r.CreateDateTime.Date >= tglAwalPencarian && r.CreateDateTime.Date <= tglAkhirPencarian).ToList();
-            return View(data);
+                // Hash GUID-like code (SHA256 truncated to 36 characters)
+                string guidLikeCode = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(encryptedPath)))
+                    .Replace('+', '-')
+                    .Replace('/', '_')
+                    .Substring(0, 36);
+
+                // Simpan mapping GUID-like code ke encryptedPath di penyimpanan sementara (misalnya, cache)
+                _urlMappingService.InMemoryMapping[guidLikeCode] = encryptedPath;
+
+                return Redirect("/" + guidLikeCode);
+            }
+            catch
+            {
+                // Jika enkripsi gagal, kembalikan view
+                return Redirect(Request.Path);
+            }            
         }
-       
+
         [HttpGet]
         public async Task<ViewResult> DetailApproval(Guid Id)
         {
@@ -377,17 +557,20 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
 
                     //Signal R
 
-                    var getUserId = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
-                    var getUserActiveId = _userActiveRepository.GetAllUser().Where(u => u.UserActiveCode == getUserId.KodeUser).FirstOrDefault().UserActiveId;
-                    var data2 = _purchaseRequestRepository.GetAllPurchaseRequest()
-                                    .Where(p => (p.UserApprove1Id == getUserActiveId && p.ApproveStatusUser1 == null)
-                                    || (p.UserApprove2Id == getUserActiveId && p.ApproveStatusUser1 == "Approve" && p.ApproveStatusUser2 == null)
-                                    || (p.UserApprove3Id == getUserActiveId && p.ApproveStatusUser1 == "Approve" && p.ApproveStatusUser2 == "Approve" && p.ApproveStatusUser3 == null))
-                                    .ToList();
+                    //var getUserId = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+                    //if (getUserId.Email != "superadmin@admin.com")
+                    //{
+                    //    var getUserActiveId = _userActiveRepository.GetAllUser().Where(u => u.UserActiveCode == getUserId.KodeUser).FirstOrDefault().UserActiveId;
+                    //    var data2 = _purchaseRequestRepository.GetAllPurchaseRequest()
+                    //                    .Where(p => (p.UserApprove1Id == getUserActiveId && p.ApproveStatusUser1 == null)
+                    //                    || (p.UserApprove2Id == getUserActiveId && p.ApproveStatusUser1 == "Approve" && p.ApproveStatusUser2 == null)
+                    //                    || (p.UserApprove3Id == getUserActiveId && p.ApproveStatusUser1 == "Approve" && p.ApproveStatusUser2 == "Approve" && p.ApproveStatusUser3 == null))
+                    //                    .ToList();
 
-                    int totalKaryawan = data2.Count();
-                    ViewBag.TotalKaryawan = totalKaryawan;
-                    await _hubContext.Clients.All.SendAsync("UpdateDataCount", totalKaryawan);
+                    //    int totalKaryawan = data2.Count();
+                    //    ViewBag.TotalKaryawan = totalKaryawan;
+                    //    await _hubContext.Clients.All.SendAsync("UpdateDataCount", totalKaryawan);
+                    //}                    
 
                     //End Signal R
 

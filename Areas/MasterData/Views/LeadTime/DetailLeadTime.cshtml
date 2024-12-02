@@ -56,8 +56,10 @@
                                     <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold" id="btnsimpan"><div style="color:#ffffff">Save</div></button>
                                     <a class="btn bg-indigo" id="btnubah">Change</a>
                                     <a class="btn btn-default" id="btnbatalubah">Cancel Change</a>
-                                    <a class="btn btn-danger" asp-action="DeleteLeadTime" asp-controller="LeadTime" asp-area="MasterData" asp-route-id="@Model.LeadTimeId" id="btnhapus">Delete</a>
-                                    <a class="btn btn-default" asp-action="Index" asp-controller="LeadTime" asp-area="MasterData" id="btnbatal">Cancel</a>
+                                    @*<a class="btn btn-danger" asp-action="DeleteLeadTime" asp-controller="LeadTime" asp-area="MasterData" asp-route-id="@Model.LeadTimeId" id="btnhapus">Delete</a>
+                                    <a class="btn btn-default" asp-action="Index" asp-controller="LeadTime" asp-area="MasterData" id="btnbatal">Cancel</a>*@
+                                    <div class="btn btn-danger" data-href="@Url.Action("RedirectToDelete", "LeadTime", new { id = Model.LeadTimeId })">Delete</div>
+                                    <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "LeadTime", new { area = "MasterData" })">Cancel</div>
                                 </div>
                             </div>
                             <div class="col-md-0"></div>

@@ -47,7 +47,37 @@
                             </select>
                             <span asp-validation-for="PurchaseOrderId" class="error"></span>
                         </div>
-                    </div>                    
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="ShippingNumber">Shipping Number</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="ShippingNumber" class="form-control form-control-border border-width-2" id="shippingnumber" placeholder="Shipping Number">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="DeliveryServiceName">Delivery Service Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="DeliveryServiceName" class="form-control form-control-border border-width-2" id="deliveryservicename" placeholder="Delivery Service Name">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="DeliveryDate">Delivery Date</label>
+                        <div class="col-sm-10">
+                            <input type="date" asp-for="DeliveryDate" class="form-control form-control-border border-width-2" id="deliverydate" placeholder="Delivery Date">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="WaybillNumber">Waybill Number</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="WaybillNumber" class="form-control form-control-border border-width-2" id="waybillnumber" placeholder="Waybill Number">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="InvoiceNumber">Invoice Number</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="InvoiceNumber" class="form-control form-control-border border-width-2" id="invoicenumber" placeholder="Invoice Number">
+                        </div>
+                    </div>
                     <div class="form-group row">
                         <label class="col-sm-2 col-form-label" asp-for="Note">Note</label>
                         <div class="col-sm-10">
@@ -91,7 +121,7 @@
                                 <input autocomplete="off" class="form-control" id="productnumber" placeholder="Product Number" readonly>
                                 <span class="error">Required !</span>
                             </div>
-                            <div class="col-sm-4">
+                            <div class="col-sm-2">
                                 <span>Product Name</span>
                                 <input autocomplete="off" class="form-control" id="productname" placeholder="Product Name" readonly>
                                 <span class="error">Required !</span>
@@ -106,6 +136,11 @@
                                 <input autocomplete="off" class="form-control row-qtyorder" id="qtyorder" placeholder="Qty Order" readonly>
                                 <span class="error">Required !</span>
                             </div>
+                            <div class="col-sm-2">
+                                <span>Condition</span>
+                                <input autocomplete="off" class="form-control" id="condition" placeholder="Condition" readonly>
+                                <span class="error">Required !</span>
+                            </div>
                         </div>
 
                         <div class="card-body table-responsive p-0">
@@ -118,7 +153,8 @@
                                         <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Measure</div></th>
                                         <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff">Qty Order</div></th>
                                         <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff">Qty Receive</div></th>
-                                        <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff"></th>
+                                        <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff">Condition</div></th>
+                                        <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff"></div></th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -132,7 +168,7 @@
                     <div class="card-body">
                         @****Perhatikan type nya jika submit akan berbeda hasil pada json, jadi pakai type button*@
                         <input type="button" value="Save" id="submit" class="btn btn-primary bg-indigo float-left fw-bold">
-                        <a class="btn btn-default" asp-action="Index" asp-controller="ReceiveOrder">Cancel</a>
+                        <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "ReceiveOrder")">Cancel</div>                        
                     </div>
                 </div>
                 <!-- /.end button footer -->

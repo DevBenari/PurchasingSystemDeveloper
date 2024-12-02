@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PurchasingSystemDeveloper.Areas.MasterData.Models;
 using PurchasingSystemDeveloper.Areas.Order.Models;
 using PurchasingSystemDeveloper.Data;
 using PurchasingSystemDeveloper.Repositories;
@@ -61,7 +62,6 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
                     ApplicationUser = purchaseRequest.ApplicationUser,
                     ExpiredDay = purchaseRequest.ExpiredDay,
                     RemainingDay = purchaseRequest.RemainingDay,
-                    //DueDate = purchaseRequest.DueDate,
                     ExpiredDate = purchaseRequest.ExpiredDate,
                     Department1Id = purchaseRequest.Department1Id,
                     Department1 = purchaseRequest.Department1,
@@ -136,7 +136,6 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
                 ApplicationUser = purchaseRequest.ApplicationUser,
                 ExpiredDay = purchaseRequest.ExpiredDay,
                 RemainingDay = purchaseRequest.RemainingDay,
-                //DueDate = purchaseRequest.DueDate,
                 ExpiredDate = purchaseRequest.ExpiredDate,
                 Department1Id = purchaseRequest.Department1Id,
                 Department1 = purchaseRequest.Department1,
@@ -187,8 +186,52 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
                 .Include(d3 => d3.Department3)
                 .Include(p3 => p3.Position3)
                 .Include(a3 => a3.UserApprove3)
-                //.Include(e => e.DueDate)
                 .ToList();
+        }
+
+        public async Task<(IEnumerable<PurchaseRequest> purchaseRequests, int totalCountPurchaseRequests)> GetAllPurchaseRequestPageSize(string searchTerm, int page, int pageSize, DateTimeOffset? startDate, DateTimeOffset? endDate)
+        {
+            var query = _context.PurchaseRequests
+                .Include(d => d.PurchaseRequestDetails)
+                .Include(u => u.ApplicationUser)
+                .Include(t => t.TermOfPayment)
+                .Include(d1 => d1.Department1)
+                .Include(p1 => p1.Position1)
+                .Include(a1 => a1.UserApprove1)
+                .Include(d2 => d2.Department2)
+                .Include(p2 => p2.Position2)
+                .Include(a2 => a2.UserApprove2)
+                .Include(d3 => d3.Department3)
+                .Include(p3 => p3.Position3)
+                .Include(a3 => a3.UserApprove3)
+                .OrderByDescending(d => d.CreateDateTime)
+                .AsQueryable();
+
+            // Filter berdasarkan searchTerm jika ada
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(p => p.PurchaseRequestNumber.Contains(searchTerm) || p.UserApprove1.FullName.Contains(searchTerm) || p.UserApprove2.FullName.Contains(searchTerm) || p.UserApprove3.FullName.Contains(searchTerm));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime <= endDate.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            // Ambil data paginated
+            var purchaseRequests = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (purchaseRequests, totalCount);
         }
 
         public async Task<PurchaseRequest> Update(PurchaseRequest update)

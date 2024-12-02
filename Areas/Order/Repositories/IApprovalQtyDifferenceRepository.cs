@@ -108,6 +108,43 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
                 .ToList();
         }
 
+        public async Task<(IEnumerable<ApprovalQtyDifference> approvalQtyDifferences, int totalCountApprovalQtyDifferences)> GetAllApprovalQtyDifferencePageSize(string searchTerm, int page, int pageSize, DateTimeOffset? startDate, DateTimeOffset? endDate)
+        {
+            var query = _context.ApprovalQtyDifferences
+                .Include(d => d.PurchaseOrder)
+                .Include(a => a.QtyDifference)
+                .Include(a1 => a1.UserApprove)
+                .Include(u => u.ApplicationUser)
+                .OrderByDescending(d => d.CreateDateTime)
+                .AsQueryable();
+
+            // Filter berdasarkan searchTerm jika ada
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(p => p.QtyDifferenceNumber.Contains(searchTerm));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime <= endDate.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            // Ambil data paginated
+            var approvalQtyDifferences = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (approvalQtyDifferences, totalCount);
+        }
+
         public async Task<ApprovalQtyDifference> Update(ApprovalQtyDifference update)
         {
             var approval = _context.ApprovalQtyDifferences.Attach(update);

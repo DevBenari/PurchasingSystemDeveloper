@@ -247,7 +247,8 @@
                         else
                         {
                             <a class="btn bg-gray" asp-action="PrintUnitRequest" asp-controller="UnitRequest" asp-area="Transaction" asp-route-id="@Model.UnitRequestId"><i class="far fa-file-alt" style="color:white"></i> Save As PDF</a>
-                            <a class="btn btn-default" id="btnbatal" asp-action="Index" asp-controller="UnitRequest">Cancel</a>
+                            @*<a class="btn btn-default" id="btnbatal" asp-action="Index" asp-controller="UnitRequest">Cancel</a>*@
+                            <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "UnitRequest", new { area = "Transaction" })">Cancel</div>
                         }
                     </div>
                 </div>

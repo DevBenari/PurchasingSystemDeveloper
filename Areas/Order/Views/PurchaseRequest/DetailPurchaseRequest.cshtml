@@ -291,13 +291,15 @@
                             @*<a class="btn bg-gray" asp-action="PrintPurchaseRequest" asp-controller="PurchaseRequest" asp-area="Order" asp-route-id="@Model.PurchaseRequestId"><i class="fas fa-print" style="color:white"></i> Print Preview</a>*@
                             <a class="btn bg-gray" asp-action="PrintPurchaseRequest" asp-controller="PurchaseRequest" asp-area="Order" asp-route-id="@Model.PurchaseRequestId"><i class="far fa-file-alt" style="color:white"></i> Save As PDF</a>
                             <a class="btn btn-default" id="btnbatalubah">Cancel Change</a>
-                            <a class="btn btn-default" id="btnbatal" asp-action="Index" asp-controller="PurchaseRequest">Cancel</a>
+                            @*<a class="btn btn-default" id="btnbatal" asp-action="Index" asp-controller="PurchaseRequest">Cancel</a>*@
+                            <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "PurchaseRequest", new { area = "Order" })">Cancel</div>
                         }
                         else
                         {
                             @*<a class="btn bg-gray" asp-action="PrintPurchaseRequest" asp-controller="PurchaseRequest" asp-area="Order" asp-route-id="@Model.PurchaseRequestId"><i class="fas fa-print" style="color:white"></i> Print Preview</a>*@
                             <a class="btn bg-gray" asp-action="PrintPurchaseRequest" asp-controller="PurchaseRequest" asp-area="Order" asp-route-id="@Model.PurchaseRequestId"><i class="far fa-file-alt" style="color:white"></i> Save As PDF</a>
-                            <a class="btn btn-default" id="btnbatal" asp-action="Index" asp-controller="PurchaseRequest">Cancel</a>
+                            @*<a class="btn btn-default" id="btnbatal" asp-action="Index" asp-controller="PurchaseRequest">Cancel</a>*@
+                            <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "PurchaseRequest", new { area = "Order" })">Cancel</div>
                         }
                     </div>
                 </div>

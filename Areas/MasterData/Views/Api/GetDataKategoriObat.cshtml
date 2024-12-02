@@ -23,10 +23,31 @@
                         <button type="submit" class="btn btn-primary bg-indigo">
                             <div style="color:#ffffff">Get Data</div>
                         </button>
-                        <a class="btn btn-default" href="@Url.Action("Index", "Api")">Cancel</a>
+                        <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "Api")">Cancel</div>
                     </div>
                 </div>
             </form>
         </div>
     </div>
 </section>
+@section Scripts {
+    <style>
+        .cursor-pointer {
+            cursor: pointer; /* Tambahkan ini untuk mengubah kursor */
+        }
+    </style>
+
+    <script>
+        //Start Pengaturan Click Pada Button DIV Index
+        document.addEventListener("DOMContentLoaded", () => {
+            const rows = document.querySelectorAll("div[data-href]");
+
+            rows.forEach(row => {
+                row.addEventListener("click", () => {
+                    window.location.href = row.dataset.href;
+                });
+            });
+        });
+                                    //End Pengaturan Click Pada Button DIV Index
+    </script>
+    }

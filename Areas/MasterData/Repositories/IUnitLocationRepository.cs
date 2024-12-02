@@ -66,6 +66,40 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Repositories
                 .AsNoTracking();
         }
 
+        public async Task<(IEnumerable<UnitLocation> unitLocations, int totalCountUnitLocations)> GetAllUnitLocationPageSize(string searchTerm, int page, int pageSize, DateTimeOffset? startDate, DateTimeOffset? endDate)
+        {
+            var query = _context.UnitLocations
+                .OrderByDescending(d => d.CreateDateTime)
+                .Include(d => d.UnitManager)
+                .AsQueryable();
+
+            // Filter berdasarkan searchTerm jika ada
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(p => p.UnitLocationCode.Contains(searchTerm) || p.UnitLocationName.Contains(searchTerm) || p.UnitManager.FullName.Contains(searchTerm));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime <= endDate.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            // Ambil data paginated
+            var unitLocations = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (unitLocations, totalCount);
+        }
+
         public UnitLocation Update(UnitLocation update)
         {
             var UnitLocation = _context.UnitLocations.Attach(update);

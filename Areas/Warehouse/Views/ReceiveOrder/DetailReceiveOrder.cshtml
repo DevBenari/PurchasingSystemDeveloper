@@ -58,6 +58,36 @@
                         </div>
                     </div>
                     <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="ShippingNumber">Shipping Number</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="ShippingNumber" class="form-control form-control-border border-width-2" id="shippingnumber" placeholder="Shipping Number" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="DeliveryServiceName">Delivery Service Name</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="DeliveryServiceName" class="form-control form-control-border border-width-2" id="deliveryservicename" placeholder="Delivery Service Name" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="DeliveryDate">Delivery Date</label>
+                        <div class="col-sm-10">
+                            <input type="date" asp-for="DeliveryDate" class="form-control form-control-border border-width-2" id="deliverydate" placeholder="Delivery Date" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="WaybillNumber">Waybill Number</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="WaybillNumber" class="form-control form-control-border border-width-2" id="waybillnumber" placeholder="Waybill Number" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="InvoiceNumber">Invoice Number</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="InvoiceNumber" class="form-control form-control-border border-width-2" id="invoicenumber" placeholder="Invoice Number" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
                         <label class="col-sm-2 col-form-label" asp-for="Status">Status</label>
                         <div class="col-sm-10">
                             <input type="text" asp-for="Status" class="form-control form-control-border border-width-2" id="status" placeholder="Status" disabled>
@@ -111,8 +141,8 @@
 
                 <!-- start button footer -->
                 <div class="card card-orange">
-                    <div class="card-body">
-                        <a class="btn btn-default" asp-action="Index" asp-controller="ReceiveOrder">Cancel</a>
+                    <div class="card-body">                        
+                        <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "ReceiveOrder", new { area = "Warehouse" })">Cancel</div>
                     </div>
                 </div>
                 <!-- /.end button footer -->

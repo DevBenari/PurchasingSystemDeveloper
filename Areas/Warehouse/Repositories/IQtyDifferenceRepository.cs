@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PurchasingSystemDeveloper.Areas.Order.Models;
 using PurchasingSystemDeveloper.Areas.Transaction.Models;
 using PurchasingSystemDeveloper.Areas.Warehouse.Models;
 using PurchasingSystemDeveloper.Data;
@@ -141,6 +142,49 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Repositories
                 .Include(a2 => a2.UserApprove2)
                 .Include(u => u.ApplicationUser)
                 .ToList();
+        }
+
+        public async Task<(IEnumerable<QtyDifference> qtyDifferences, int totalCountQtyDifferences)> GetAllQtyDifferencePageSize(string searchTerm, int page, int pageSize, DateTimeOffset? startDate, DateTimeOffset? endDate)
+        {
+            var query = _context.QtyDifferences
+                .Include(d => d.PurchaseOrder)
+                .Include(a => a.PurchaseOrderDetails)
+                .Include(r => r.QtyDifferenceDetails)
+                .Include(d1 => d1.Department1)
+                .Include(p1 => p1.Position1)
+                .Include(a1 => a1.UserApprove1)
+                .Include(d2 => d2.Department2)
+                .Include(p2 => p2.Position2)
+                .Include(a2 => a2.UserApprove2)
+                .Include(u => u.ApplicationUser)
+                .OrderByDescending(d => d.CreateDateTime)
+                .AsQueryable();
+
+            // Filter berdasarkan searchTerm jika ada
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(p => p.QtyDifferenceNumber.Contains(searchTerm));
+            }
+
+            if (startDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime >= startDate.Value);
+            }
+
+            if (endDate.HasValue)
+            {
+                query = query.Where(p => p.CreateDateTime <= endDate.Value);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            // Ambil data paginated
+            var qtyDifferences = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (qtyDifferences, totalCount);
         }
     }
 }

@@ -21,7 +21,7 @@ namespace PurchasingSystemDeveloper.Areas.Api.Controllers
 {
     [Area("Api")]
     [Route("Api/[Controller]/[Action]")]
-    public class ApiController : Controller
+    public class ProductApiController : Controller
     {
         private readonly HttpClient _httpClient;
         private readonly ApplicationDbContext _applicationDbContext;
@@ -42,7 +42,7 @@ namespace PurchasingSystemDeveloper.Areas.Api.Controllers
         private readonly IDataProtector _protector;
         private readonly UrlMappingService _urlMappingService;
 
-        public ApiController(
+        public ProductApiController(
             ApplicationDbContext applicationDbContext,
             IUserActiveRepository userActiveRepository,
             IProductRepository productRepository,

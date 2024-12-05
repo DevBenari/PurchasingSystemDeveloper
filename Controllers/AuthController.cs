@@ -87,7 +87,7 @@ namespace PurchasingSystemStaging.Controllers
                         {
                             return NotFound(new { message = "User belum terdaftar" });
                         }
-                        else if (user.IsActive == true && user.IsOnline == false)
+                        else if (user.IsActive == false && user != null)
                         {
                             // Cek password
                             var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, true);
@@ -136,16 +136,7 @@ namespace PurchasingSystemStaging.Controllers
                             {
                                 return Unauthorized(new { message = "Password salah || 401 Unauthorized" });
                             }
-                        }
-                        else if (user.IsActive == true && user.IsOnline == true)
-                        {
-                            //TempData["UserOnlineMessage"] = "Sorry, your account is online, has been logged out, please sign back in !";
-
-                            user.IsOnline = false;
-                            await _userManager.UpdateAsync(user);
-
-                            return Ok(new { message = "Akun berhasil logout || 200 OK" });
-                        }
+                        }                        
                         else
                         {
                             return BadRequest(new { message = "Maaf, akun anda belum aktif... || 400 Bad Request" });

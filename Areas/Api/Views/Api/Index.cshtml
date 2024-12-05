@@ -1,1 +1,742 @@
-﻿<h1>etrwgu werer</h1>
+﻿@using Microsoft.AspNetCore.Identity;
+@using PurchasingSystemDeveloper.Models;
+@using PurchasingSystemDeveloper.Areas.Api.ViewModels;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model ProductApiViewModels
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="icon" type="image" href="~/favicon.ico">
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>@ViewBag.Title</title>
+        <!-- Google Font: Source Sans Pro -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+        <!-- Font Awesome -->
+        <link rel="stylesheet" href="~/admin/plugins/fontawesome-free/css/all.min.css">
+        <!-- Ionicons -->
+        <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+        <!-- Tempusdominus Bootstrap 4 -->
+        <link rel="stylesheet" href="~/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
+        <!-- iCheck -->
+        <link rel="stylesheet" href="~/admin/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+        <!-- JQVMap -->
+        <link rel="stylesheet" href="~/admin/plugins/jqvmap/jqvmap.min.css">
+        <!-- Theme style -->     
+        <link rel="stylesheet" href="~/admin/dist/css/adminlte.min.css">
+        <!-- overlayScrollbars -->
+        <link rel="stylesheet" href="~/admin/plugins/overlayScrollbars/css/OverlayScrollbars.min.css">
+        <!-- Daterange picker -->
+        <link rel="stylesheet" href="~/admin/plugins/daterangepicker/daterangepicker.css">
+        <!-- summernote -->
+        <link rel="stylesheet" href="~/admin/plugins/summernote/summernote-bs4.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <link href="~/admin/plugins/select2/css/select2.min.css" rel="stylesheet" />
+        <link href="~/admin/plugins/select2/css/select2.css" rel="stylesheet" />    
+        <link href="~/admin/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css" rel="stylesheet" />
+        <link href="~/admin/plugins/select2-bootstrap4-theme/select2-bootstrap4.css" rel="stylesheet" />
+        <link href="https://cdn.datatables.net/2.0.1/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+
+        <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+        <link media="screen" rel="stylesheet" href="https://cdn.jsdelivr.net/sweetalert2/6.3.8/sweetalert2.min.css" />
+        <link media="screen" rel="stylesheet" href='https://cdn.jsdelivr.net/sweetalert2/6.3.8/sweetalert2.css' />
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/sweetalert2/6.3.8/sweetalert2.min.js"></script>
+
+        @*Fontawesome Jquery*@
+        <script src="https://kit.fontawesome.com/c3423d6308.js" crossorigin="anonymous"></script>
+    </head>
+    <body>
+    <div class="p-3 mt-5">
+        <div class="container">
+            <div class="logo border-1 border-black p-3">
+                <h1>
+                    Dokumentasi API System Purchasing
+                </h1>
+                <a href="https://blm-rsmmc.com/api/api/index" class="font-sm">https://blm-rsmmc.com/api/api/index</a>
+            </div>
+
+            <div class="d-flex justify-content-end mb-3">
+                <button id="authorizeBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#authorizeModal">
+                    Authorize
+                </button>
+            </div>
+
+            <!-- Modal for Bearer Token -->
+            <div class="modal fade" id="authorizeModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Authorize API</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal">X</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="bearerToken" class="form-label">Bearer Token</label>
+                                <input type="text" class="form-control" id="bearerToken" placeholder="Enter Bearer Token" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary" id="saveToken">Save Token</button>
+                            <button id="logoutBtn" class="btn btn-danger ms-2" style="display: none;">Logout</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion" id="accordionExample">
+                <div class="card rounded-lg">
+                    <div class="card-header" style="background-color:#E8F6F0;" id="headingOne">
+                        <h2 class="mb-0">
+                            <button class="btn btn-block text-left collapsed text-black" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                               <h3>Login</h3>
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapseOne" class="collapse show" style="background-color:#E8F6F0;" aria-labelledby="headingOne" data-parent="#accordionExample">
+                        <div class="px-4 mt-4">
+                            <p class="mt-2"><span class="p-2 mr-1" style="background-color:#49CC90;">POST</span> /api/auth/login</p>
+                        </div>
+                        <h5 class="bg-white px-3 py-2 col-12">Parameters</h5>
+                        <div class="px-3 py-2 col-12">
+                            <p>No Parameters</p>
+                        </div>
+                        <h5 class="bg-white px-3 py-2 col-12">Request Body</h5>
+                        <div class="px-4 py-2">
+                           <p>Example</p>
+                           <pre class="bg-black text-left">
+                               <code>
+                                    {
+                                       "email": "andrew@gmail.com",
+                                       "password": "01Sep2024"
+                                    }
+                               </code>
+                           </pre>
+                        </div>
+                        
+                        <div class="card-body">
+                            <form id="loginForm">
+                                <div class="form-group">
+                                    <label for="email">Email:</label>
+                                    <input type="email" id="email" class="form-control" placeholder="Enter your email" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="password">Password:</label>
+                                    <input type="password" id="password" class="form-control" placeholder="Enter your password" required>
+                                </div>
+                                <button type="submit" class="btn btn-success">Login</button>
+                                <button type="reset" class="btn btn-danger" id="resetOutput">Reset</button>
+                            </form>
+                        </div>
+                        
+                        <h4 class="bg-white px-3 py-2">Response</h4>
+                     
+                        <div class="card-body ">
+                            <p>Request Url</p>
+                            <p class="p-2 rounded-md text-white" style="background-color:#333333;">https://blm-rsmmc.com/api/auth/login</p>
+                            <textarea id="response" class="form-control p-2 bg-white" rows="10" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                @*ini adalah section get Product *@
+                <div class="card rounded-lg">
+                    <div class="card-header" id="headingTwo" style="background-color:#EBF3FB;">
+                        <h2 class="mb-0">
+                            <button class="btn btn-block text-left collapsed text-black" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                <h3>Get Product</h3>
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample" style="background-color:#EBF3FB;">
+                        <div class="card-body">
+                            <span class="p-2 mr-1" style="background-color:#61AFFE;">GET</span> /Api/DashboadApi/GetProduct/Products
+                        </div>
+                        <h5 class="bg-white px-3 py-2 col-12">Parameters</h5>
+                        <div class="px-3 py-2 col-12">
+                            <p>No Parameters</p>
+                        </div>
+                        <div class="card-body">
+                            <button type="button" class="btn btn-success" id="getProductBtn">Try it out</button>
+                             <button type="reset" class="btn btn-danger" id="resetGet">Reset</button>
+                        </div>
+                        <h5 class="bg-white px-3 py-2">Response</h5>
+                        <div class="card-body">
+                            <p>Request Url</p>
+                            <p class="p-2 rounded-md text-white" style="background-color:#333333;">https://blm-rsmmc.com/Api/DashboadApi/GetProduct/Products</p>
+                            <textarea id="responseProduct" class="form-control p-2 bg-white" rows="10" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                @*ini adalah end section get Product *@
+
+                @*ini adalah section Create Product *@
+                <div class="card rounded-lg" style="background-color:#E8F6F0;">
+                    <div class="card-header" id="headingThree">
+                        <h2 class="mb-0">
+                            <button class="btn btn-block text-left collapsed text-black" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                <h3>Create Product</h3>
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapseThree" class="collapse row" aria-labelledby="headingThree" data-parent="#accordionExample">
+                        <div class="card-body col-12">
+                            <span class="p-2 mr-1" style="background-color:#49CC90;">POST</span> /Api/DashboadApi/CreateProduct
+                        </div>
+                        <h5 class="bg-white px-3 py-2 col-12">Parameters</h5>
+                        <div class="px-3 py-2 col-12">
+                            <p>No Parameters</p>
+                        </div>
+                        <h5 class="bg-white px-3 py-2 col-12">Request Body</h5>
+                        <div class="card-body col-12">
+                            <form id="createProduct" class="row ">
+                                <div class="form-group col-6">
+                                    <label for="productCode">Product Code:</label>
+                                    <input type="text" id="productCode" class="form-control" placeholder="Enter your Nama Produk" required autocomplete="on">
+                                </div>
+                                <div class="form-group col-6">
+                                    <label for="productName">Nama Produk:</label>
+                                    <input type="text" id="productName" class="form-control" placeholder="Enter your Nama Produk" required autocomplete="on">
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="supplierId">Supplier :</label>
+                                    <input type="text" id="supplierId" class="form-control" placeholder="Enter Supplier" requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="categoryId">Category Product :</label>
+                                    <input type="text" id="categoryId" class="form-control" placeholder="Enter Category" requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="measurementId">Measurement :</label>
+                                    <input type="text" id="measurementId" class="form-control" placeholder="Enter Measurement" requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="discountId">Discount :</label>
+                                    <input type="number" id="discountId" class="form-control" placeholder="Enter Discount" requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="minStock">Min Stock :</label>
+                                    <input type="number" id="minStock" class="form-control" placeholder="Enter Min Stock" requeried autocomplete="on" readonly />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="maxStock">Max Stock :</label>
+                                    <input type="number" id="maxStock" class="form-control" placeholder="Enter Max Stock" requeried autocomplete="on" readonly />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="bufferStock">Buffer Stock :</label>
+                                    <input type="number" id="bufferStock" class="form-control" placeholder="Enter Buffer Stock" requeried autocomplete="on" readonly />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="discountId">Stock :</label>
+                                    <input type="number" id="stock" class="form-control" placeholder="Enter Stock" requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="discountId">Buy Price :</label>
+                                    <input type="number" id="price" class="form-control" placeholder="Enter Price" requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="discountId">Retail Price :</label>
+                                    <input type="number" id="retailPrice" class="form-control" placeholder="Enter Retail Price" requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="discountId">Cogs :</label>
+                                    <input type="number" id="cogs" class="form-control" placeholder="Enter Cogs" requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="discountId">Warehouse Location :</label>
+                                    <input type="text" id="warehouseLocation" class="form-control" placeholder="Enter Warehouse Location" requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="discountId">Storage Location :</label>
+                                    <input type="text" id="storageLocationId" class="form-control" placeholder="Enter Storage Location" requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="discountId">Rack Number :</label>
+                                    <input type="text" id="rackNumber" class="form-control" placeholder="Enter Rack Number" requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="discountId">Note :</label>
+                                    <input type="text" id="note" class="form-control" placeholder="Enter Note" requeried autocomplete="on" />
+                                </div>
+
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-success">Try it out</button>
+                                    <button type="reset" class="btn btn-danger" id="resetCreateProduct">Reset</button>
+                                </div>
+                            </form> 
+                        </div>
+                        <h4 class="bg-white px-3 py-2 col-12">Response</h4>
+                         <div class="card-body">
+                            <p>Request Url</p>
+                            <p class="p-2 rounded-md text-white" style="background-color:#333333;">https://blm-rsmmc.com/Api/DashboadApi/CreateProduct</p>
+                            <textarea id="responseCreateProduct" class="form-control p-2 bg-white" rows="10" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                @*end section create product*@
+
+                @*section update product*@
+                <div class="card rounded-lg" style="background-color:#FBF1E6;">
+                    <div class="card-header" id="headingFour">
+                        <h2 class="mb-0">
+                            <button class="btn btn-block text-left collapsed text-black" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                <h3>Update Product</h3>
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapseFour" class="collapse row" aria-labelledby="headingFour" data-parent="#accordionExample">
+                        <div class="card-body col-12">
+                            <span class="p-2 mr-1" style="background-color:#FCA130;">PUT</span>  /Api/DashboadApi/UpdateProduct
+                        </div>
+                        
+                        <div class="card-body col-12">
+                            <form id="updateProduct" class="row ">
+                                <h5 class="bg-white px-3 py-2 col-12">Parameters</h5>
+                                <div class="form-group col-6">
+                                    <label for="productId">Product ID:</label>
+                                    <input type="text" id="productId" class="form-control" placeholder="Enter Product ID to update" required />
+                                </div>
+                                <h5 class="bg-white px-3 py-2 col-12">Request Body</h5>
+                                <div class="form-group col-6">
+                                    <label for="productCode">Product Code:</label>
+                                    <input type="text" id="productCode" class="form-control" placeholder="Enter your Nama Produk" required autocomplete="on">
+                                </div>
+                                <div class="form-group col-6">
+                                    <label for="productName">Nama Produk:</label>
+                                    <input type="text" id="updateProductName" class="form-control" placeholder="Enter your Nama Produk" required autocomplete="on">
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="supplierId">Supplier :</label>
+                                    <input type="text" id="updateSupplierId" class="form-control" placeholder="Enter Supplier" requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="categoryId">Category Product :</label>
+                                    <input type="text" id="updateCategoryId" class="form-control" placeholder="Enter Category" requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="measurementId">Measurement :</label>
+                                    <input type="text" id="updateMeasurementId" class="form-control" placeholder="Enter Measurement" requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="discountId">Discount :</label>
+                                    <input type="number" id="updateDiscountId" class="form-control" placeholder="Enter Discount" requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="minStock">Min Stock :</label>
+                                    <input type="number" id="updateMinStock" class="form-control" placeholder="Enter Min Stock" requeried autocomplete="on" readonly />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="maxStock">Max Stock :</label>
+                                    <input type="number" id="updateMaxStock" class="form-control" placeholder="Enter Max Stock" requeried autocomplete="on" readonly />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="bufferStock">Buffer Stock :</label>
+                                    <input type="number" id="updateBufferStock" class="form-control" placeholder="Enter Buffer Stock" requeried autocomplete="on" readonly />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="discountId">Stock :</label>
+                                    <input type="number" id="updateStock" class="form-control" placeholder="Enter Stock" requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="discountId">Buy Price :</label>
+                                    <input type="number" id="updatePrice" class="form-control" placeholder="Enter Buy Price" requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="discountId">Retail Price :</label>
+                                    <input type="number" id="updateRetailPrice" class="form-control" placeholder="Enter Retail Price" requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="discountId">Cogs :</label>
+                                    <input type="number" id="updateCogs" class="form-control" placeholder="Enter Cogs" requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="discountId">Warehouse Location :</label>
+                                    <input type="text" id="updateWarehouseLocation" class="form-control" placeholder="Enter Warehouse Location" requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="discountId">Storage Location :</label>
+                                    <input type="text" id="updateStorageLocationId" class="form-control" placeholder="Enter Storage Location" requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="discountId">Rack Number :</label>
+                                    <input type="text" id="updateRackNumber" class="form-control" placeholder="Enter Rack Number " requeried autocomplete="on" />
+                                </div>
+                                <div class="form-group col-6">
+                                    <label asp-for="discountId">Note :</label>
+                                    <input type="text" id="updateNote" class="form-control" placeholder="Enter Note" requeried autocomplete="on" />
+                                </div>
+
+                                <div class="col-12">
+                                    <button type="submit" class="btn btn-success">Try it out</button>
+                                    <button type="reset" class="btn btn-danger" id="resetUpdate">Reset</button>
+                                </div>
+                            </form>
+                        </div>
+                        <h4 class="bg-white px-3 py-2 col-12">Response</h4>
+                        <div class="card-body">
+                            <p>Request Url</p>
+                            <p class="p-2 rounded-md text-white" style="background-color:#333333;"> https://blm-rsmmc.com/Api/DashboadApi/UpdateProduct</p>
+                            <textarea id="responseUpdateProduct" class="form-control p-2 bg-white" rows="10" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+                @*end section Update Product*@
+
+                <div class="card rounded-lg" style="background-color:#FAE7E7;">
+                    <div class="card-header" id="headingFive">
+                        <h2 class="mb-0">
+                            <button class="btn btn-block text-left collapsed text-black" type="button" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                <h3>Delete Product</h3>
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapseFive" class="collapse" aria-labelledby="headingFive" data-parent="#accordionExample">
+                        <div class="card-body">
+                            <span class="bg-danger p-2 mr-1">DELETE</span> /Api/DashboadApi/DeleteProduct/{id}
+                        </div>
+                        <h5 class="bg-white px-3 py-2 col-12">Parameters</h5>
+                        <div class="card-body">
+                            <form id="DeleteProduct">
+                                <div class="form-group col-12">
+                                    <label for="productId">Product ID:</label>
+                                    <input type="text" id="deleteProductId" class="form-control" placeholder="Enter Product ID to Delete" required />
+                                </div>
+                                <button type="submit" class="btn btn-secondary mt-1" id="DeleteProductBtn">Try it out</button>
+                                <button type="reset" class="btn btn-secondary mt-1" id="resetDelete">Reset</button>
+                            </form>
+                        </div>
+                        <h4 class="bg-white px-3 py-2 col-12">Response</h4>
+                        <div class="card-body">
+                            <p>Request Url</p>
+                            <p class="p-2 rounded-md text-white" style="background-color:#333333;">  https://blm-rsmmc.com/Api/DashboadApi/DeleteProduct/ <span class="text-green">{id}</span></p>
+                            <textarea id="responseDeleteProduct" class="form-control p-2 bg-white" rows="10" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <script>
+          document.addEventListener("DOMContentLoaded", function () {
+            const saveTokenBtn = document.getElementById("saveToken");
+            const logoutBtn = document.getElementById("logoutBtn");
+            const authorizeModal = document.getElementById("authorizeModal");
+
+                // Show/Hide buttons based on localStorage on modal open
+                authorizeModal.addEventListener("show.bs.modal", function () {
+                    const token = localStorage.getItem("bearerToken");
+                    if (token) {
+                        saveTokenBtn.style.display = "none";
+                        logoutBtn.style.display = "inline-block";
+                    } else {
+                        saveTokenBtn.style.display = "inline-block";
+                        logoutBtn.style.display = "none";
+                    }
+                });
+
+                // Handle saving the Bearer Token
+                saveTokenBtn.addEventListener("click", function () {
+                    const token = document.getElementById("bearerToken").value.trim();
+                    if (token) {
+                        localStorage.setItem("bearerToken", token); // Save token to localStorage
+                        alert("Bearer Token saved!");
+
+
+                        // Toggle button visibility
+                        saveTokenBtn.style.display = "none";
+                        logoutBtn.style.display = "inline-block";
+                        $('#authorizeModal').modal('hide'); // Close modal
+                    } else {
+                        alert("Please enter a Bearer Token.");
+                    }
+                });
+
+                // Handle logout button click
+                logoutBtn.addEventListener("click", function () {
+                    localStorage.removeItem("bearerToken"); // Remove token from localStorage
+                    alert("Logged out successfully!");
+
+                    // Toggle button visibility
+                    saveTokenBtn.style.display = "inline-block";
+                    logoutBtn.style.display = "none";
+
+                    // Optionally refresh the page
+                    location.reload();
+                    });
+          });
+
+            // Clear localStorage on page refresh
+            window.addEventListener("load", function () {
+                localStorage.removeItem("bearerToken");
+            });
+            // Handle login form submission
+            document.getElementById("loginForm").addEventListener("submit", async function (event) {
+                event.preventDefault();
+
+                const email = document.getElementById("email").value;
+                const password = document.getElementById("password").value;
+
+                try {
+                    const response = await fetch("/api/auth/login", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ email, password })
+                    });
+
+                    const responseData = await response.json();
+
+                    // Menampilkan JSON dalam format yang rapi di textarea
+                    document.getElementById("response").textContent = JSON.stringify(responseData, null, 4);
+
+                    if (response.ok) {
+                        alert("Login Successful!");
+                    } else {
+                        alert("Login Failed!");
+                    }
+                } catch (error) {
+                    document.getElementById("response").textContent = "Error: " + error.message;
+                    console.error("Login error:", error);
+                }
+            });
+
+            document.addEventListener("DOMContentLoaded", function () {
+                // Handle reset output
+                const resetButton = document.getElementById("resetOutput");
+                const responseOutput = document.getElementById("response");
+
+                const resetButtonGet = document.getElementById("resetGet")
+                const responseGet = document.getElementById("responseProduct")
+
+                const resetButtonCreate = document.getElementById("resetCreateProduct")
+                const responseCreate = document.getElementById("responseCreateProduct")
+
+                const resetButtonUpdate = document.getElementById("resetUpdate")
+                const responseUpdate = document.getElementById("responseUpdateProduct")
+
+                const resetButtonDelete = document.getElementById("resetDelete")
+                const responseDelet = document.getElementById("responseDeleteProduct")
+
+                resetButton.addEventListener("click", function () {
+                    responseOutput.textContent = ""; // Clear the output JSON
+                    alert("Output JSON has been reset!");
+                });
+
+                resetButtonGet.addEventListener("click", function() {
+                    responseGet.textContent = "";
+                    alert("Output JSON has been reset!");
+                })
+
+                resetButtonCreate.addEventListener("click", function(){
+                    responseCreate.textContent = "";
+                    alert("Output JSON has been reset!");
+                })
+
+                resetButtonUpdate.addEventListener("click", function() {
+                    responseUpdate.textContent = "";
+                    alert("Output JSON has been reset!");
+                })
+
+                resetButtonDelete.addEventListener("click", function() {
+                    resresponseDelet.textContent = "";
+                    alert("Output JSON has been reset!");
+                })
+
+
+            });
+
+           document.getElementById("getProductBtn").addEventListener("click", async function () {
+            const token = localStorage.getItem("bearerToken");
+
+            if (!token) {
+                alert("Please authorize first by providing a Bearer Token.");
+                return;
+            }
+
+            try {
+                const response = await fetch("/Api/api/GetProduct/Products", {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`, // Attach the Bearer Token
+                    }
+                });
+
+                // Check if the response is JSON
+                const contentType = response.headers.get("Content-Type");
+                if (contentType && contentType.includes("application/json")) {
+                    const responseData = await response.json();
+
+                    if (response.ok) {
+                        // Display product data in a formatted way in the textarea
+                        document.getElementById("responseProduct").textContent = JSON.stringify(responseData, null, 4);
+                    } else {
+                        // Handle errors from API response
+                        document.getElementById("responseProduct").textContent = `Error: ${responseData.message}`;
+                        alert("Failed to fetch products.");
+                    }
+                } else {
+                        const errorMessage = await response.text();
+                        document.getElementById("responseProduct").textContent = `Error: ${errorMessage}`;
+                        alert("Invalid response format, not JSON.");
+                }
+            } catch (error) {
+                    // Handle fetch errors
+                    document.getElementById("responseProduct").textContent = "Error: " + error.message;
+                    console.error("Error fetching product data:", error);
+            }
+        });
+
+
+        document.getElementById("createProduct").addEventListener("submit", async function (event) {
+                event.preventDefault();
+                
+                // Ambil nilai input form
+                const productData = {
+                    productName: document.getElementById('productName').value,
+                    supplierName: document.getElementById('supplierId').value,
+                    categoryName: document.getElementById('categoryId').value,
+                    measurementName: document.getElementById('measurementId').value,
+                    discountValue: document.getElementById('discountId').value,
+                    minStock: document.getElementById('minStock').value,
+                    maxStock: document.getElementById('maxStock').value,
+                    bufferStock: document.getElementById('bufferStock').value,
+                    stock: document.getElementById('stock').value,
+                    cogs: document.getElementById('cogs').value,
+                    buyPrice: document.getElementById('price').value,
+                    retailPrice: document.getElementById('retailPrice').value,
+                    warehouseLocationName: document.getElementById('warehouseLocation').value,
+                    storageLocation:document.getElementById('storageLocationId').value,
+                    rackNumber: document.getElementById('rackNumber').value,
+                    note: document.getElementById('note').value,
+                };
+
+                const token = localStorage.getItem("bearerToken");
+                if (!token) {
+                    alert("Please authorize first by providing a Bearer Token.");
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/Api/api/CreateProduct', {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "Authorization": `Bearer ${token}`,
+                            },
+                            body: JSON.stringify(productData)
+                    })
+
+                    const result = await response.json();
+                    if(response.ok){
+                        document.getElementById("responseCreateProduct").value = JSON.stringify(result, null, 4)
+                    }else{
+                        document.getElementById("responseCreateProduct").value = `Error: ${result.message}`;
+                        alert("Failed to create products.");
+                    }
+
+                } catch (error) {
+                    console.log(error.message)
+                }
+        });
+
+               document.addEventListener("DOMContentLoaded", function() {
+                    document.getElementById("updateProduct").addEventListener("submit", async function (event) {
+                        event.preventDefault();
+
+                        const productId = document.getElementById('productId').value;
+
+                        // Ambil nilai input form
+                        const productData = {
+                            productName: document.getElementById('updateProductName').value,
+                            supplierName: document.getElementById('updateSupplierId').value,
+                            categoryName: document.getElementById('updateCategoryId').value,
+                            measurementName: document.getElementById('updateMeasurementId').value,
+                            discountValue: document.getElementById('updateDiscountId').value,
+                            minStock: document.getElementById('updateMinStock').value,
+                            maxStock: document.getElementById('updateMaxStock').value,
+                            bufferStock: document.getElementById('updateBufferStock').value,
+                            stock: document.getElementById('updateStock').value,
+                            cogs: document.getElementById('updateCogs').value,
+                            buyPrice: document.getElementById('updatePrice').value,
+                            retailPrice: document.getElementById('updateRetailPrice').value,
+                            warehouseLocationName: document.getElementById('updateWarehouseLocation').value,
+                            storageLocation: document.getElementById('updateStorageLocationId').value,
+                            rackNumber: document.getElementById('updateRackNumber').value,
+                            note: document.getElementById('updateNote').value,
+                        };
+
+                        const token = localStorage.getItem("bearerToken");
+                        if (!token) {
+                            alert("Please authorize first by providing a Bearer Token.");
+                            return;
+                        }
+
+                        try {
+                            const response = await fetch(`/Api/api/UpdateProduct/${productId}`, {
+                                method: "PUT",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "Authorization": `Bearer ${token}`,
+                                },
+                                body: JSON.stringify(productData)
+                            })
+                            
+                            const result = await response.json();
+                            console.log(result)
+                            if (response.ok) {
+                                document.getElementById("responseUpdateProduct").value = JSON.stringify(result, null, 4)
+                            } else {
+                                document.getElementById("responseUpdateProduct").value = `Error: ${result.message}`;
+                                alert("Failed to create products.");
+                            }
+
+                        } catch (error) {
+                            console.log(error.message)
+                        }
+                    });
+                });
+
+                document.addEventListener("DOMContentLoaded", function () {
+                document.getElementById("DeleteProduct").addEventListener("submit", async function (e) {
+                        e.preventDefault();
+
+                        const productId = document.getElementById("deleteProductId").value;
+
+                        const token = localStorage.getItem("bearerToken");
+                        if (!token) {
+                            alert("Please authorize first by providing a Bearer Token.");
+                            return;
+                        }
+
+                        try{
+                        const response = await fetch(`/Api/api/DeleteProduct/${productId}`, {
+                                method: "DELETE",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                    "Authorization": `Bearer ${token}`,
+                                }
+                            });
+
+                            const result = await response.json();
+                            if(response.ok){
+                                productId.value = "";
+                                document.getElementById("responseDeleteProduct").textContent = JSON.stringify(result, null, 4)
+                            }else{
+                                document.getElementById("responseDeleteProduct").textContent = `Error: ${result.message}`;
+                                alert("Failed To Delete Product");
+                            }
+                        }catch(error){
+                            console.log(error)
+                        }
+
+                    })
+                });
+
+    </script>
+    <script src="~/admin/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

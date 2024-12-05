@@ -81,35 +81,6 @@ namespace PurchasingSystemDeveloper.Areas.Api.Controllers
             _urlMappingService = urlMappingService;
         }
 
-        public IActionResult RedirectToIndex(string filterOptions = "", string searchTerm = "", DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, int page = 1, int pageSize = 10)
-        {
-            try
-            {
-                // Format tanggal tanpa waktu
-                string startDateString = startDate.HasValue ? startDate.Value.ToString("yyyy-MM-dd") : "";
-                string endDateString = endDate.HasValue ? endDate.Value.ToString("yyyy-MM-dd") : "";
-
-                // Bangun originalPath dengan format tanggal ISO 8601
-                string originalPath = $"Page:Api/Api/Index?filterOptions={filterOptions}&searchTerm={searchTerm}&startDate={startDateString}&endDate={endDateString}&page={page}&pageSize={pageSize}";
-                string encryptedPath = _protector.Protect(originalPath);
-
-                // Hash GUID-like code (SHA256 truncated to 36 characters)
-                string guidLikeCode = Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(encryptedPath)))
-                    .Replace('+', '-')
-                    .Replace('/', '_')
-                    .Substring(0, 36);
-
-                // Simpan mapping GUID-like code ke encryptedPath di penyimpanan sementara (misalnya, cache)
-                _urlMappingService.InMemoryMapping[guidLikeCode] = encryptedPath;
-
-                return Redirect("/" + guidLikeCode);
-            }
-            catch
-            {
-                // Jika enkripsi gagal, kembalikan view
-                return Redirect(Request.Path);
-            }
-        }
 
         [AllowAnonymous]
         public IActionResult Index()
@@ -117,161 +88,77 @@ namespace PurchasingSystemDeveloper.Areas.Api.Controllers
             return View();
         }
 
-        [HttpPost("login")]
+        // Get All Products
+        [HttpGet("Products")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromForm] LoginViewModel model)
+        public IActionResult GetProduct()
         {
-            if (ModelState.IsValid)
-            {
-                if (User.Identity.IsAuthenticated)
-                {
-                    return BadRequest(new { message = "User sedang online || Response Code: 400" }); // 400 Bad Request
-                }
-                else
-                {
-                    // Cek apakah admin atau user lain
-                    if (model.Email == "superadmin@admin.com" && model.Password == "Admin@123")
-                    {
-                        // Membuat token JWT
-                        var jwtSettings = _configuration.GetSection("Jwt");
-                        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
-                        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-                        var claims = new[]
-                        {
-                    new Claim(JwtRegisteredClaimNames.Sub, model.Email),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                };
-
-                        var token = new JwtSecurityToken(
-                            issuer: jwtSettings["Issuer"],
-                            audience: jwtSettings["Audience"],
-                            claims: claims,
-                            expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtSettings["ExpirationInMinutes"])),
-                            signingCredentials: credentials
-                        );
-
-                        return RedirectToAction("RedirectToIndex", "Api");
-                    }
-                    else
-                    {
-                        var user = await _signInManager.UserManager.FindByNameAsync(model.Email);
-
-                        // Cek apakah user ada
-                        if (user == null)
-                        {
-                            return NotFound(new { message = "User belum terdaftar" });
-                        }
-                        else if (user.IsActive && !user.IsOnline)
-                        {
-                            // Cek password
-                            var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, true);
-                            if (result.Succeeded)
-                            {
-                                // Membuat token JWT
-                                var jwtSettings = _configuration.GetSection("Jwt");
-                                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Key"]));
-                                var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-                                var claims = new[]
-                                {
-                            new Claim(JwtRegisteredClaimNames.Sub, model.Email),
-                            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-                        };
-
-                                var token = new JwtSecurityToken(
-                                    issuer: jwtSettings["Issuer"],
-                                    audience: jwtSettings["Audience"],
-                                    claims: claims,
-                                    expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtSettings["ExpirationInMinutes"])),
-                                    signingCredentials: credentials
-                                );
-
-                                return RedirectToAction("RedirectToIndex", "Api");
-                            }
-                            else if (result.IsLockedOut)
-                            {
-                                var lockTime = await _userManager.GetLockoutEndDateAsync(user);
-                                var timeRemaining = lockTime.Value - DateTimeOffset.UtcNow;
-
-                                return BadRequest(new { message = "Akun Anda diblokir sementara" });
-                            }
-                            else
-                            {
-                                return Unauthorized(new { message = "Password salah" });
-                            }
-                        }
-                        else if (user.IsActive && user.IsOnline)
-                        {
-                            // Jika user sudah login sebelumnya
-                            user.IsOnline = false;
-                            await _userManager.UpdateAsync(user);
-
-                            return Ok(new { message = "Akun berhasil logout" });
-                        }
-                        else
-                        {
-                            return BadRequest(new { message = "Akun Anda belum aktif" });
-                        }
-                    }
-                }
-            }
-            return View(model);  // Jika model tidak valid, kembali ke form login
+            var data = _productRepository.GetAllProduct().ToList();  // Materialize the result to a List
+            return Ok(data);  // Return data as JSON
         }
 
+        // Get All Categories
         [HttpGet]
-        public async Task<IActionResult> GetProduct(string filterOptions = "", string searchTerm = "", DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, int page = 1, int pageSize = 10)
+        [AllowAnonymous]
+        public IActionResult GetCategories()
         {
-            ViewBag.Active = "MasterData";
-            ViewBag.SearchTerm = searchTerm;
-            ViewBag.SelectedFilter = filterOptions;
-
-            // Format tanggal untuk input[type="date"]
-            ViewBag.StartDate = startDate?.ToString("yyyy-MM-dd");
-            ViewBag.EndDate = endDate?.ToString("yyyy-MM-dd");
-
-            // Format tanggal untuk tampilan (Indonesia)
-            ViewBag.StartDateReadable = startDate?.ToString("dd MMMM yyyy");
-            ViewBag.EndDateReadable = endDate?.ToString("dd MMMM yyyy");
-
-            // Normalisasi tanggal untuk mengabaikan waktu
-            if (startDate.HasValue) startDate = startDate.Value.Date;
-            if (endDate.HasValue) endDate = endDate.Value.Date.AddDays(1).AddTicks(-1); // Sampai akhir hari
-
-            // Tentukan range tanggal berdasarkan filterOptions
-            if (!string.IsNullOrEmpty(filterOptions))
-            {
-                (startDate, endDate) = GetDateRangeHelper.GetDateRange(filterOptions);
-            }
-
-            var data = await _productRepository.GetAllProductPageSize(searchTerm, page, pageSize, startDate, endDate);
-
-            var model = new Pagination<Product>
-            {
-                Items = data.products,
-                TotalCount = data.totalCountProducts,
-                PageSize = pageSize,
-                CurrentPage = page,
-            };
-
-            // Sertakan semua parameter untuk pagination
-            ViewBag.FilterOptions = filterOptions;
-            ViewBag.StartDateParam = startDate?.ToString("yyyy-MM-dd");
-            ViewBag.EndDateParam = endDate?.ToString("yyyy-MM-dd");
-            ViewBag.PageSize = pageSize;
-
-            return View(model);
+            var data = _categoryRepository.GetAllCategory();  // Materialize the result to a List
+            return Ok(data);  // Return data as JSON
         }
+
+        // Get All Measurements
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult GetMeasurements()
+        {
+            var data = _measurementRepository.GetAllMeasurement();  // Materialize the result to a List
+            return Ok(data);  // Return data as JSON
+        }
+
+        // Get All Discounts
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult GetDiscounts()
+        {
+            var data = _discountRepository.GetAllDiscount();  // Materialize the result to a List
+            return Ok(data);  // Return data as JSON
+        }
+
+        // Get All Suppliers
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult GetSuppliers()
+        {
+            var data = _SupplierRepository.GetAllSupplier();  // Materialize the result to a List
+            return Ok(data);  // Return data as JSON
+        }
+
+        // Get All Warehouse Locations
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult GetWarehouseLocations()
+        {
+            var data = _warehouseLocationRepository.GetAllWarehouseLocation().ToList();  // Materialize the result to a List
+            return Ok(data);  // Return data as JSON
+        }
+
         [HttpPost]
-        public async Task<IActionResult> CreateProduct([FromForm] ProductViewModel vm)
+        [AllowAnonymous]
+        public async Task<IActionResult> CreateProduct([FromBody] ProductViewModel vm)
         {
             var dateNow = DateTimeOffset.Now;
-            var setDateNow = DateTimeOffset.Now.ToString("yyMMdd");
+            var setDateNow = dateNow.ToString("yyMMdd");
 
-            var lastCode = _productRepository.GetAllProduct().Where(d => d.CreateDateTime.ToString("yyMMdd") == dateNow.ToString("yyMMdd")).OrderByDescending(k => k.ProductCode).FirstOrDefault();
+            // Mendapatkan kode produk terakhir yang dibuat pada hari yang sama
+            var lastCode = _productRepository.GetAllProduct()
+                .Where(d => d.CreateDateTime.ToString("yyMMdd") == setDateNow)
+                .OrderByDescending(k => k.ProductCode).FirstOrDefault();
+
+            string ProductCode;
+
             if (lastCode == null)
             {
-                vm.ProductCode = "PDC" + setDateNow + "0001";
+                ProductCode = "PDC" + setDateNow + "0001";
             }
             else
             {
@@ -279,88 +166,218 @@ namespace PurchasingSystemDeveloper.Areas.Api.Controllers
 
                 if (lastCodeTrim != setDateNow)
                 {
-                    vm.ProductCode = "PDC" + setDateNow + "0001";
+                    ProductCode = "PDC" + setDateNow + "0001";
                 }
                 else
                 {
-                    vm.ProductCode = "PDC" + setDateNow + (Convert.ToInt32(lastCode.ProductCode.Substring(9, lastCode.ProductCode.Length - 9)) + 1).ToString("D4");
+                    ProductCode = "PDC" + setDateNow +
+                                    (Convert.ToInt32(lastCode.ProductCode.Substring(9, lastCode.ProductCode.Length - 9)) + 1)
+                                    .ToString("D4");
                 }
             }
 
-            var getUser = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+            // Mendapatkan user yang sedang login
+            var getUser = _userActiveRepository.GetAllUserLogin()
+                .FirstOrDefault(u => u.UserName == "barra@gmail.com");
 
-            if (ModelState.IsValid)
+            if (getUser == null)
             {
-                var Product = new Product
-                {
-                    CreateDateTime = DateTime.Now,
-                    CreateBy = new Guid(getUser.Id),
-                    ProductId = vm.ProductId,
-                    ProductCode = vm.ProductCode,
-                    ProductName = vm.ProductName,
-                    SupplierId = vm.SupplierId,
-                    CategoryId = vm.CategoryId,
-                    MeasurementId = vm.MeasurementId,
-                    DiscountId = vm.DiscountId,
-                    WarehouseLocationId = vm.WarehouseLocationId,
-                    MinStock = vm.MinStock,
-                    MaxStock = vm.MaxStock,
-                    BufferStock = vm.BufferStock,
-                    Stock = vm.Stock,
-                    Cogs = vm.Cogs,
-                    BuyPrice = vm.BuyPrice,
-                    RetailPrice = vm.RetailPrice,
-                    StorageLocation = vm.StorageLocation,
-                    RackNumber = vm.RackNumber,
-                    Note = vm.Note
-                };
-
-                var checkDuplicate = _productRepository.GetAllProduct().Where(c => c.ProductName == vm.ProductName).ToList();
-
-                if (checkDuplicate.Count == 0)
-                {
-                    var result = _productRepository.GetAllProduct().Where(c => c.ProductName == vm.ProductName).FirstOrDefault();
-                    if (result == null)
-                    {
-                        _productRepository.Tambah(Product);
-                        TempData["SuccessMessage"] = "Name " + vm.ProductName + " Saved";
-                        return RedirectToAction("Index", "Product");
-                    }
-                    else
-                    {
-                        ViewBag.Supplier = new SelectList(await _SupplierRepository.GetSuppliers(), "SupplierId", "SupplierName", SortOrder.Ascending);
-                        ViewBag.Category = new SelectList(await _categoryRepository.GetCategories(), "CategoryId", "CategoryName", SortOrder.Ascending);
-                        ViewBag.Measurement = new SelectList(await _measurementRepository.GetMeasurements(), "MeasurementId", "MeasurementName", SortOrder.Ascending);
-                        ViewBag.Discount = new SelectList(await _discountRepository.GetDiscounts(), "DiscountId", "DiscountValue", SortOrder.Ascending);
-                        ViewBag.Warehouse = new SelectList(await _warehouseLocationRepository.GetWarehouseLocations(), "WarehouseLocationId", "WarehouseLocationName", SortOrder.Ascending);
-
-                        TempData["WarningMessage"] = "Name " + vm.ProductName + " Already Exist !!!";
-                        return View(vm);
-                    }
-                }
-                else
-                {
-                    ViewBag.Supplier = new SelectList(await _SupplierRepository.GetSuppliers(), "SupplierId", "SupplierName", SortOrder.Ascending);
-                    ViewBag.Category = new SelectList(await _categoryRepository.GetCategories(), "CategoryId", "CategoryName", SortOrder.Ascending);
-                    ViewBag.Measurement = new SelectList(await _measurementRepository.GetMeasurements(), "MeasurementId", "MeasurementName", SortOrder.Ascending);
-                    ViewBag.Discount = new SelectList(await _discountRepository.GetDiscounts(), "DiscountId", "DiscountValue", SortOrder.Ascending);
-                    ViewBag.Warehouse = new SelectList(await _warehouseLocationRepository.GetWarehouseLocations(), "WarehouseLocationId", "WarehouseLocationName", SortOrder.Ascending);
-
-                    TempData["WarningMessage"] = "Name " + vm.ProductName + " There is duplicate data !!!";
-                    return View(vm);
-                }
+                return Unauthorized("User not found or unauthorized.");
             }
-            else
+
+            // Pencarian entitas berdasarkan nama yang diterima
+            var GetSupplier = _SupplierRepository.GetAllSupplier()
+                .FirstOrDefault(c => c.SupplierName == vm.SupplierName);
+
+            if (GetSupplier == null)
             {
-                ViewBag.Supplier = new SelectList(await _SupplierRepository.GetSuppliers(), "SupplierId", "SupplierName", SortOrder.Ascending);
-                ViewBag.Category = new SelectList(await _categoryRepository.GetCategories(), "CategoryId", "CategoryName", SortOrder.Ascending);
-                ViewBag.Measurement = new SelectList(await _measurementRepository.GetMeasurements(), "MeasurementId", "MeasurementName", SortOrder.Ascending);
-                ViewBag.Discount = new SelectList(await _discountRepository.GetDiscounts(), "DiscountId", "DiscountValue", SortOrder.Ascending);
-                ViewBag.Warehouse = new SelectList(await _warehouseLocationRepository.GetWarehouseLocations(), "WarehouseLocationId", "WarehouseLocationName", SortOrder.Ascending);
-
-                return View(vm);
+                return BadRequest("Supplier not found.");
             }
+
+            var GetCategory = _categoryRepository.GetAllCategory()
+                .FirstOrDefault(c => c.CategoryName == vm.CategoryName);
+
+            if (GetCategory == null)
+            {
+                return BadRequest("Category not found.");
+            }
+
+            var GetMeasurement = _measurementRepository.GetAllMeasurement()
+                .FirstOrDefault(c => c.MeasurementName == vm.MeasurementName);
+
+            if (GetMeasurement == null)
+            {
+                return BadRequest("Measurement not found.");
+            }
+
+            var GetDiscount = _discountRepository.GetAllDiscount()
+                .FirstOrDefault(c => c.DiscountValue == vm.DiscountValue);
+
+            if (GetDiscount == null)
+            {
+                return BadRequest("Discount not found.");
+            }
+
+            var GetWarehouseLocation = _warehouseLocationRepository.GetAllWarehouseLocation()
+                .FirstOrDefault(c => c.WarehouseLocationName == vm.WarehouseLocationName);
+
+            if (GetWarehouseLocation == null)
+            {
+                return BadRequest("Warehouse Location not found.");
+            }
+
+            // Membuat produk baru
+            var product = new Product
+            {
+                CreateDateTime = DateTime.Now,
+                CreateBy = new Guid(getUser.Id),
+                ProductId = Guid.NewGuid(),
+                ProductCode = ProductCode,
+                ProductName = vm.ProductName,
+                SupplierId = GetSupplier.SupplierId,
+                CategoryId = GetCategory.CategoryId,
+                MeasurementId = GetMeasurement.MeasurementId,
+                DiscountId = GetDiscount.DiscountId,
+                WarehouseLocationId = GetWarehouseLocation.WarehouseLocationId,
+                MinStock = vm.MinStock,
+                MaxStock = vm.MaxStock,
+                BufferStock = vm.BufferStock,
+                Stock = vm.Stock,
+                Cogs = vm.Cogs,
+                BuyPrice = vm.BuyPrice,
+                RetailPrice = vm.RetailPrice,
+                StorageLocation = vm.StorageLocation,
+                RackNumber = vm.RackNumber,
+                Note = vm.Note
+            };
+
+            // Simpan produk baru
+           var result = _productRepository.Tambah(product);
+
+            return Ok(new { Message = "Product created successfully!", result = result });
         }
 
+        [HttpPut("{id}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> UpdateProduct(Guid id, [FromBody] ProductViewModel vm)
+        {
+            // Mencari produk yang akan diedit berdasarkan ProductId
+            var product = _productRepository.GetAllProduct()
+                                                   .FirstOrDefault(p => p.ProductId == id);
+
+            if (product == null)
+            {
+                TempData["ErrorMessage"] = "Product not found!";
+                return NotFound("Product not found.");
+            }
+
+            var getUser = _userActiveRepository.GetAllUserLogin()
+                                               .FirstOrDefault(u => u.UserName == "barra@gmail.com");
+
+            // Pencarian entitas berdasarkan nama yang diterima
+            var GetSupplier = _SupplierRepository.GetAllSupplier()
+                .FirstOrDefault(c => c.SupplierName == vm.SupplierName);
+
+            if (GetSupplier == null)
+            {
+                return BadRequest("Supplier not found.");
+            }
+
+            var GetCategory = _categoryRepository.GetAllCategory()
+                .FirstOrDefault(c => c.CategoryName == vm.CategoryName);
+
+            if (GetCategory == null)
+            {
+                return BadRequest("Category not found.");
+            }
+
+            var GetMeasurement = _measurementRepository.GetAllMeasurement()
+                .FirstOrDefault(c => c.MeasurementName == vm.MeasurementName);
+
+            if (GetMeasurement == null)
+            {
+                return BadRequest("Measurement not found.");
+            }
+
+            var GetDiscount = _discountRepository.GetAllDiscount()
+                .FirstOrDefault(c => c.DiscountValue == vm.DiscountValue);
+
+            if (GetDiscount == null)
+            {
+                return BadRequest("Discount not found.");
+            }
+
+            var GetWarehouseLocation = _warehouseLocationRepository.GetAllWarehouseLocation()
+                .FirstOrDefault(c => c.WarehouseLocationName == vm.WarehouseLocationName);
+
+            if (GetWarehouseLocation == null)
+            {
+                return BadRequest("Warehouse Location not found.");
+            }
+            // Memperbarui data produk dengan data baru dari vm (ProductViewModel)
+            product.ProductName = vm.ProductName;
+            product.SupplierId = GetSupplier.SupplierId;
+            product.CategoryId = GetCategory.CategoryId;
+            product.MeasurementId = GetMeasurement.MeasurementId;
+            product.DiscountId = GetDiscount.DiscountId;
+            product.WarehouseLocationId = GetWarehouseLocation.WarehouseLocationId;
+            product.MinStock = vm.MinStock;
+            product.MaxStock = vm.MaxStock;
+            product.BufferStock = vm.BufferStock;
+            product.Stock = vm.Stock;
+            product.Cogs = vm.Cogs;
+            product.BuyPrice = vm.BuyPrice;
+            product.RetailPrice = vm.RetailPrice;
+            product.StorageLocation = vm.StorageLocation;
+            product.RackNumber = vm.RackNumber;
+            product.Note = vm.Note;
+            product.UpdateDateTime = DateTime.Now;  // Waktu update
+            product.UpdateBy = new Guid(getUser.Id);  // Update by user yang login
+
+            // Mengecek apakah ada produk dengan nama yang sama (opsional, tergantung kebutuhan)
+            var existingProduct = _productRepository.GetAllProduct()
+                                                          .FirstOrDefault(c => c.ProductName == vm.ProductName && c.ProductId != id);
+
+            if (existingProduct != null)
+            {
+                TempData["WarningMessage"] = $"Name '{vm.ProductName}' already exists!";
+                return BadRequest("Product with the same name already exists.");
+            }
+
+            // Menyimpan perubahan ke repository
+            _productRepository.Update(product);  // Pastikan ada method UpdateAsync di repository Anda
+
+            TempData["SuccessMessage"] = $"Product '{vm.ProductName}' updated successfully.";
+            return Ok(product);  // Mengembalikan objek produk yang telah diperbarui
+        }
+
+
+        [HttpDelete("{id}")]
+        [AllowAnonymous]
+        public IActionResult DeleteProduct(Guid id)
+        {
+            // Cari data berdasarkan ID
+            var ResepMasuk = _applicationDbContext.Products.Find(id);
+            if (ResepMasuk == null)
+            {
+                return NotFound($"ResepMasuk dengan ID {id} tidak ditemukan.");
+            }
+
+            try
+            {
+                // Hapus entitas dari database
+                _applicationDbContext.Products.Remove(ResepMasuk);
+
+                // Simpan perubahan
+                _applicationDbContext.SaveChanges();
+
+                return Ok(new { success = true, message = $"Berhasil menghapus product dengan id {id}" });
+            }
+            catch (Exception ex)
+            {
+                // Tangani error jika ada masalah
+                return StatusCode(500, $"Terjadi kesalahan saat menghapus data: {ex.Message}");
+            }
+        }
     }
 }

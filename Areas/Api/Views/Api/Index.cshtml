@@ -286,12 +286,12 @@
                         <h2 class="mb-0">
                             <button class="btn btn-block text-left collapsed text-black" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
                                 <h3>Update Product</h3>
-                            </button>
+                            </button>                         
                         </h2>
                     </div>
                     <div id="collapseFour" class="collapse row" aria-labelledby="headingFour" data-parent="#accordionExample">
                         <div class="card-body col-12">
-                            <span class="p-2 mr-1" style="background-color:#FCA130;">PUT</span>  /Api/DashboadApi/UpdateProduct
+                            <span class="p-2 mr-1" style="background-color:#FCA130;">PUT</span>  /Api/DashboadApi/UpdateProduct/{id}
                         </div>
                         
                         <div class="card-body col-12">
@@ -382,7 +382,7 @@
                         <h4 class="bg-white px-3 py-2 col-12">Response</h4>
                         <div class="card-body">
                             <p>Request Url</p>
-                            <p class="p-2 rounded-md text-white" style="background-color:#333333;"> https://blm-rsmmc.com/Api/DashboardApi/UpdateProduct</p>
+                            <p class="p-2 rounded-md text-white" style="background-color:#333333;"> https://blm-rsmmc.com/Api/DashboardApi/UpdateProduct<span class="text-green">{id}</span></p>
                             <textarea id="responseUpdateProduct" class="form-control p-2 bg-white" rows="10" readonly></textarea>
                         </div>
                     </div>
@@ -419,6 +419,9 @@
                             <textarea id="responseDeleteProduct" class="form-control p-2 bg-white" rows="10" readonly></textarea>
                         </div>
                     </div>
+                </div>
+                <div>
+                    @await Html.PartialAsync("_userApi");
                 </div>
             </div>
         </div>
@@ -558,7 +561,7 @@
                 const token = localStorage.getItem("bearerToken");
 
                 if (!token) {
-                    alert("Please authorize first by providing a Bearer Token.");
+                    alert("silahkan masukkan token telebih dahulu ke dalam authorization");
                     return;
                 }
 
@@ -634,7 +637,7 @@
 
                     const token = localStorage.getItem("bearerToken");
                     if (!token) {
-                        alert("Please authorize first by providing a Bearer Token.");
+                    alert("silahkan masukkan token telebih dahulu ke dalam authorization");
                         return;
                     }
 
@@ -694,7 +697,7 @@
 
                         const token = localStorage.getItem("bearerToken");
                         if (!token) {
-                            alert("Please authorize first by providing a Bearer Token.");
+                        alert("silahkan masukkan token telebih dahulu ke dalam authorization");
                             return;
                         }
 
@@ -731,7 +734,7 @@
 
                         const token = localStorage.getItem("bearerToken");
                         if (!token) {
-                            alert("Please authorize first by providing a Bearer Token.");
+                        alert("silahkan masukkan token telebih dahulu ke dalam authorization");
                             return;
                         }
 

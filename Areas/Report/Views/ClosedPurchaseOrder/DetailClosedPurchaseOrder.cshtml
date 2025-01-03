@@ -1,0 +1,179 @@
+﻿@{
+    ViewData["Title"] = "Detail Closed Purchase Order";
+    Layout = "~/Views/Shared/_TopNavbarReportPurchaseOrder.cshtml";
+}
+
+@using Microsoft.AspNetCore.Identity;
+@using PurchasingSystemDeveloper.Areas.Report.Models;
+
+@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@model PurchasingSystemDeveloper.Areas.Report.Models.ClosingPurchaseOrder
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-md-12 bg-white">
+            <div class="card-header bg-cyan">
+                <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+            </div>
+
+            <form enctype="multipart/form-data" asp-controller="ClosedPurchaseOrder" asp-action="DetailClosedPurchaseOrder" method="post" class="form-horizontal">
+                <div class="card-body">
+                    <input asp-for="ClosingPurchaseOrderId" type="hidden" />
+
+                    @if (signInManager.IsSignedIn(User))
+                    {
+                        <input asp-for="@User.Identity.Name" class="form-control" type="hidden">
+                    }
+
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="ClosingPurchaseOrderNumber">No. Closing Purchase Order</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="ClosingPurchaseOrderNumber" class="form-control form-control-border border-width-2" id="ClosingPurchaseOrderNumber" placeholder="Nomor Receive" readonly disabled>
+                        </div>
+                    </div>                    
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="UserAccessId">
+                            Create By
+                        </label>
+                        <div class="col-sm-10">
+                            <select asp-for="UserAccessId" asp-items="@ViewBag.User" class="form-control select2bs4" id="UserAccessId" style="width: 100%;" disabled>
+                                <option value="" hidden disabled selected>--Choose User--</option>
+                            </select>
+                            <span asp-validation-for="UserAccessId" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="Month">Month</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="Month" class="form-control form-control-border border-width-2" id="Month" placeholder="Month" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="Year">Year</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="Year" class="form-control form-control-border border-width-2" id="Year" placeholder="Year" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="TotalPo">Total PO</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="TotalPo" class="form-control form-control-border border-width-2" id="TotalPo" placeholder="Total Po" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="TotalQty">TotalQty</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="TotalQty" class="form-control form-control-border border-width-2" id="TotalQty" placeholder="Total Qty" disabled>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-2 col-form-label" asp-for="GrandTotal">GrandTotal</label>
+                        <div class="col-sm-10">
+                            <input type="text" asp-for="GrandTotal" class="form-control form-control-border border-width-2" id="GrandTotal" placeholder="Grand Total" disabled>
+                        </div>
+                    </div>                    
+                </div>
+
+                <div class="card card-default">
+                    <div class="card-header bg-cyan">
+                        <h3 class="card-title fw-bold" style="color:#ffffff">Item</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <div class="card-body table-responsive p-0">
+                            <table id="tbldetailpr" class="table table-head-fixed text-nowrap table-bordered table-hover table-striped">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff">No</div></th>
+                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Purchase Order Number</div></th>
+                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Term Of Payment Name</div></th>
+                                        <th class="text-left" style="background-color:#7FB9EE"><div style="color:#ffffff">Status</div></th>
+                                        <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff">Supplier Name</div></th>
+                                        <th class="text-center" style="background-color:#7FB9EE"><div style="color:#ffffff">Qty</div></th>
+                                        <th class="text-right" style="background-color:#7FB9EE"><div style="color:#ffffff">Total Price</div></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int i = 0; i < Model.ClosingPurchaseOrderDetails.Count; i++)
+                                    {
+                                        var no = (Model.ClosingPurchaseOrderDetails.Count - Model.ClosingPurchaseOrderDetails.Count) + i + 1;
+
+                                        <tr id="R$@no" class="detailProduct">
+                                            <td class="row-index text-center"><p>@no</p></td>
+                                            <td class="text-left row-productNumber"><input class="detkodeproduk" asp-for="@Model.ClosingPurchaseOrderDetails[i].PurchaseOrderNumber" type="hidden" value="@Model.ClosingPurchaseOrderDetails[i].PurchaseOrderNumber">@Model.ClosingPurchaseOrderDetails[i].PurchaseOrderNumber</td>
+                                            <td class="text-left row-productName"><input class="detnamaproduk" asp-for="@Model.ClosingPurchaseOrderDetails[i].TermOfPaymentName" type="hidden" value="@Model.ClosingPurchaseOrderDetails[i].TermOfPaymentName">@Model.ClosingPurchaseOrderDetails[i].TermOfPaymentName</td>
+                                            <td class="text-left"><input class="detsatuan" asp-for="@Model.ClosingPurchaseOrderDetails[i].Status" type="hidden" value="@Model.ClosingPurchaseOrderDetails[i].Status">@Model.ClosingPurchaseOrderDetails[i].Status</td>
+                                            <td class="text-center"><input class="detqty" asp-for="@Model.ClosingPurchaseOrderDetails[i].SupplierName" type="hidden" value="@Model.ClosingPurchaseOrderDetails[i].SupplierName">@Model.ClosingPurchaseOrderDetails[i].SupplierName</td>
+                                            <td class="text-center"><input class="detprice" asp-for="@Model.ClosingPurchaseOrderDetails[i].Qty" type="hidden" value="@Model.ClosingPurchaseOrderDetails[i].Qty">@Model.ClosingPurchaseOrderDetails[i].Qty</td>
+                                            <td class="text-right"><input class="detprice" asp-for="@Model.ClosingPurchaseOrderDetails[i].TotalPrice" type="hidden" value="@Model.ClosingPurchaseOrderDetails[i].TotalPrice">@Model.ClosingPurchaseOrderDetails[i].TotalPrice.ToString("C0")</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- start button footer -->
+                <div class="card card-orange">
+                    <div class="card-body">
+                        <div class="btn btn-default" data-href="@Url.Action("Index", "ClosedPurchaseOrder", new { area = "Report" })">Cancel</div>
+                    </div>
+                </div>
+                <!-- /.end button footer -->
+            </form>
+        </div>
+        @if (TempData["WarningMessage"] != null)
+        {
+            <script type="text/javascript">
+                window.onload = function () {
+                    swal("Failed", '@TempData["WarningMessage"]', "warning");
+                };
+            </script>
+        }
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->
+@section Scripts {
+    <script>
+        $(function () {
+            //Initialize Select2 Elements
+            $('.select2bs4').select2({
+                theme: 'bootstrap4'
+            })
+        })
+    </script>
+
+    <script>
+        const grandTotalInput = document.getElementById("GrandTotal");
+        const grandTotalValue = parseInt(grandTotalInput.value, 10) || 0;
+
+        // Format ke currency
+        grandTotalInput.value = grandTotalValue.toLocaleString('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        });
+    </script>
+
+    <script>
+        // Ambil elemen input
+        const monthInput = document.getElementById("Month");
+
+        // Ambil nilai (angka bulan)
+        const monthNumber = parseInt(monthInput.value, 10);
+
+        // Array nama bulan dalam bahasa Indonesia
+        const monthNames = [
+            "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+            "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+        ];
+
+        // Ubah angka menjadi nama bulan
+        if (monthNumber >= 1 && monthNumber <= 12) {
+            monthInput.value = monthNames[monthNumber - 1];
+        }
+    </script>
+}

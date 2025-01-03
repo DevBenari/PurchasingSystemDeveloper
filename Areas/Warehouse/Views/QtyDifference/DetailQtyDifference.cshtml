@@ -6,7 +6,11 @@
 @using Microsoft.AspNetCore.Identity;
 @using PurchasingSystemDeveloper.Areas.Warehouse.Models;
 
-@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@{
+    var listRole = Context.Session.GetString("ListRole");
+    @inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+
+}
 @model PurchasingSystemDeveloper.Areas.Warehouse.Models.QtyDifference
 
 <!-- Tempusdominus Bootstrap 4 -->
@@ -140,10 +144,32 @@
                 </div>
 
                 <!-- start button footer -->
-                <div class="card card-orange">
+                <div class="card">
                     <div class="card-body">
-                        <a class="btn bg-gray" asp-action="PrintQtyDifference" asp-controller="QtyDifference" asp-area="Warehouse" asp-route-id="@Model.QtyDifferenceId"><i class="far fa-file-alt" style="color:white"></i> Save As PDF</a>
-                        <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "QtyDifference", new { area = "Warehouse" })">Cancel</div>
+                        <div class="row">
+                            <div class="col-md-0"></div>
+                            <div class="col-md-12">
+                                <div class="row">
+                                    @if (User.Identity.Name == "superadmin@admin.com")
+                                    {
+                                        <a class="btn bg-gray" asp-action="PrintQtyDifference" asp-controller="QtyDifference" asp-area="Warehouse" asp-route-id="@Model.QtyDifferenceId"><i class="far fa-file-alt" style="color:white"></i> Save As PDF</a>
+                                    }
+                                    else
+                                    {
+                                        @if (!string.IsNullOrEmpty(listRole))
+                                        {
+                                            var roles = listRole.Split(',');
+                                            if (roles.Contains("PrintQtyDifference"))
+                                            {
+                                                <a class="btn bg-gray" asp-action="PrintQtyDifference" asp-controller="QtyDifference" asp-area="Warehouse" asp-route-id="@Model.QtyDifferenceId"><i class="far fa-file-alt" style="color:white"></i> Save As PDF</a>
+                                            }
+                                        }
+                                    }                                    
+                                    <div class="btn btn-default" id="btnbatal" data-href="@Url.Action("Index", "QtyDifference", new { area = "Warehouse" })">Cancel</div>                                    
+                                </div>
+                            </div>
+                            <div class="col-md-0"></div>
+                        </div>
                     </div>
                 </div>
                 <!-- /.end button footer -->

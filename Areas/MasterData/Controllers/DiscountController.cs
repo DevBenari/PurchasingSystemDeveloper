@@ -83,8 +83,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 return Redirect(Request.Path);
             }            
         }
-
-        [HttpGet]
+        
         public async Task<IActionResult> Index(string filterOptions = "", string searchTerm = "", DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, int page = 1, int pageSize = 10)
         {
             ViewBag.Active = "MasterData";
@@ -153,8 +152,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 return Redirect(Request.Path);
             }            
         }
-
-        [HttpGet]
+        
         public async Task<ViewResult> CreateDiscount()
         {
             ViewBag.Active = "MasterData";
@@ -277,8 +275,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 return Redirect(Request.Path);
             }            
         }
-
-        [HttpGet]
+        
         public async Task<IActionResult> DetailDiscount(Guid Id)
         {
             ViewBag.Active = "MasterData";
@@ -370,8 +367,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 return Redirect(Request.Path);
             }            
         }
-
-        [HttpGet]
+        
         public async Task<IActionResult> DeleteDiscount(Guid Id)
         {
             ViewBag.Active = "MasterData";

@@ -7,7 +7,11 @@
 @using PurchasingSystemDeveloper.Models;
 @using PurchasingSystemDeveloper.Repositories;
 
-@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@{
+    var listRole = Context.Session.GetString("ListRole");
+    @inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+
+}
 @model Pagination<UnitRequest>
 @{
     var searchTerm = ViewBag.SearchTerm as string;
@@ -30,12 +34,28 @@
                 <!-- /.card-header -->
                 <div class="card">
                     <div class="card-body">
-                        <form enctype="multipart/form-data" id="filterForm" asp-action="RedirectToIndex" asp-controller="UnitRequest" asp-area="Order" method="post" class="form-horizontal">
+                        <form enctype="multipart/form-data" id="filterForm" asp-action="Index" asp-controller="UnitRequest" asp-area="Transaction" method="get" class="form-horizontal">
                             <div class="row">
                                 <div class="col-md-3 input-group">
-                                    <div class="btn btn-default bg-green" id="btn-search" data-href="@Url.Action("RedirectToCreate", "UnitRequest")">
-                                        <i class="fas fa-plus"></i>
-                                    </div>
+                                    @if (User.Identity.Name == "superadmin@admin.com")
+                                    {
+                                        <div class="btn btn-default bg-green" id="btn-search" data-href="@Url.Action("CreateUnitRequest", "UnitRequest")">
+                                            <i class="fas fa-plus"></i>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        @if (!string.IsNullOrEmpty(listRole))
+                                        {
+                                            var roles = listRole.Split(',');
+                                            if (roles.Contains("CreateUnitRequest"))
+                                            {
+                                                <div class="btn btn-default bg-green" id="btn-search" data-href="@Url.Action("CreateUnitRequest", "UnitRequest")">
+                                                    <i class="fas fa-plus"></i>
+                                                </div>
+                                            }
+                                        }
+                                    }                                                                        
                                     <input type="date" name="startDate" id="startDate" class="date-input" value="@ViewBag.StartDate" placeholder="Select Start Date">
                                 </div>
                                 <div class="col-md-3 input-group">
@@ -56,7 +76,7 @@
                                 <div class="col-md-4 input-group" data-target-input="nearest">
                                     <input autocomplete="off" maxlength="50" type="text" class="form-control form-control-border border-width-2" id="searchIn" name="searchTerm" value="@searchTerm" placeholder="Search unit requests..." />
                                     <button type="submit" class="btn btn-default bg-indigo" id="btn-search"><i class="fa fa-search"></i></button>
-                                    <div class="btn btn-default bg-indigo" id="btn-search" data-href="@Url.Action("RedirectToIndex", "UnitRequest")">
+                                    <div class="btn btn-default bg-indigo" id="btn-search" data-href="@Url.Action("Index", "UnitRequest")">
                                         <i class="fa-solid fa-arrows-rotate"></i>
                                     </div>                                    
                                     <input type="hidden" name="page" value="1" />
@@ -85,7 +105,7 @@
                                 {
                                     @foreach (var ur in Model.Items)
                                     {
-                                        <tr data-href="@Url.Action("RedirectToDetail", "UnitRequest", new {id=ur.UnitRequestId})">
+                                        <tr data-href="@Url.Action("DetailUnitRequest", "UnitRequest", new {id=ur.UnitRequestId})">
                                             <th class="text-center">@itemNumber</th>
                                             <td class="text-left">@ur.CreateDateTime.ReadStringDate()</td>
                                             <td class="text-left">@ur.ApplicationUser.NamaUser</td>
@@ -128,22 +148,24 @@
                                     </tr>
                                 }
                             </tbody>
-                        </table>
+                        </table>                        
+                    </div>
+                    <span class="error">* Double click in the table row to open data</span>
 
-                        @* Pagination *@
-                        <div>
-                            <p class="pagination-info">Page @Model.CurrentPage of @Model.TotalPages from @Model.TotalCount Rows</p>
-                            <div class="pagination-container">
-                                <ul class="pagination">
-                                    @{
-                                        int startPage = ((Model.CurrentPage - 1) / 10) * 10 + 1;
-                                        int endPage = Math.Min(startPage + 9, Model.TotalPages);
-                                    }
+                    @* Pagination *@
+                    <div>
+                        <p class="pagination-info">Page @Model.CurrentPage of @Model.TotalPages from @Model.TotalCount Rows</p>
+                        <div class="pagination-container">
+                            <ul class="pagination">
+                                @{
+                                    int startPage = ((Model.CurrentPage - 1) / 10) * 10 + 1;
+                                    int endPage = Math.Min(startPage + 9, Model.TotalPages);
+                                }
 
-                                    @if (startPage > 1)
-                                    {
-                                        <li>
-                                            <div class="pagination-link" data-href="@Url.Action("RedirectToIndex", "UnitRequest", new
+                                @if (startPage > 1)
+                                {
+                                    <li>
+                                        <div class="pagination-link" href="@Url.Action("Index", "UnitRequest", new
                                                 {
                                                     filterOptions = filterOptions,
                                                     searchTerm = searchTerm,
@@ -152,15 +174,15 @@
                                                     page = startPage - 10,
                                                     pageSize = Model.PageSize
                                                 })">
-                                                Prev 10
-                                            </div>                                            
-                                        </li>
-                                    }
+                                            Prev 10
+                                        </div>
+                                    </li>
+                                }
 
-                                    @if (Model.CurrentPage > 1)
-                                    {
-                                        <li>
-                                            <div class="pagination-link" id="btn-previous" data-href="@Url.Action("RedirectToIndex", "UnitRequest", new
+                                @if (Model.CurrentPage > 1)
+                                {
+                                    <li>
+                                        <div class="pagination-link" id="btn-previous" href="@Url.Action("Index", "UnitRequest", new
                                                 {
                                                     filterOptions = filterOptions,
                                                     searchTerm = searchTerm,
@@ -169,15 +191,15 @@
                                                     page = Model.CurrentPage - 1,
                                                     pageSize = Model.PageSize
                                                 })">
-                                                Prev
-                                            </div>                                            
-                                        </li>
-                                    }
+                                            Prev
+                                        </div>
+                                    </li>
+                                }
 
-                                    @for (int i = startPage; i <= endPage; i++)
-                                    {
-                                        <li class="@(i == Model.CurrentPage ? "active" : "")">
-                                            <div class="pagination-link" data-href="@Url.Action("RedirectToIndex", "UnitRequest", new
+                                @for (int i = startPage; i <= endPage; i++)
+                                {
+                                    <li class="@(i == Model.CurrentPage ? "active" : "")">
+                                        <div class="pagination-link" href="@Url.Action("Index", "UnitRequest", new
                                                 {
                                                     filterOptions = filterOptions,
                                                     searchTerm = searchTerm,
@@ -186,15 +208,15 @@
                                                     page = i,
                                                     pageSize = Model.PageSize
                                                 })">
-                                                @i
-                                            </div>                                            
-                                        </li>
-                                    }
+                                            @i
+                                        </div>
+                                    </li>
+                                }
 
-                                    @if (Model.CurrentPage < Model.TotalPages)
-                                    {
-                                        <li>
-                                            <div class="pagination-link" id="btn-next" data-href="@Url.Action("RedirectToIndex", "UnitRequest", new
+                                @if (Model.CurrentPage < Model.TotalPages)
+                                {
+                                    <li>
+                                        <div class="pagination-link" id="btn-next" href="@Url.Action("Index", "UnitRequest", new
                                                 {
                                                     filterOptions = filterOptions,
                                                     searchTerm = searchTerm,
@@ -203,15 +225,15 @@
                                                     page = Model.CurrentPage + 1,
                                                     pageSize = Model.PageSize
                                                 })">
-                                                Next
-                                            </div>                                            
-                                        </li>
-                                    }
+                                            Next
+                                        </div>
+                                    </li>
+                                }
 
-                                    @if (endPage < Model.TotalPages)
-                                    {
-                                        <li>
-                                            <div class="pagination-link" data-href="@Url.Action("RedirectToIndex", "UnitRequest", new
+                                @if (endPage < Model.TotalPages)
+                                {
+                                    <li>
+                                        <div class="pagination-link" href="@Url.Action("Index", "UnitRequest", new
                                                 {
                                                     filterOptions = filterOptions,
                                                     searchTerm = searchTerm,
@@ -220,41 +242,37 @@
                                                     page = endPage + 1,
                                                     pageSize = Model.PageSize
                                                 })">
-                                                Next 10
-                                            </div>
-                                        </li>
-                                    }
-                                </ul>
-                            </div>
+                                            Next 10
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
                         </div>
-
                     </div>
-                    <span class="error">* Double click in the table row to open data</span>
-                </div>
-
-                <!-- /.card-body -->
-                @if (TempData["SuccessMessage"] != null)
-                {
-                    <script type="text/javascript">
-                        window.onload = function () {
-                            swal("Berhasil", '@TempData["SuccessMessage"]', "success");
-                        };
-                    </script>
-                }
-                @if (TempData["WarningMessage"] != null)
-                {
-                    <script type="text/javascript">
-                        window.onload = function () {
-                            swal("Gagal Simpan", '@TempData["WarningMessage"]', "warning");
-                        };
-                    </script>
-                }
+                </div>                
             </div>
             <!-- /.card -->
         </div>
     </div>
     <!-- /.row -->
 </section>
+<!-- /.card-body -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            swal("Berhasil", '@TempData["SuccessMessage"]', "success");
+        };
+    </script>
+}
+@if (TempData["WarningMessage"] != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            swal("Gagal Simpan", '@TempData["WarningMessage"]', "warning");
+        };
+    </script>
+}
 <!-- /.content -->
 @section Scripts{
         <

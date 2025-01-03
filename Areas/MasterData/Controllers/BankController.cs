@@ -83,8 +83,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 return Redirect(Request.Path);
             }            
         }
-
-        [HttpGet]
+        
         //[Authorize(Roles = "IndexBank")]
         public async Task<IActionResult> Index(string filterOptions = "", string searchTerm = "", DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, int page = 1, int pageSize = 10)
         {
@@ -155,8 +154,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 return Redirect(Request.Path);
             }            
         }
-
-        [HttpGet]
+        
         //[Authorize(Roles = "CreateBank")]
         public async Task<ViewResult> CreateBank()
         {
@@ -238,7 +236,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                     {
                         _bankRepository.Tambah(Bank);
                         TempData["SuccessMessage"] = "Name " + vm.BankName + " Saved";
-                        return RedirectToAction("RedirectToIndex", "Bank");
+                        return RedirectToAction("Index", "Bank", new { area = "MasterData" });
                     }
                     else
                     {
@@ -284,8 +282,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 return Redirect(Request.Path);
             }            
         }
-        
-        [HttpGet]
+                
         //[Authorize(Roles = "DetailBank")]
         public async Task<IActionResult> DetailBank(Guid Id)
         {
@@ -338,7 +335,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                         _applicationDbContext.SaveChanges();
 
                         TempData["SuccessMessage"] = "Name " + viewModel.BankName + " Success Changes";
-                        return RedirectToAction("RedirectToIndex", "Bank");
+                        return RedirectToAction("Index", "Bank");
                     }
                     else
                     {
@@ -384,8 +381,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 return Redirect(Request.Path);
             }            
         }
-
-        [HttpGet]
+        
         //[Authorize(Roles = "DeleteBank")]
         public async Task<IActionResult> DeleteBank(Guid Id)
         {
@@ -417,7 +413,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             _applicationDbContext.SaveChanges();
 
             TempData["SuccessMessage"] = "Name " + vm.BankName + " Success Deleted";
-            return RedirectToAction("RedirectToIndex", "Bank");
+            return RedirectToAction("Index", "Bank");
         }
     }
 }

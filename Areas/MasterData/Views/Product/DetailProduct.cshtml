@@ -6,7 +6,11 @@
 @using Microsoft.AspNetCore.Identity;
 @using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
 
-@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@{
+    var listRole = Context.Session.GetString("ListRole");
+    @inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+
+}
 @model ProductViewModel
 
 <!-- Tempusdominus Bootstrap 4 -->
@@ -19,6 +23,13 @@
             <form enctype="multipart/form-data" asp-controller="Product" asp-action="DetailProduct" method="post" class="form-horizontal">
                 <div class="card-header bg-cyan">
                     <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
+
+                    <div class="card-tools">                       
+                        <div class="icheck-success d-inline">
+                            <input asp-for="IsActive" type="checkbox" id="IsActive" disabled>
+                            <label asp-for="IsActive">Is Active?</label>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="card">
@@ -39,12 +50,19 @@
                                         <input maxlength="50" autocomplete="off" autofocus type="text" asp-for="ProductName" class="form-control form-control-border border-width-2" id="ProductName" placeholder="Product Name" disabled>
                                         <span asp-validation-for="ProductName" class="text-danger"></span>
                                     </div>
-                                </div>
+                                </div>                                
                                 <div class="form-group row">
                                     <div class="col-sm-12">
                                         <label asp-for="SupplierId">Supplier Name</label>
-                                        <select class="form-control select2bs4" style="width: 100%;" asp-for="SupplierId" id="SupplierId" asp-items="@ViewBag.Supplier" disabled>
-                                            <option value="" hidden disabled selected>--Choose Supplier--</option>
+                                        <select id="supplierDropdown" asp-for="SupplierId" class="form-control select2bs4" style="width: 100%;" disabled>
+                                            <option value="" disabled selected>--Choose Supplier--</option>
+
+                                            @if (Model.SupplierId != Guid.Empty && !string.IsNullOrEmpty(Model.SupplierName))
+                                            {
+                                                <option value="@Model.SupplierId.ToString()" selected="selected">
+                                                    @Model.SupplierName
+                                                </option>
+                                            }
                                         </select>
                                         <span asp-validation-for="SupplierId" class="text-danger"></span>
                                     </div>
@@ -52,17 +70,31 @@
                                 <div class="form-group row">
                                     <div class="col-sm-12">
                                         <label asp-for="CategoryId">Category Name</label>
-                                        <select class="form-control select2bs4" style="width: 100%;" asp-for="CategoryId" id="CategoryId" asp-items="@ViewBag.Category" disabled>
-                                            <option value="" hidden disabled selected>--Choose Category--</option>
+                                        <select id="categoryDropdown" asp-for="CategoryId" class="form-control select2bs4" style="width: 100%;" disabled>
+                                            <option value="" disabled selected>--Choose Category--</option>
+
+                                            @if (Model.CategoryId != Guid.Empty && !string.IsNullOrEmpty(Model.CategoryName))
+                                            {
+                                                <option value="@Model.CategoryId.ToString()" selected="selected">
+                                                    @Model.CategoryName
+                                                </option>
+                                            }
                                         </select>
-                                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                                        <span asp-validation-for="SupplierId" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="MeasurementId">Measure Name</label>
-                                        <select class="form-control select2bs4" style="width: 100%;" asp-for="MeasurementId" id="MeasurementId" asp-items="@ViewBag.Measurement" disabled>
-                                            <option value="" hidden disabled selected>--Choose Measurement--</option>
+                                        <label asp-for="MeasurementId">Measurement Name</label>
+                                        <select id="measurementDropdown" asp-for="MeasurementId" class="form-control select2bs4" style="width: 100%;" disabled>
+                                            <option value="" disabled selected>--Choose Measurement--</option>
+
+                                            @if (Model.MeasurementId != Guid.Empty && !string.IsNullOrEmpty(Model.MeasurementName))
+                                            {
+                                                <option value="@Model.MeasurementId.ToString()" selected="selected">
+                                                    @Model.MeasurementName
+                                                </option>
+                                            }
                                         </select>
                                         <span asp-validation-for="MeasurementId" class="text-danger"></span>
                                     </div>
@@ -70,10 +102,24 @@
                                 <div class="form-group row">
                                     <div class="col-sm-12">
                                         <label asp-for="DiscountId">Discount Name</label>
-                                        <select class="form-control select2bs4" style="width: 100%;" asp-for="DiscountId" id="DiscountId" asp-items="@ViewBag.Discount" disabled>
-                                            <option value="" hidden disabled selected>--Choose Discount--</option>
+                                        <select id="discountDropdown" asp-for="DiscountId" class="form-control select2bs4" style="width: 100%;" disabled>
+                                            <option value="" disabled selected>--Choose Discount--</option>
+
+                                            @if (Model.DiscountId != Guid.Empty)
+                                            {
+                                                <option value="@Model.DiscountId.ToString()" selected="selected">
+                                                    @Model.DiscountValue
+                                                </option>
+                                            }
                                         </select>
                                         <span asp-validation-for="DiscountId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="ExpiredDate">Expired Date</label>
+                                        <input type="date" asp-for="ExpiredDate" maxlength="50" autocomplete="off" class="form-control form-control-border border-width-2" id="ExpiredDate" placeholder="Expired Date" readonly disabled>
+                                        <span asp-validation-for="ExpiredDate" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -127,11 +173,18 @@
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-sm-12">
-                                        <label asp-for="WarehouseLocationId">Warehouse Location</label>
-                                        <select class="form-control select2bs4" style="width: 100%;" asp-for="WarehouseLocationId" id="WarehouseLocationId" asp-items="@ViewBag.Warehouse" disabled>
-                                            <option value="" hidden disabled selected>--Choose WarehouseLocation--</option>
+                                        <label asp-for="WarehouseLocationId">Warehouse Location Name</label>
+                                        <select id="warehouseDropdown" asp-for="WarehouseLocationId" class="form-control select2bs4" style="width: 100%;" disabled>
+                                            <option value="" disabled selected>--Choose Warehouse Location--</option>
+
+                                            @if (Model.WarehouseLocationId != Guid.Empty && !string.IsNullOrEmpty(Model.WarehouseLocationName))
+                                            {
+                                                <option value="@Model.WarehouseLocationId.ToString()" selected="selected">
+                                                    @Model.WarehouseLocationName
+                                                </option>
+                                            }
                                         </select>
-                                        <span asp-validation-for="WarehouseLocationId" class="text-danger"></span>
+                                        <span asp-validation-for="WarehouseLocationId" class="text-danger"></span>                                        
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -169,12 +222,28 @@
                             <div class="col-md-12">
                                 <div class="row">
                                     <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold" id="btnsimpan"><div style="color:#ffffff">Save</div></button>
-                                    <a class="btn bg-indigo" id="btnubah">Change</a>
-                                    <a class="btn btn-default" id="btnbatalubah">Cancel Change</a>
-                                    @*<a class="btn btn-danger" asp-action="RedirectToDelete" asp-controller="Product" asp-area="MasterData" asp-route-id="@Model.ProductId" id="btnhapus">Delete</a>
-                                    <a class="btn btn-default" asp-action="RedirectToIndex" asp-controller="Product" asp-area="MasterData" id="btnbatal">Cancel</a>*@
-                                    <div class="btn btn-danger" data-href="@Url.Action("RedirectToDelete", "Product", new { id = Model.ProductId })">Delete</div>
-                                    <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "Product", new { area = "MasterData" })">Cancel</div>
+                                    @if (User.Identity.Name == "superadmin@admin.com")
+                                    {
+                                        <a class="btn bg-indigo" id="btnubah">Change</a>
+                                        <div class="btn btn-danger" data-href="@Url.Action("DeleteProduct", "Product", new { id = Model.ProductId })">Delete</div>
+                                    }
+                                    else
+                                    {
+                                        @if (!string.IsNullOrEmpty(listRole))
+                                        {
+                                            var roles = listRole.Split(',');
+                                            if (roles.Contains("UpdateProduct"))
+                                            {
+                                                <a class="btn bg-indigo" id="btnubah">Change</a>
+                                            }
+                                            <a class="btn btn-default" id="btnbatalubah">Cancel Change</a>
+                                            if (roles.Contains("DeleteProduct"))
+                                            {
+                                                <div class="btn btn-danger" data-href="@Url.Action("DeleteProduct", "Product", new { id = Model.ProductId })">Delete</div>
+                                            }
+                                        }
+                                    }                                                                        
+                                    <div class="btn btn-default" id="btnbatal" data-href="@Url.Action("Index", "Product", new { area = "MasterData" })">Cancel</div>
                                 </div>
                             </div>
                             <div class="col-md-0"></div>
@@ -195,6 +264,214 @@
 
                     <script>
                         $(function () {
+                            // Inisialisasi Select2 pada #supplierDropdown
+                            $('#supplierDropdown').select2({
+                                theme: 'bootstrap4',
+                                placeholder: "--Choose Supplier--",
+                                allowClear: true,
+
+                                ajax: {
+                                    url: '@Url.Action("GetSuppliersPaged", "Product")', // Sesuaikan nama Controller
+                                    dataType: 'json',
+                                    delay: 250,
+                                    data: function (params) {
+                                        return {
+                                            term: params.term || "",
+                                            page: params.page || 1,
+                                            pageSize: 10
+                                        };
+                                    },
+                                    processResults: function (data, params) {
+                                        params.page = params.page || 1;
+                                        return {
+                                            results: data.results,
+                                            pagination: {
+                                                more: data.pagination.more
+                                            }
+                                        };
+                                    }
+                                }
+                            });
+                        });
+                    </script>
+
+                    @*<script>
+                        $(function () {
+                            // Inisialisasi Supplier
+                            $('#supplierDropdown').select2({
+                                theme: 'bootstrap4',
+                                placeholder: "--Choose Supplier--",
+                                allowClear: true,
+
+                                ajax: {
+                                    url: '@Url.Action("GetSuppliersPaged", "Product")',
+                                    dataType: 'json',
+                                    delay: 250,
+                                    data: function (params) {
+                                        var query = {
+                                            term: params.term || "",
+                                            page: params.page || 1,
+                                            pageSize: 10
+                                        };
+                                        return query;
+                                    },
+                                    processResults: function (data, params) {
+                                        params.page = params.page || 1;
+
+                                        return {
+                                            results: data.results,
+                                            pagination: {
+                                                more: data.pagination.more
+                                            }
+                                        };
+                                    }
+                                }
+                            });
+                        });
+                    </script>*@
+
+                    <script>
+                        $(function () {
+                            // Inisialisasi Category
+                            $('#categoryDropdown').select2({
+                                theme: 'bootstrap4',
+                                placeholder: "--Choose Category--",
+                                allowClear: true,
+
+                                ajax: {
+                                    url: '@Url.Action("GetCategoriesPaged", "Product")',
+                                    dataType: 'json',
+                                    delay: 250,
+                                    data: function (params) {
+                                        var query = {
+                                            term: params.term || "",
+                                            page: params.page || 1,
+                                            pageSize: 10
+                                        };
+                                        return query;
+                                    },
+                                    processResults: function (data, params) {
+                                        params.page = params.page || 1;
+
+                                        return {
+                                            results: data.results,
+                                            pagination: {
+                                                more: data.pagination.more
+                                            }
+                                        };
+                                    }
+                                }
+                            });
+                        });
+                    </script>
+
+                    <script>
+                        $(function () {
+                            // Inisialisasi Measurement
+                            $('#measurementDropdown').select2({
+                                theme: 'bootstrap4',
+                                placeholder: "--Choose Measurement--",
+                                allowClear: true,
+
+                                ajax: {
+                                    url: '@Url.Action("GetMeasurementsPaged", "Product")',
+                                    dataType: 'json',
+                                    delay: 250,
+                                    data: function (params) {
+                                        var query = {
+                                            term: params.term || "",
+                                            page: params.page || 1,
+                                            pageSize: 10
+                                        };
+                                        return query;
+                                    },
+                                    processResults: function (data, params) {
+                                        params.page = params.page || 1;
+
+                                        return {
+                                            results: data.results,
+                                            pagination: {
+                                                more: data.pagination.more
+                                            }
+                                        };
+                                    }
+                                }
+                            });
+                        });
+                    </script>
+
+                    <script>
+                        $(function () {
+                            // Inisialisasi Discount
+                            $('#discountDropdown').select2({
+                                theme: 'bootstrap4',
+                                placeholder: "--Choose Discount--",
+                                allowClear: true,
+
+                                ajax: {
+                                    url: '@Url.Action("GetDiscountsPaged", "Product")',
+                                    dataType: 'json',
+                                    delay: 250,
+                                    data: function (params) {
+                                        var query = {
+                                            term: params.term || "",
+                                            page: params.page || 1,
+                                            pageSize: 10
+                                        };
+                                        return query;
+                                    },
+                                    processResults: function (data, params) {
+                                        params.page = params.page || 1;
+
+                                        return {
+                                            results: data.results,
+                                            pagination: {
+                                                more: data.pagination.more
+                                            }
+                                        };
+                                    }
+                                }
+                            });
+                        });
+                    </script>
+
+                    <script>
+                        $(function () {
+                            // Inisialisasi Measurement
+                            $('#warehouseDropdown').select2({
+                                theme: 'bootstrap4',
+                                placeholder: "--Choose Warehouse Location--",
+                                allowClear: true,
+
+                                ajax: {
+                                    url: '@Url.Action("GetWarehouseLocationsPaged", "Product")',
+                                    dataType: 'json',
+                                    delay: 250,
+                                    data: function (params) {
+                                        var query = {
+                                            term: params.term || "",
+                                            page: params.page || 1,
+                                            pageSize: 10
+                                        };
+                                        return query;
+                                    },
+                                    processResults: function (data, params) {
+                                        params.page = params.page || 1;
+
+                                        return {
+                                            results: data.results,
+                                            pagination: {
+                                                more: data.pagination.more
+                                            }
+                                        };
+                                    }
+                                }
+                            });
+                        });
+                    </script>
+
+                    <script>
+                        $(function () {
                             $("#btnsimpan").hide();
                             $("#btnbatalubah").hide();
 
@@ -207,11 +484,11 @@
 
                                 document.getElementById("ProductCode").disabled = false;
                                 document.getElementById("ProductName").disabled = false;
-                                document.getElementById("SupplierId").disabled = false;
-                                document.getElementById("CategoryId").disabled = false;
-                                document.getElementById("MeasurementId").disabled = false;
-                                document.getElementById("DiscountId").disabled = false;
-                                document.getElementById("WarehouseLocationId").disabled = false;
+                                document.getElementById("supplierDropdown").disabled = false;
+                                document.getElementById("categoryDropdown").disabled = false;
+                                document.getElementById("measurementDropdown").disabled = false;
+                                document.getElementById("discountDropdown").disabled = false;
+                                document.getElementById("warehouseDropdown").disabled = false;
                                 document.getElementById("MinStock").disabled = false;
                                 document.getElementById("MaxStock").disabled = false;
                                 document.getElementById("BufferStock").disabled = false;
@@ -233,11 +510,11 @@
 
                                 document.getElementById("ProductCode").disabled = true;
                                 document.getElementById("ProductName").disabled = true;
-                                document.getElementById("SupplierId").disabled = true;
-                                document.getElementById("CategoryId").disabled = true;
-                                document.getElementById("MeasurementId").disabled = true;
-                                document.getElementById("DiscountId").disabled = true;
-                                document.getElementById("WarehouseLocationId").disabled = true;
+                                document.getElementById("supplierDropdown").disabled = true;
+                                document.getElementById("categoryDropdown").disabled = true;
+                                document.getElementById("measurementDropdown").disabled = true;
+                                document.getElementById("discountDropdown").disabled = true;
+                                document.getElementById("warehouseDropdown").disabled = true;
                                 document.getElementById("MinStock").disabled = true;
                                 document.getElementById("MaxStock").disabled = true;
                                 document.getElementById("BufferStock").disabled = true;

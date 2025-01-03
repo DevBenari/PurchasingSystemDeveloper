@@ -5,8 +5,11 @@
 
 @using Microsoft.AspNetCore.Identity;
 @using PurchasingSystemDeveloper.Areas.Order.ViewModels;
+@{
+    var listRole = Context.Session.GetString("ListRole");
+    @inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
 
-@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+}
 @model ApprovalQtyDifferenceViewModel
 
 <!-- Main content -->
@@ -128,22 +131,33 @@
                         <div class="card-body">
                             @if (Model.ApprovalStatusUser == "User1" && Model.Status == "Waiting Approval" && Model.UserApprove == User.Identity.Name)
                             {
-                                <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold" id="btnapprove" value="Approve"><div style="color:#ffffff">Approve</div></button>
-                                <button type="submit" class="btn btn-primary bg-danger float-left fw-bold" id="btnreject" value="Reject"><div style="color:#ffffff">Reject</div></button>
-                                @*<a class="btn btn-default" asp-action="Index" asp-controller="ApprovalQtyDifference" asp-area="Order" id="btnbatal">Cancel</a>*@
-                                <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "ApprovalQtyDifference", new { area = "Order" })">Cancel</div>
+                                @if (!string.IsNullOrEmpty(listRole))
+                                {
+                                    var roles = listRole.Split(',');
+                                    if (roles.Contains("UpdateApprovalQtyDifference"))
+                                    {
+                                        <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold" id="btnapprove" value="Approve"><div style="color:#ffffff">Approve</div></button>
+                                        <button type="submit" class="btn btn-primary bg-danger float-left fw-bold" id="btnreject" value="Reject"><div style="color:#ffffff">Reject</div></button>
+                                    }
+                                }
+                                <div class="btn btn-default" data-href="@Url.Action("Index", "ApprovalQtyDifference", new { area = "Order" })">Cancel</div>
                             }
                             else if (Model.ApprovalStatusUser == "User2" && Model.Status == "User1Approve" && Model.UserApprove == User.Identity.Name)
                             {
-                                <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold" id="btnapprove" value="Approve"><div style="color:#ffffff">Approve</div></button>
-                                <button type="submit" class="btn btn-primary bg-danger float-left fw-bold" id="btnreject" value="Reject"><div style="color:#ffffff">Reject</div></button>
-                                @*<a class="btn btn-default" asp-action="Index" asp-controller="ApprovalQtyDifference" asp-area="Order" id="btnbatal">Cancel</a>*@
-                                <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "ApprovalQtyDifference", new { area = "Order" })">Cancel</div>
+                                @if (!string.IsNullOrEmpty(listRole))
+                                {
+                                    var roles = listRole.Split(',');
+                                    if (roles.Contains("UpdateApprovalQtyDifference"))
+                                    {
+                                        <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold" id="btnapprove" value="Approve"><div style="color:#ffffff">Approve</div></button>
+                                        <button type="submit" class="btn btn-primary bg-danger float-left fw-bold" id="btnreject" value="Reject"><div style="color:#ffffff">Reject</div></button>
+                                    }
+                                }
+                                <div class="btn btn-default" data-href="@Url.Action("Index", "ApprovalQtyDifference", new { area = "Order" })">Cancel</div>
                             }                           
                             else
-                            {
-                                @*<a class="btn btn-default" asp-action="Index" asp-controller="ApprovalQtyDifference" asp-area="Order" id="btnbatal">Cancel</a>*@
-                                <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "ApprovalQtyDifference", new { area = "Order" })">Cancel</div>
+                            {                                
+                                <div class="btn btn-default" data-href="@Url.Action("Index", "ApprovalQtyDifference", new { area = "Order" })">Cancel</div>
                             }
                         </div>
                     </div>

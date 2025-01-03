@@ -86,8 +86,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 return Redirect(Request.Path);
             }            
         }
-
-        [HttpGet]
+        
         public async Task<IActionResult> Index(string filterOptions = "", string searchTerm = "", DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, int page = 1, int pageSize = 10)
         {
             ViewBag.Active = "MasterData";
@@ -150,8 +149,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 return Redirect(Request.Path);
             }            
         }
-
-        [HttpGet]
+        
         public async Task<ViewResult> CreateLeadTime()
         {
             ViewBag.Active = "MasterData";
@@ -273,8 +271,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 return Redirect(Request.Path);
             }            
         }
-
-        [HttpGet]
+        
         public async Task<IActionResult> DetailLeadTime(Guid Id)
         {
             ViewBag.Active = "MasterData";
@@ -364,8 +361,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 return Redirect(Request.Path);
             }            
         }
-
-        [HttpGet]
+        
         public async Task<IActionResult> DeleteLeadTime(Guid Id)
         {
             ViewBag.Active = "MasterData";

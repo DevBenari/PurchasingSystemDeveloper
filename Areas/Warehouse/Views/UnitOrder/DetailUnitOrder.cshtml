@@ -1,11 +1,15 @@
 ﻿@{
-    ViewData["Title"] = "Detail Warehouse Request";
+    ViewData["Title"] = "Detail Unit Order";
     Layout = "~/Views/Shared/_TopNavbarWarehouseUnitOrder.cshtml";
 }
 
 @using Microsoft.AspNetCore.Identity;
 
-@inject SignInManager<ApplicationUser> signInManager
+@{
+    var listRole = Context.Session.GetString("ListRole");
+    @inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+
+}
 @model PurchasingSystemDeveloper.Areas.Warehouse.Models.UnitOrder
 
 <!-- Tempusdominus Bootstrap 4 -->
@@ -129,19 +133,30 @@
                 <!-- start button footer -->
                 <div class="card card-orange">
                     <div class="card-body">
-                        @if (Model.Status == "In Order")
+                        @if (User.Identity.Name == "superadmin@admin.com")
                         {
-                            <a class="btn btn-success" asp-action="TransferUnit" asp-controller="UnitOrder" asp-area="Warehouse" asp-route-id="@Model.UnitOrderId">Transfer</a>
-                            @*<a class="btn bg-indigo" asp-action="PrintWarehouseRequest" asp-controller="WarehouseRequest" asp-area="Warehouse" asp-route-id="@Model.WarehouseRequestId"><i class="fas fa-print" style="color:white"></i></a>*@
-                            @*<a class="btn btn-default" asp-action="Index" asp-controller="UnitOrder">Batal</a>*@
-                            <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "UnitOrder", new { area = "Warehouse" })">Cancel</div>
+                            <div class="btn btn-success" data-href="@Url.Action("TransferUnit", "UnitOrder", new { area = "Warehouse", id = Model.UnitOrderId })">Transfer</div>
+                            <div class="btn btn-default" id="btnbatal" data-href="@Url.Action("Index", "UnitOrder", new { area = "Warehouse" })">Cancel</div>
                         }
                         else
                         {
-                            @*<a class="btn bg-indigo" asp-action="PrintWarehouseRequest" asp-controller="WarehouseRequest" asp-area="Warehouse" asp-route-id="@Model.WarehouseRequestId"><i class="fas fa-print" style="color:white"></i></a>*@
-                            @*<a class="btn btn-default" asp-action="Index" asp-controller="UnitOrder">Batal</a>*@
-                            <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "UnitOrder", new { area = "Warehouse" })">Cancel</div>
-                        }
+                            @if (Model.Status == "In Order")
+                            {
+                                @if (!string.IsNullOrEmpty(listRole))
+                                {
+                                    var roles = listRole.Split(',');
+                                    if (roles.Contains("TransferUnit"))
+                                    {
+                                        <div class="btn btn-success" data-href="@Url.Action("TransferUnit", "UnitOrder", new { area = "Warehouse", id = Model.UnitOrderId })">Transfer</div>
+                                    }
+                                }
+                                <div class="btn btn-default" id="btnbatal" data-href="@Url.Action("Index", "UnitOrder", new { area = "Warehouse" })">Cancel</div>
+                            }
+                            else
+                            {
+                                <div class="btn btn-default" id="btnbatal" data-href="@Url.Action("Index", "UnitOrder", new { area = "Warehouse" })">Cancel</div>
+                            }
+                        }                        
                     </div>
                 </div>
                 <!-- /.end button footer -->

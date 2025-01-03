@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="08/02/2024 10:55:04" ReportInfo.Modified="11/07/2024 13:58:16" ReportInfo.CreatorVersion="2023.1.0.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="08/02/2024 10:55:04" ReportInfo.Modified="12/19/2024 15:41:11" ReportInfo.CreatorVersion="2023.1.0.0">
   <Dictionary>
-    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqKcw4gEN1iEAof6/rMrGBKGrc5pMWrhuHdHGvSz2D7P1MSKpS1cyZ69+daxRWAWhKHY+4j0GjkPMvwD9cwlzB6ssrvIRiXwFojSVZ9REn/Cv+jUSNkGR6pWXeJJ6xyvnZIWiiRdilLm9G3WTcGObs36r9GsA4SyVvU5y60vcO1+kccC/NFlbzGtRYGnXjAfl3PzTFxnHlamNuuwWBg3s0DxosZVBnqyUh5Jc3lRjvejI=">
-      <TableDataSource Name="OrdPurchaseOrderDetail" DataType="System.Int32" Enabled="true" TableName="OrdPurchaseOrderDetail">
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqxo5ia/cYUqo97e0judmpyiT7Aj0I0+VDb9QsQCXno/E/4ctxwACwyLTYB+Azq/2TFSnX35Dsa36stce+hQSB1l4Krnwjiffy9aR+dPv1PGIwnY/FApI6/KpuGnaWw+3/okJKxmWYlHVoJRVKv6nOVZ5duVd1niKokSG9O0MOeZ5gqWtwJxwOR1+/z1xcey8DQgQ2ggw1GGN7LbLjpHHqQqyZH/RvGgfB7OLsQLdRuLv4Ko10J57DXOz6EoKAIP84">
+      <TableDataSource Name="OrdPurchaseOrderDetail" DataType="System.Int32" Enabled="true" TableName="OrdPurchaseOrderDetail" SelectCommand="exec GetPurchaseOrderDetailById @PurchaseOrderId">
         <Column Name="PurchaseOrderDetailId" DataType="System.Guid"/>
         <Column Name="PurchaseOrderId" DataType="System.Guid"/>
         <Column Name="ProductNumber" DataType="System.String"/>
@@ -23,6 +23,7 @@
         <Column Name="IsDelete" DataType="System.Boolean" BindableControl="CheckBox"/>
         <Column Name="ReceiveOrderId" DataType="System.Guid"/>
         <Column Name="QtyDifferenceId" DataType="System.Guid"/>
+        <CommandParameter Name="PurchaseOrderId" DataType="22"/>
       </TableDataSource>
     </MsSqlDataConnection>
     <Parameter Name="Conn" DataType="System.String" AsString=""/>

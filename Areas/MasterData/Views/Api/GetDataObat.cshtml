@@ -9,7 +9,7 @@
             <div class="card-header bg-cyan">
                 <h3 class="card-title fw-bold" style="color:#ffffff">@ViewBag.Title</h3>
             </div>
-            <form id="apiForm" action="@Url.Action("CreateObat", "Api")" method="get">
+            <form id="apiForm" action="@Url.Action("Index", "Api")" method="get">
                 <div class="card-body">
                     <div class="form-group row">
                         <div class="col-sm-6">
@@ -23,7 +23,7 @@
                         <button type="submit" class="btn btn-primary bg-indigo">
                             <div style="color:#ffffff">Get Data</div>
                         </button>
-                        <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "Api")">Cancel</div>
+                        <div class="btn btn-default" data-href="@Url.Action("CreateObat", "Api")">Cancel</div>
                     </div>
                 </div>
             </form>

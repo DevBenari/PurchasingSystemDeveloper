@@ -51,37 +51,42 @@
                     <div class="form-group row">
                         <label class="col-sm-2 col-form-label" asp-for="ShippingNumber">Shipping Number</label>
                         <div class="col-sm-10">
-                            <input type="text" asp-for="ShippingNumber" class="form-control form-control-border border-width-2" id="shippingnumber" placeholder="Shipping Number">
+                            <input autocomplete="off" maxlength="50" type="text" asp-for="ShippingNumber" class="form-control form-control-border border-width-2" id="shippingnumber" placeholder="Shipping Number">
                         </div>
+                        <span asp-validation-for="ShippingNumber" class="error"></span>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-2 col-form-label" asp-for="DeliveryServiceName">Delivery Service Name</label>
                         <div class="col-sm-10">
-                            <input type="text" asp-for="DeliveryServiceName" class="form-control form-control-border border-width-2" id="deliveryservicename" placeholder="Delivery Service Name">
+                            <input autocomplete="off" maxlength="50" type="text" asp-for="DeliveryServiceName" class="form-control form-control-border border-width-2" id="deliveryservicename" placeholder="Delivery Service Name">
                         </div>
+                        <span asp-validation-for="DeliveryServiceName" class="error"></span>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-2 col-form-label" asp-for="DeliveryDate">Delivery Date</label>
                         <div class="col-sm-10">
-                            <input type="date" asp-for="DeliveryDate" class="form-control form-control-border border-width-2" id="deliverydate" placeholder="Delivery Date">
+                            <input autocomplete="off" maxlength="50" type="date" asp-for="DeliveryDate" class="form-control form-control-border border-width-2" id="deliverydate" placeholder="Delivery Date">
                         </div>
+                        <span asp-validation-for="DeliveryDate" class="error"></span>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-2 col-form-label" asp-for="WaybillNumber">Waybill Number</label>
                         <div class="col-sm-10">
-                            <input type="text" asp-for="WaybillNumber" class="form-control form-control-border border-width-2" id="waybillnumber" placeholder="Waybill Number">
+                            <input autocomplete="off" maxlength="50" type="text" asp-for="WaybillNumber" class="form-control form-control-border border-width-2" id="waybillnumber" placeholder="Waybill Number">
                         </div>
+                        <span asp-validation-for="WaybillNumber" class="error"></span>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-2 col-form-label" asp-for="InvoiceNumber">Invoice Number</label>
                         <div class="col-sm-10">
-                            <input type="text" asp-for="InvoiceNumber" class="form-control form-control-border border-width-2" id="invoicenumber" placeholder="Invoice Number">
+                            <input autocomplete="off" maxlength="50" type="text" asp-for="InvoiceNumber" class="form-control form-control-border border-width-2" id="invoicenumber" placeholder="Invoice Number">
                         </div>
+                        <span asp-validation-for="InvoiceNumber" class="error"></span>
                     </div>
                     <div class="form-group row">
                         <label class="col-sm-2 col-form-label" asp-for="Note">Note</label>
                         <div class="col-sm-10">
-                            <input type="text" asp-for="Note" class="form-control form-control-border border-width-2" id="note" placeholder="Note">
+                            <input autocomplete="off" maxlength="75" type="text" asp-for="Note" class="form-control form-control-border border-width-2" id="note" placeholder="Note">
                         </div>
                     </div>
                 </div>
@@ -93,14 +98,14 @@
                     <!-- /.card-header -->
                     <div class="card-body">
                         <div class="form-group row">
-                            <div class="col-sm-4">
+                            <div class="col-md-4">
                                 <div class="form-group">
                                     <select class="form-control select2bs4" style="width: 100%;" id="produklist" data-placeholder="--Choose Product Receive--">
                                         <option value="" hidden disabled selected>--Choose Product Receive--</option>
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-md-2">
                                 <input autocomplete="off" class="form-control row-QtyReceive" type="number" pattern="/^-?\d+\.?\d*$/" onKeyUp="qtyInput(this.value)" onKeyPress="if(this.value.length==6) return false;" min="1" max="1000" id="qtyreceive" placeholder="Qty Receive" disabled>
                                 <span class="error">Required !</span>
                             </div>
@@ -116,29 +121,33 @@
                             </div>
                         </div>
                         <div class="form-group row">
-                            <div class="col-sm-4">
+                            <div class="col-md-4">
                                 <span>Product Number</span>
                                 <input autocomplete="off" class="form-control" id="productnumber" placeholder="Product Number" readonly>
                                 <span class="error">Required !</span>
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-md-2">
                                 <span>Product Name</span>
                                 <input autocomplete="off" class="form-control" id="productname" placeholder="Product Name" readonly>
                                 <span class="error">Required !</span>
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-md-2">
                                 <span>Measure</span>
                                 <input autocomplete="off" class="form-control" id="measure" placeholder="Measure" readonly>
                                 <span class="error">Required !</span>
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-md-2">
                                 <span>Qty Order</span>
                                 <input autocomplete="off" class="form-control row-qtyorder" id="qtyorder" placeholder="Qty Order" readonly>
                                 <span class="error">Required !</span>
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-md-2">
                                 <span>Condition</span>
-                                <input autocomplete="off" class="form-control" id="condition" placeholder="Condition" readonly>
+                                <select class="form-control" id="condition">
+                                    <option value="Good Condition">Good Condition</option>
+                                    <option value="Damaged">Damaged</option>
+                                    <option value="Pending Inspection">Pending Inspection</option>
+                                </select>                                
                                 <span class="error">Required !</span>
                             </div>
                         </div>
@@ -168,7 +177,7 @@
                     <div class="card-body">
                         @****Perhatikan type nya jika submit akan berbeda hasil pada json, jadi pakai type button*@
                         <input type="button" value="Save" id="submit" class="btn btn-primary bg-indigo float-left fw-bold">
-                        <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "ReceiveOrder")">Cancel</div>                        
+                        <div class="btn btn-default" data-href="@Url.Action("Index", "ReceiveOrder")">Cancel</div>                        
                     </div>
                 </div>
                 <!-- /.end button footer -->
@@ -332,12 +341,12 @@
 
                         //Add Item to List if Valid
                         if (isValidItem) {
-
                             var productNumber = $('#productnumber').val().trim();
                             var productName = $('#productname').val().trim();
                             var measurement = $('#measure').val().trim();
                             var QtyOrder = parseInt($('#qtyorder').val().trim());
                             var QtyReceive = parseInt($('#qtyreceive').val().trim());
+                            var Condition = $('#condition').val().trim();
 
                             if ($('#tbldetailrcv tbody').children().children().length == 1) {
                                 $('#tbldetailrcv tbody').html('');
@@ -376,21 +385,18 @@
                                 return proName == dynamicName;
                             }
 
-
-
                             if (checkDuplicate == undefined) {
                                 var dynamicTr =
-                                    `
-                                        <tr id="R${no}" class="detailProduct">
+                                    `<tr id="R${no}" class="detailProduct">
                                         <td class="row-index text-center"><p>${no}</p></td>
                                         <td class="text-left row-productNumber"><input class="detproductnumber" type="hidden" value="${productNumber}">${productNumber}</td>
                                         <td class="text-left row-productName"><input class="detproductname" type="hidden" value="${productName}">${productName}</td>
                                         <td class="text-left"><input class="detmeasure" type="hidden" value="${measurement}">${measurement}</td>
                                         <td class="text-center"><input class="detdiorder" type="hidden" value="${QtyOrder}">${QtyOrder}</td>
                                         <td class="text-center"><input class="detditerima" type="hidden" value="${QtyReceive}">${QtyReceive}</td>
+                                        <td class="text-center"><input class="detcondition" type="hidden" value="${Condition}">${Condition}</td>
                                         <td class="text-center"> <button class="btn btn-danger btn-sm">X</button></td>
-                                        </tr>
-                                    `;
+                                    </tr>`;
 
                                 $('#tbldetailrcv tbody').append(dynamicTr);
 
@@ -418,7 +424,7 @@
                                             $(this).attr('id', `R${dig - 1}`);
                                         }
                                     });
-                                   
+
                                     $(this).closest('tr').remove();
 
                                     swal({
@@ -513,13 +519,18 @@
                 var detailItemDone = [];
                 var detailDone = {};
                 var purchaseOrderNumber = $('#poList').find(":selected").val();
+                var shippingNumber = $('#shippingnumber').val();
+                var deliveryServiceName = $('#deliveryservicename').val();
+                var deliveryDate = $('#deliverydate').val();
+                var waybillNumber = $('#waybillnumber').val();
+                var invoiceNumber = $('#invoicenumber').val();
 
-                var detailTable = $('#tbldetailrcv tbody').children().children().length / 7;
+                var detailTable = $('#tbldetailrcv tbody').children().children().length / 8;
                 var detailProdukList = document.getElementById("produklist").options.length - 1;
 
                 if (detailTable == detailProdukList) {
                     if (detailItem.length == 0 && purchaseOrderNumber == '') {
-                        $('#poList').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Harap di pilih !</span>');
+                        $('#poList').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please select !</span>');
                         swal({
                             title: "Warning",
                             text: "Items in the table cannot be empty",
@@ -528,13 +539,53 @@
                         //$('#tbldetailpr tbody').html('<tr><td colspan="10" class="text-center"><span style="color:red;">Item belum tersedia</span></td></tr>');
                         isAllValid = false;
                     } else if (detailItem.length != 0 && purchaseOrderNumber == '' ) {
-                        $('#poList').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Harap di pilih !</span>');
+                        $('#poList').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please select !</span>');
                        swal({
                             title: "Warning",
                             text: "Sorry, please select...",
                             type: "warning"
                         });
-                        isAllValid = false;                                       
+                        isAllValid = false;
+                    } else if (detailItem.length != 0 && shippingNumber == '') {
+                        $('#shippingnumber').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please fill in !</span>');
+                        swal({
+                            title: "Warning",
+                            text: "Sorry, fill in...",
+                            type: "warning"
+                        });
+                        isAllValid = false;
+                    } else if (detailItem.length != 0 && deliveryServiceName == '') {
+                        $('#deliveryservicename').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please fill in !</span>');
+                        swal({
+                            title: "Warning",
+                            text: "Sorry, fill in...",
+                            type: "warning"
+                        });
+                        isAllValid = false;
+                    } else if (detailItem.length != 0 && deliveryDate == '') {
+                        $('#deliverydate').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please select !</span>');
+                        swal({
+                            title: "Warning",
+                            text: "Sorry, please select...",
+                            type: "warning"
+                        });
+                        isAllValid = false;
+                    } else if (detailItem.length != 0 && waybillNumber == '') {
+                        $('#waybillnumber').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please fill in !</span>');
+                        swal({
+                            title: "Warning",
+                            text: "Sorry, fill in...",
+                            type: "warning"
+                        });
+                        isAllValid = false;
+                    } else if (detailItem.length != 0 && invoiceNumber == '') {
+                        $('#invoicenumber').siblings('span.error').css('visibility', 'visible').html('<span style="color:red">Please fill in !</span>');
+                        swal({
+                            title: "Warning",
+                            text: "Sorry, fill in...",
+                            type: "warning"
+                        });
+                        isAllValid = false;
                     } else if (detailItem.length == 0 && purchaseOrderNumber != '') {
                         swal({
                             title: "Warning",
@@ -550,6 +601,7 @@
                             detailDone.measure = $(element).find(".detmeasure").val();
                             detailDone.QtyOrder = $(element).find(".detdiorder").val();
                             detailDone.QtyReceive = $(element).find(".detditerima").val();
+                            detailDone.Condition = $(element).find(".detcondition").val();
                             detailItemDone.push(detailDone);
                             detailDone = {};
                         });
@@ -557,6 +609,11 @@
                         var ReceiveOrderNumber = $('#receiveordernumber').val();
                         var PurchaseOrderId = $('#poList').val();
                         var ReceiveById = $('#receivebyid').val();
+                        var ShippingNumber = $('#shippingnumber').val();
+                        var DeliveryServiceName = $('#deliveryservicename').val();
+                        var DeliveryDate = $('#deliverydate').val();
+                        var WaybillNumber = $('#waybillnumber').val();
+                        var InvoiceNumber = $('#invoicenumber').val();
                         var Status = $('#status').val();
                         var Note = $('#note').val();
                         var ReceiveOrderDetail = detailItemDone;
@@ -567,6 +624,11 @@
                         dataPost.ReceiveOrderNumber = ReceiveOrderNumber;
                         dataPost.PurchaseOrderId = PurchaseOrderId;
                         dataPost.ReceiveById = ReceiveById;
+                        dataPost.ShippingNumber = ShippingNumber;                        
+                        dataPost.DeliveryServiceName = DeliveryServiceName;
+                        dataPost.DeliveryDate = DeliveryDate;
+                        dataPost.WaybillNumber = WaybillNumber;
+                        dataPost.InvoiceNumber = InvoiceNumber;
                         dataPost.Status = Status;
                         dataPost.Note = Note;
                         dataPost.ReceiveOrderDetails = ReceiveOrderDetail;

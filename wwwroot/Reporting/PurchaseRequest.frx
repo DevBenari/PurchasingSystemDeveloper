@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="08/01/2024 22:55:44" ReportInfo.Modified="11/07/2024 13:55:37" ReportInfo.CreatorVersion="2023.1.0.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="08/01/2024 22:55:44" ReportInfo.Modified="12/19/2024 16:21:37" ReportInfo.CreatorVersion="2023.1.0.0">
   <Dictionary>
-    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqKcw4gEN1iEAof6/rMrGBKGrc5pMWrhuHdHGvSz2D7P1MSKpS1cyZ69+daxRWAWhKHY+4j0GjkPMvwD9cwlzB6ssrvIRiXwFojSVZ9REn/Cv+jUSNkGR6pWXeJJ6xyvnZIWiiRdilLm9G3WTcGObs31EFVMHAA0b9kyO0hc02kMn6LUXuHE0FO3O/FJ2kQ3Zfr+YzVYw8iAD8PPV6MJjAWeBeaix3v2h5GwiuBXeIgQA=">
-      <TableDataSource Name="OrdPurchaseRequestDetail" DataType="System.Int32" Enabled="true" TableName="OrdPurchaseRequestDetail">
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqxo5ia/cYUqo97e0judmpyiT7Aj0I0+VDb9QsQCXno/E/4ctxwACwyLTYB+Azq/2TFSnX35Dsa36stce+hQSB1l4Krnwjiffy9aR+dPv1PGIwnY/FApI6/KpuGnaWw+3/okJKxmWYlHVoJRVKv6nOVZ5duVd1niKokSG9O0MOeZ4RpY3ndAH8CUGRnXMPV+cZBKhuQezp2lqdfdrvY4L41c4dtAgqIIC1g1g3KLHIUwpmG3PxOsioKnOe+j64fqin">
+      <TableDataSource Name="OrdPurchaseRequestDetail" DataType="System.Int32" Enabled="true" TableName="OrdPurchaseRequestDetail" SelectCommand="exec GetPurchaseRequestDetailById @PurchaseRequestId">
         <Column Name="PurchaseRequestDetailId" DataType="System.Guid"/>
         <Column Name="PurchaseRequestId" DataType="System.Guid"/>
         <Column Name="ProductNumber" DataType="System.String"/>
@@ -21,6 +21,7 @@
         <Column Name="DeleteBy" DataType="System.Guid"/>
         <Column Name="IsCancel" DataType="System.Boolean" BindableControl="CheckBox"/>
         <Column Name="IsDelete" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <CommandParameter Name="PurchaseRequestId" DataType="22"/>
       </TableDataSource>
     </MsSqlDataConnection>
     <Parameter Name="Conn" DataType="System.String" AsString=""/>
@@ -53,7 +54,7 @@
       <TextObject Name="Text3" Top="103.95" Width="274.05" Height="37.8" Border.Color="White" Border.Width="2" Text="PURCHASE REQUEST NUMBER :" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
       <TextObject Name="Text31" Left="274.05" Top="103.95" Width="160.65" Height="37.8" Border.Color="White" Border.Width="2" Text="[PrNumber]" VertAlign="Center" Font="Arial, 12pt, style=Bold"/>
     </ReportTitleBand>
-    <PageHeaderBand Name="PageHeader1" Top="155.2" Width="718.2" Height="37.8">
+    <PageHeaderBand Name="PageHeader1" Top="154.4" Width="718.2" Height="37.8">
       <TextObject Name="Text13" Top="9.45" Width="37.8" Height="18.9" Border.Color="Red" Border.Width="5" Text="No" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
       <LineObject Name="Line2" Top="9.45" Width="718.2" Border.Width="2"/>
       <TextObject Name="Text14" Left="37.8" Top="9.45" Width="103.95" Height="18.9" Border.Color="Red" Border.Width="5" Text="Product Number" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
@@ -64,7 +65,7 @@
       <TextObject Name="Text19" Left="633.15" Top="9.45" Width="85.05" Height="18.9" Border.Color="Red" Border.Width="5" Text="Sub Total" HorzAlign="Right" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
       <LineObject Name="Line3" Top="28.35" Width="718.2" Border.Width="2"/>
     </PageHeaderBand>
-    <DataBand Name="Data1" Top="197" Width="718.2" Height="18.9" Guides="0" DataSource="OrdPurchaseRequestDetail">
+    <DataBand Name="Data1" Top="195.4" Width="718.2" Height="18.9" Guides="0" DataSource="OrdPurchaseRequestDetail">
       <TextObject Name="Text38" Width="37.8" Height="18.9" Text="[Row#]" HorzAlign="Center" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
       <TextObject Name="Text39" Left="37.8" Width="103.95" Height="18.9" Text="[OrdPurchaseRequestDetail.ProductNumber]" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
       <TextObject Name="Text40" Left="141.75" Width="302.4" Height="18.9" Text="[OrdPurchaseRequestDetail.ProductName]" VertAlign="Center" Font="Arial, 8pt, style=Bold"/>
@@ -73,7 +74,7 @@
       <TextObject Name="Text36" Left="548.1" Width="85.05" Height="18.9" Text="[OrdPurchaseRequestDetail.Price]" Format="Currency" Format.UseLocale="true" Format.DecimalDigits="0" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="Arial, 8pt, style=Bold" Trimming="EllipsisCharacter"/>
       <TextObject Name="Text37" Left="633.15" Width="85.05" Height="18.9" Text="[OrdPurchaseRequestDetail.SubTotal]" Format="Currency" Format.UseLocale="true" Format.DecimalDigits="0" HorzAlign="Right" VertAlign="Center" WordWrap="false" Font="Arial, 8pt, style=Bold" Trimming="EllipsisCharacter"/>
     </DataBand>
-    <PageFooterBand Name="PageFooter1" Top="219.9" Width="718.2" Height="226.8">
+    <PageFooterBand Name="PageFooter1" Top="217.5" Width="718.2" Height="226.8">
       <TableObject Name="Table1" Top="85.05" Width="718.3" Height="113.4">
         <TableColumn Name="Column5" Width="296.1"/>
         <TableColumn Name="Column1" Width="144.95"/>

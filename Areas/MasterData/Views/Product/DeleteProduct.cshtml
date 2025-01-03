@@ -11,7 +11,7 @@
         <h3 class="card-title" style="color:#ffffff">@ViewBag.Title</h3>
     </div>
 
-    <form enctype="multipart/form-data" asp-controller="Product" asp-action="RedirectToDelete" method="post" class="form-horizontal">
+    <form enctype="multipart/form-data" asp-controller="Product" asp-action="DeleteProduct" method="post" class="form-horizontal">
         <div class="card-body">
             <h4>Yakin hapus data ini?</h4>
             <hr />
@@ -32,7 +32,7 @@
         <div class="card-footer">
             @*<form asp-action="DeletePengguna" method="post">*@
             @*<a class="btn btn-default" asp-action="RedirectToIndex" asp-controller="Product" asp-area="MasterData">Batal</a>*@
-            <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "Product", new { area = "MasterData" })">Cancel</div>
+            <div class="btn btn-default" data-href="@Url.Action("Index", "Product", new { area = "MasterData" })">Cancel</div>
             <button type="submit" class="btn btn-danger float-left fw-bold"><div style="color:#ffffff">Hapus</div></button>
             @*</form>*@
         </div>

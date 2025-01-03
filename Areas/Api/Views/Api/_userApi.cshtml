@@ -1,0 +1,353 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+@*ini adalah section get Product *@
+<div class="card rounded-lg">
+    <div class="card-header" id="headingSix" style="background-color:#EBF3FB;">
+        <h2 class="mb-0">
+            <button class="btn btn-block text-left collapsed text-black" type="button" data-toggle="collapse" data-target="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+                <h3>Get Categories</h3>
+            </button>
+        </h2>
+    </div>
+    <div id="collapseSix" class="collapse" aria-labelledby="headingSix" data-parent="#accordionExample" style="background-color:#EBF3FB;">
+        <div class="card-body">
+            <span class="p-2 mr-1" style="background-color:#61AFFE;">GET</span> /Api/DashboadApi/GetRetur/Returs
+        </div>
+        <h5 class="bg-white px-3 py-2 col-12">Parameters</h5>
+        <div class="px-3 py-2 col-12">
+            <p>No Parameters</p>
+        </div>
+        <div class="card-body">
+            <button type="button" class="btn btn-success" id="getProductRetur">Try it out</button>
+            <button type="reset" class="btn btn-danger" id="resetGetRetur">Reset</button>
+        </div>
+        <h5 class="bg-white px-3 py-2">Response</h5>
+        <div class="card-body">
+            <p>Request Url</p>
+            <p class="p-2 rounded-md text-white" style="background-color:#333333;">https://blm-rsmmc.com/Api/DashboardApi/GetProduct/Products</p>
+            <textarea id="responseProductRetur" class="form-control p-2 bg-white" rows="10" readonly></textarea>
+        </div>
+    </div>
+</div>
+@*ini adalah end section get Product *@
+
+@*ini adalah section Create Product *@
+<div class="card rounded-lg" style="background-color:#E8F6F0;">
+    <div class="card-header" id="headingSeven">
+        <h2 class="mb-0">
+            <button class="btn btn-block text-left collapsed text-black" type="button" data-toggle="collapse" data-target="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
+                <h3>Create Retur</h3>
+            </button>
+        </h2>
+    </div>
+    <div id="collapseSeven" class="collapse row" aria-labelledby="headingSeven" data-parent="#accordionExample">
+        <div class="card-body col-12">
+            <span class="p-2 mr-1" style="background-color:#49CC90;">POST</span> /Api/DashboardApi/CreateProduct
+        </div>
+        <h5 class="bg-white px-3 py-2 col-12">Parameters</h5>
+        <div class="px-3 py-2 col-12">
+            <p>No Parameters</p>
+        </div>
+        <h5 class="bg-white px-3 py-2 col-12">Request Body</h5>
+        <div class="card-body col-12">
+            <form id="createProductRetur" class="row ">
+                <div class="form-group col-6">
+                    <label for="productCode">Product Code:</label>
+                    <input type="text" id="productCode" class="form-control" placeholder="Auto Generate" required autocomplete="on" readonly>
+                </div>
+                <div class="form-group col-6">
+                    <label for="productName">Product Name:</label>
+                    <input type="text" id="productName" class="form-control" placeholder="Enter your Product Name" required autocomplete="on">
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="supplierId">Supplier :</label>
+                    <input type="text" id="supplierId" class="form-control" placeholder="Enter Supplier" requeried autocomplete="on" />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="categoryId">Category Product :</label>
+                    <input type="text" id="categoryId" class="form-control" placeholder="Enter Category" requeried autocomplete="on" />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="measurementId">Measurement :</label>
+                    <input type="text" id="measurementId" class="form-control" placeholder="Enter Measurement" requeried autocomplete="on" />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="discountId">Discount :</label>
+                    <input type="number" id="discountId" class="form-control" placeholder="Enter Discount" requeried autocomplete="on" />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="minStock">Min Stock :</label>
+                    <input type="number" id="minStock" class="form-control" placeholder="Enter Min Stock" requeried autocomplete="on" readonly />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="maxStock">Max Stock :</label>
+                    <input type="number" id="maxStock" class="form-control" placeholder="Enter Max Stock" requeried autocomplete="on" readonly />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="bufferStock">Buffer Stock :</label>
+                    <input type="number" id="bufferStock" class="form-control" placeholder="Enter Buffer Stock" requeried autocomplete="on" readonly />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="stock">Stock :</label>
+                    <input type="number" id="stock" class="form-control" placeholder="Enter Stock" requeried autocomplete="on" />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="buyPrice">Buy Price :</label>
+                    <input type="number" id="price" class="form-control" placeholder="Enter Price" requeried autocomplete="on" />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="retailPrice">Retail Price :</label>
+                    <input type="number" id="retailPrice" class="form-control" placeholder="Enter Retail Price" requeried autocomplete="on" />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="cogs">Cogs :</label>
+                    <input type="number" id="cogs" class="form-control" placeholder="Enter Cogs" requeried autocomplete="on" />
+                </div>
+                <div class="form-group col-6">
+                    <label for="warehouseLocation">Warehouse Location:</label>
+                    <select id="warehouseLocation" class="form-control" required>
+                        <option value="" disabled selected>Select a warehouse</option>
+                    </select>
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="storageLocation">Storage Location :</label>
+                    <input type="text" id="storageLocationId" class="form-control" placeholder="Enter Storage Location" requeried autocomplete="on" />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="rackNumber">Rack Number :</label>
+                    <input type="text" id="rackNumber" class="form-control" placeholder="Enter Rack Number" requeried autocomplete="on" />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="note">Note :</label>
+                    <input type="text" id="note" class="form-control" placeholder="Enter Note" requeried autocomplete="on" />
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-success">Try it out</button>
+                    <button type="reset" class="btn btn-danger" id="resetCreateProductRetur">Reset</button>
+                </div>
+            </form>
+        </div>
+        <h4 class="bg-white px-3 py-2 col-12">Response</h4>
+        <div class="card-body">
+            <p>Request Url</p>
+            <p class="p-2 rounded-md text-white" style="background-color:#333333;">https://blm-rsmmc.com/Api/DashboardApi/CreateProduct</p>
+            <textarea id="responseCreateProductRetur" class="form-control p-2 bg-white" rows="10" readonly></textarea>
+        </div>
+    </div>
+</div>
+@*end section create product*@
+
+@*section update product*@
+<div class="card rounded-lg" style="background-color:#FBF1E6;">
+    <div class="card-header" id="headingEight">
+        <h2 class="mb-0">
+            <button class="btn btn-block text-left collapsed text-black" type="button" data-toggle="collapse" data-target="#collapseEight" aria-expanded="false" aria-controls="collapseEight">
+                <h3>Update Product Retur</h3>
+            </button>
+        </h2>
+    </div>
+    <div id="collapseEight" class="collapse row" aria-labelledby="headingEight" data-parent="#accordionExample">
+        <div class="card-body col-12">
+            <span class="p-2 mr-1" style="background-color:#FCA130;">PUT</span>  /Api/DashboadApi/UpdateProduct/{id}
+        </div>
+
+        <div class="card-body col-12">
+            <form id="updateProductRetur" class="row ">
+                <h5 class="bg-white px-3 py-2 col-12">Parameters</h5>
+                <div class="form-group col-6">
+                    <label for="productId">Product ID:</label>
+                    <input type="text" id="productId" class="form-control" placeholder="Enter Product ID to update" required />
+                </div>
+                <h5 class="bg-white px-3 py-2 col-12">Request Body</h5>
+                <div class="form-group col-6">
+                    <label for="productCode">Product Code:</label>
+                    <input type="text" id="productCode" class="form-control" placeholder="Auto Generate " required autocomplete="on" readonly>
+                </div>
+                <div class="form-group col-6">
+                    <label for="productName">Product Name:</label>
+                    <input type="text" id="updateProductName" class="form-control" placeholder="Enter your Product Name" required autocomplete="on">
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="supplierId">Supplier :</label>
+                    <input type="text" id="updateSupplierId" class="form-control" placeholder="Enter Supplier" requeried autocomplete="on" />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="categoryId">Category Product :</label>
+                    <input type="text" id="updateCategoryId" class="form-control" placeholder="Enter Category" requeried autocomplete="on" />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="measurementId">Measurement :</label>
+                    <input type="text" id="updateMeasurementId" class="form-control" placeholder="Enter Measurement" requeried autocomplete="on" />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="discountId">Discount :</label>
+                    <input type="number" id="updateDiscountId" class="form-control" placeholder="Enter Discount" requeried autocomplete="on" />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="minStock">Min Stock :</label>
+                    <input type="number" id="updateMinStock" class="form-control" placeholder="Enter Min Stock" requeried autocomplete="on" readonly />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="maxStock">Max Stock :</label>
+                    <input type="number" id="updateMaxStock" class="form-control" placeholder="Enter Max Stock" requeried autocomplete="on" readonly />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="bufferStock">Buffer Stock :</label>
+                    <input type="number" id="updateBufferStock" class="form-control" placeholder="Enter Buffer Stock" requeried autocomplete="on" readonly />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="stock">Stock :</label>
+                    <input type="number" id="updateStock" class="form-control" placeholder="Enter Stock" requeried autocomplete="on" />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="buyPrice">Buy Price :</label>
+                    <input type="number" id="updatePrice" class="form-control" placeholder="Enter Buy Price" requeried autocomplete="on" />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="retailPrice">Retail Price :</label>
+                    <input type="number" id="updateRetailPrice" class="form-control" placeholder="Enter Retail Price" requeried autocomplete="on" />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="cogs">Cogs :</label>
+                    <input type="number" id="updateCogs" class="form-control" placeholder="Enter Cogs" requeried autocomplete="on" />
+                </div>
+                <div class="form-group col-6">
+                    <label for="updateWarehouseLocation">Warehouse Location:</label>
+                    <select id="updateWarehouseLocation" class="form-control" required>
+                        <option value="" disabled selected>Select a warehouse</option>
+                    </select>
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="storageLocation">Storage Location :</label>
+                    <input type="text" id="updateStorageLocationId" class="form-control" placeholder="Enter Storage Location" requeried autocomplete="on" />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="rackNumber">Rack Number :</label>
+                    <input type="text" id="updateRackNumber" class="form-control" placeholder="Enter Rack Number " requeried autocomplete="on" />
+                </div>
+                <div class="form-group col-6">
+                    <label asp-for="note">Note :</label>
+                    <input type="text" id="updateNote" class="form-control" placeholder="Enter Note" requeried autocomplete="on" />
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-success">Try it out</button>
+                    <button type="reset" class="btn btn-danger" id="resetUpdateRetur">Reset</button>
+                </div>
+            </form>
+        </div>
+        <h4 class="bg-white px-3 py-2 col-12">Response</h4>
+        <div class="card-body">
+            <p>Request Url</p>
+            <p class="p-2 rounded-md text-white" style="background-color:#333333;"> https://blm-rsmmc.com/Api/DashboardApi/UpdateProduct<span class="text-green">{id}</span></p>
+            <textarea id="responseUpdateProductRetur" class="form-control p-2 bg-white" rows="10" readonly></textarea>
+        </div>
+    </div>
+</div>
+@*end section Update Product*@
+
+<div class="card rounded-lg" style="background-color:#FAE7E7;">
+    <div class="card-header" id="heading+">
+        <h2 class="mb-0">
+            <button class="btn btn-block text-left collapsed text-black" type="button" data-toggle="collapse" data-target="#collapseNine" aria-expanded="false" aria-controls="collapseNine">
+                <h3>Delete Product Retur</h3>
+            </button>
+        </h2>
+    </div>
+    <div id="collapseNine" class="collapse" aria-labelledby="headingNine" data-parent="#accordionExample">
+        <div class="card-body">
+            <span class="bg-danger p-2 mr-1">DELETE</span> /Api/DashboadApi/DeleteProduct/{id}
+        </div>
+        <h5 class="bg-white px-3 py-2 col-12">Parameters</h5>
+        <div class="card-body">
+            <form id="DeleteProduct">
+                <div class="form-group col-12">
+                    <label for="productId">Product ID:</label>
+                    <input type="text" id="deleteProductId" class="form-control" placeholder="Enter Product ID to Delete" required />
+                </div>
+                <button type="submit" class="btn btn-secondary mt-1" id="DeleteProductReturBtn">Try it out</button>
+                <button type="reset" class="btn btn-secondary mt-1" id="resetDeleteRetur">Reset</button>
+            </form>
+        </div>
+        <h4 class="bg-white px-3 py-2 col-12">Response</h4>
+        <div class="card-body">
+            <p>Request Url</p>
+            <p class="p-2 rounded-md text-white" style="background-color:#333333;">  https://blm-rsmmc.com/Api/DashboardApi/DeleteProduct/ <span class="text-green">{id}</span></p>
+            <textarea id="responseDeleteProductRetur" class="form-control p-2 bg-white" rows="10" readonly></textarea>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Handle reset output
+        
+        const resetButtonGetRetur = document.getElementById("resetGetRetur")
+        const responseGetRetur = document.getElementById("responseProductRetur")
+
+        const resetButtonCreateRetur = document.getElementById("resetCreateProductRetur")
+        const responseCreate = document.getElementById("responseCreateProductRetur")
+
+        const resetButtonUpdate = document.getElementById("resetUpdateRetur")
+        const responseUpdate = document.getElementById("responseUpdateProductRetur")
+
+        const resetButtonDelete = document.getElementById("resetDeleteRetur")
+        const responseDelete = document.getElementById("responseDeleteProductRetur")
+
+        resetButton.addEventListener("click", function () {
+            responseOutput.textContent = ""; // Clear the output JSON
+            alert("Output JSON has been reset!");
+        });
+
+        resetButtonGetRetur.addEventListener("click", function () {
+            responseGetRetur.textContent = "";
+            alert("Output JSON has been reset!");
+        })
+
+        resetButtonCreate.addEventListener("click", function () {
+            responseCreate.textContent = "";
+            alert("Output JSON has been reset!");
+        })
+
+        resetButtonUpdate.addEventListener("click", function () {
+            responseUpdate.textContent = "";
+            alert("Output JSON has been reset!");
+        })
+
+        resetButtonDelete.addEventListener("click", function () {
+            responseDelete.textContent = "";
+            alert("Output JSON has been reset!");
+        })
+    });
+
+    $('#getProductRetur').click(function () {
+        const token = localStorage.getItem("bearerToken")
+        if (!token) 
+        {
+            alert("silahkan masukkan token telebih dahulu ke dalam authorization")
+            return;
+        }
+
+        $.ajax({
+           url: '/Api/api/getCategories',
+           type: 'GET',
+           headers: {
+              'Authorization': 'Bearer' + token
+           },
+           success: function(response){
+               $('#responseProductRetur').text(JSON.stringify(response, null, 4));
+           },
+           Error: function(error){
+               $('#responseProductRetur').text("Error: " + error.responseText);
+               alert("Failed to fetch product retur");
+           }
+        })
+
+    })
+</script>

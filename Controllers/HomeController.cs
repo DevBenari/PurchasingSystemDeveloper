@@ -42,13 +42,17 @@ namespace PurchasingSystemDeveloper.Controllers
         private readonly IHubContext<ChatHub> _hubContext;
         private readonly IPurchaseRequestRepository _purchaseRequestRepository;
         private readonly IProductRepository _productRepository;
-        private readonly IApprovalRepository _approvalRepository;
+        private readonly IApprovalPurchaseRequestRepository _approvalRepository;
         private readonly IQtyDifferenceRepository _qtyDifferenceRepository;
         private readonly IApprovalQtyDifferenceRepository _approvalQtyDifferenceRepository;
         private readonly IUnitRequestRepository _unitRequestRepository;
         private readonly IApprovalUnitRequestRepository _approvalUnitRequestRepository;
         private readonly IPurchaseOrderRepository _purchaseOrderRepository;
-        
+        private readonly IReceiveOrderRepository _receiveOrderRepository;
+        private readonly IWarehouseTransferRepository _warehouseTransferRepository;
+        private readonly IApprovalProductReturnRepository _approvalProductReturnRepository;
+        private readonly IProductReturnRepository _productReturnRepository;
+
         private readonly IDataProtector _protector;
         private readonly UrlMappingService _urlMappingService;
         private readonly IHostingEnvironment _hostingEnvironment;
@@ -63,12 +67,16 @@ namespace PurchasingSystemDeveloper.Controllers
             IDepartmentRepository departmentRepository,
             IPositionRepository positionRepository,
             IProductRepository productRepository,
-            IApprovalRepository approvalRepository,
+            IApprovalPurchaseRequestRepository approvalRepository,
             IQtyDifferenceRepository qtyDifferenceRepository,
             IApprovalQtyDifferenceRepository approvalQtyDifferenceRepository,
             IUnitRequestRepository unitRequestRepository,
             IApprovalUnitRequestRepository approvalUnitRequestRepository,
             IPurchaseOrderRepository purchaseOrderRepository,
+            IReceiveOrderRepository receiveOrderRepository,
+            IWarehouseTransferRepository wehouseTransferRepository,
+            IApprovalProductReturnRepository approvalProductReturnRepository,
+            IProductReturnRepository productReturnRepository,
 
             IDataProtectionProvider provider,
             UrlMappingService urlMappingService,
@@ -91,6 +99,10 @@ namespace PurchasingSystemDeveloper.Controllers
             _unitRequestRepository = unitRequestRepository;
             _approvalUnitRequestRepository = approvalUnitRequestRepository;
             _purchaseOrderRepository = purchaseOrderRepository;
+            _receiveOrderRepository = receiveOrderRepository;
+            _warehouseTransferRepository = wehouseTransferRepository;
+            _approvalProductReturnRepository = approvalProductReturnRepository;
+            _productReturnRepository = productReturnRepository;
 
             _protector = provider.CreateProtector("UrlProtector");
             _urlMappingService = urlMappingService;
@@ -286,49 +298,6 @@ namespace PurchasingSystemDeveloper.Controllers
         [HttpGet]
         public IActionResult MyProfile()
         {
-            ViewBag.Active = "Dashboard";
-            var countUser = _applicationDbContext.UserActives.GroupBy(u => u.UserActiveId).Select(y => new
-            {
-                UserActiveId = y.Key,
-                CountOfUsers = y.Count()
-            }).ToList();
-            ViewBag.CountUser = countUser.Count;
-
-            var countSupplier = _applicationDbContext.Suppliers.GroupBy(u => u.SupplierId).Select(y => new
-            {
-                SupplierId = y.Key,
-                CountOfSuppliers = y.Count()
-            }).ToList();
-            ViewBag.CountSupplier = countSupplier.Count;
-
-            var countProduct = _applicationDbContext.Products.GroupBy(u => u.ProductId).Select(y => new
-            {
-                ProductId = y.Key,
-                CountOfProducts = y.Count()
-            }).ToList();
-            ViewBag.CountProduct = countProduct.Count;
-
-            var countPurchaseRequest = _applicationDbContext.PurchaseRequests.GroupBy(u => u.PurchaseRequestId).Select(y => new
-            {
-                PurchaseRequestId = y.Key,
-                CountOfPurchaseRequests = y.Count()
-            }).ToList();
-            ViewBag.CountPurchaseRequest = countPurchaseRequest.Count;
-
-            var countPurchaseOrder = _applicationDbContext.PurchaseOrders.GroupBy(u => u.PurchaseOrderId).Select(y => new
-            {
-                PurchaseOrderId = y.Key,
-                CountOfPurchaseOrders = y.Count()
-            }).ToList();
-            ViewBag.CountPurchaseOrder = countPurchaseOrder.Count;
-
-            var countReceiveOrder = _applicationDbContext.ReceiveOrders.GroupBy(u => u.ReceiveOrderId).Select(y => new
-            {
-                ReceiveOrderId = y.Key,
-                CountOfReceiveOrders = y.Count()
-            }).ToList();
-            ViewBag.CountReceiveOrder = countReceiveOrder.Count;
-
             var checkUserLogin = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
             var user = _userActiveRepository.GetAllUser().Where(u => u.FullName == checkUserLogin.NamaUser).FirstOrDefault();
 
@@ -412,34 +381,149 @@ namespace PurchasingSystemDeveloper.Controllers
             return Json(data);
         }
 
+        public class GetDataQtyReceived
+        {
+            public int DataReceivedOrderDetail { get; set; }  // Menyimpan nama supplier
+        }
+
         public IActionResult GetMonitoringProduct()
         {
+            //Produk Repository
             var alldata = _productRepository.GetAllProduct();
             var warning = alldata.Where(product => product.Stock < product.MinStock).Count(); // Data Stock Dibawah Minimal Stock (Minstock) bukan termasuk data stock yang save
-            var save = alldata.Where(product => product.Stock >= product.MinStock).Count(); // Data Stock Sama Atau Diatas Minimal Stock (Minstock) termasuk data stock yang aman
+            var save = alldata.Where(product => product.Stock > product.MinStock).Count(); // Data Stock Diatas Minimal Stock (Minstock) termasuk data stock yang aman
+            var notinitialized = alldata.Where(product => product.MinStock == 0 && product.Stock == 0).Count(); // Data Stock 0 dan Minimal Stock 0 belum di inisialisasi
+            var totalStock = alldata.Select(product => product.Stock).Sum();
 
-            //var warning = _productRepository.GetAllProduct().Where(product => product.Stock <= product.MinStock).Count();
-            //var save = _productRepository.GetAllProduct().Where(product => product.Stock >= product.MinStock).Count();
-            
+            //Warehouse Transfer
+            var dataTransfer = _warehouseTransferRepository.GetAllWarehouseTransfer();
+            var totalStockKeluar = dataTransfer.Select(stock => stock.QtyTotal).Sum();
+
+            //Warehouse Received (Kendala Pemanggilan QtyReceive tidak terdeteksi)
+            var dataReceived = _receiveOrderRepository.GetAllReceiveOrder();
+            var getDataReceived = dataReceived.Select(ro => new GetDataQtyReceived
+            {
+                DataReceivedOrderDetail = ro.ReceiveOrderDetails.Select(rod => rod.QtyReceive).Sum()
+            }).ToList();
+
             var result = new
             {
                 Warning = warning,
-                Save = save
+                Save = save,
+                Notinitialized = notinitialized,
+                TotalStock = totalStock,
+                StockKeluar = totalStockKeluar,
+                DataReceived = getDataReceived
             };
             return Json(result);
         }
 
         public IActionResult GetMonitoringStatus()
         {
-            var completed = _purchaseOrderRepository.GetAllPurchaseOrder().Where(po => po.Status.StartsWith("RO")).Count();
-            var inorder = _purchaseOrderRepository.GetAllPurchaseOrder().Where(po => po.Status == "In Order").Count();
-            var cancelled = _purchaseOrderRepository.GetAllPurchaseOrder().Where(po => po.Status == "Cancelled").Count();
+            var getAllData = _purchaseOrderRepository.GetAllPurchaseOrder();
+            var completed = getAllData.Where(po => po.Status.StartsWith("RO")).Count();
+            var inorder = getAllData.Where(po => po.Status == "In Order").Count();
+            var cancelled = getAllData.Where(po => po.Status == "Cancelled").Count();
+            var totalPO = getAllData.Select(po => po.Status != "").Count();
             var result = new
             {
                 Completed = completed,
                 Inorder = inorder,
-                Cancelled = cancelled
+                Cancelled = cancelled,
+                TotalPO = totalPO,
             };
+            return Json(result);
+        }
+
+        public IActionResult GetMonitoringByExpired()
+        {
+            var getAllData = _purchaseRequestRepository.GetAllPurchaseRequest();
+            var waiting = getAllData.Where(pr => pr.Status == "Waiting Approval").Count();
+            var rejected = getAllData.Where(pr => pr.Status == "Reject").Count();
+            var completed = getAllData.Where(pr => pr.Status.StartsWith("PO")).Count();
+            var totalPRData = getAllData.Count();
+            var onProcessStock = getAllData.Where(pr => pr.Status == "Waiting Approval" || pr.Status == "Reject").Sum(sw => sw.QtyTotal);
+            var finishProcess = getAllData.Where(pr => pr.Status.StartsWith("PO")).Sum(sw => sw.QtyTotal);
+
+            var result = new
+            {
+                Waiting = waiting,
+                Rejected = rejected,
+                Completed = completed,
+                TotalPRData = totalPRData,
+                OnProcessStock = onProcessStock,
+                FinishProcess = finishProcess
+            };
+
+            return Json(result);
+        }
+
+        public IActionResult GetPRByApprove()
+        {
+            var checkUserLogin = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+            var getUserActive = _userActiveRepository.GetAllUser().Where(c => c.UserActiveCode == checkUserLogin.KodeUser).FirstOrDefault();
+
+            var getAllData = _approvalRepository.GetAllApproval();
+            var waiting = getAllData.Where(app => app.Status.StartsWith("User") && app.UserApproveId == getUserActive.UserActiveId || app.Status.StartsWith("Waiting") && app.UserApproveId == getUserActive.UserActiveId).Count();
+            var rejected = getAllData.Where(app => app.Status == "Reject" && app.UserApproveId == getUserActive.UserActiveId).Count();
+            var completed = getAllData.Where(app => app.Status == "Approve" && app.UserApproveId == getUserActive.UserActiveId).Count();
+            var totalPRData = getAllData.Where(app => app.UserApproveId == getUserActive.UserActiveId).Count();
+
+            var result = new
+            {
+                Waiting = waiting,
+                Rejected = rejected,
+                Completed = completed,
+                TotalPRData = totalPRData,
+                DataUser = getUserActive,
+            };
+
+            return Json(result);
+
+        }
+
+        public IActionResult GetUnitRequestMonitoring()
+        {
+            var checkUserLogin = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+            var getUserActive = _userActiveRepository.GetAllUser().Where(c => c.UserActiveCode == checkUserLogin.KodeUser).FirstOrDefault();
+
+            var getAllData = _approvalUnitRequestRepository.GetAllApprovalRequest();
+            var waiting = getAllData.Where(status => status.Status == "Waiting Approval" && status.UserApproveId == getUserActive.UserActiveId).Count();
+            var rejected = getAllData.Where(status => status.Status == "Reject" && status.UserApproveId == getUserActive.UserActiveId).Count();
+            var completed = getAllData.Where(status => status.Status == "Approve" && status.UserApproveId == getUserActive.UserActiveId).Count();
+            var totalUnitRequest = getAllData.Where(status => status.UserApproveId == getUserActive.UserActiveId).Count();
+
+            var result = new
+            {
+                Waiting = waiting,
+                Rejected = rejected,
+                Completed = completed,
+                TotalUnitRequest = totalUnitRequest,
+            };
+
+            return Json(result);
+
+        }
+
+        public IActionResult GetQtyDiffMonitoring()
+        {
+            var checkUserLogin = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
+            var getUserActive = _userActiveRepository.GetAllUser().Where(c => c.UserActiveCode == checkUserLogin.KodeUser).FirstOrDefault();
+
+            var getAllData = _approvalQtyDifferenceRepository.GetAllApproval();
+            var waiting = getAllData.Where(status => status.Status == "Waiting Approval" && status.UserApproveId == getUserActive.UserActiveId).Count();
+            var rejected = getAllData.Where(status => status.Status == "Reject" && status.UserApproveId == getUserActive.UserActiveId).Count();
+            var completed = getAllData.Where(status => status.Status == "Approve" && status.UserApproveId == getUserActive.UserActiveId).Count();
+            var totalQtyDifference = getAllData.Where(status => status.UserApproveId == getUserActive.UserActiveId).Count();
+
+            var result = new
+            {
+                Waiting = waiting,
+                Rejected = rejected,
+                Completed = completed,
+                TotalQtyDifference = totalQtyDifference
+            };
+
             return Json(result);
         }
 
@@ -495,22 +579,7 @@ namespace PurchasingSystemDeveloper.Controllers
             TempData["MessageFailed"] = "Failed to change password.";
             return RedirectToAction("MyProfile");
         }
-
-        public async Task<IActionResult> Logout()
-        {
-            var getUser = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
-            var user = await _signInManager.UserManager.FindByNameAsync(getUser.Email);
-
-            if (user != null)
-            {
-                user.IsOnline = false;
-                await _userManager.UpdateAsync(user);
-            }
-
-            await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
-        }
-
+        
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
@@ -533,6 +602,7 @@ namespace PurchasingSystemDeveloper.Controllers
                 var loggerDataPR = new List<object>();
                 var loggerDataQtyDiff = new List<object>();
                 var loggerDataUnitReq = new List<object>();
+                var loggerDataProductReturn = new List<object>();
 
                 var DataPR = _purchaseRequestRepository.GetAllPurchaseRequest()
                                 .Where(p => (p.UserApprove1Id == getUserActiveId && p.ApproveStatusUser1 == null)
@@ -552,6 +622,13 @@ namespace PurchasingSystemDeveloper.Controllers
                                 .OrderByDescending(a => a.CreateDateTime)
                                 .ToList();
 
+                var DataProductReturn = _productReturnRepository.GetAllProductReturn()
+                                .Where(p => (p.UserApprove1Id == getUserActiveId && p.ApproveStatusUser1 == null)
+                                || (p.UserApprove2Id == getUserActiveId && p.ApproveStatusUser1 == "Approve" && p.ApproveStatusUser2 == null)
+                                || (p.UserApprove3Id == getUserActiveId && p.ApproveStatusUser1 == "Approve" && p.ApproveStatusUser2 == "Approve" && p.ApproveStatusUser3 == null))
+                                .OrderByDescending(a => a.CreateDateTime)
+                                .ToList();
+
 
                 foreach (var logger in DataPR)
                 {
@@ -564,7 +641,7 @@ namespace PurchasingSystemDeveloper.Controllers
                             approvalId = getUserApproveId,
                             createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
                             purchaseRequestNumber = logger.PurchaseRequestNumber,
-                            createdDate = logger.CreateDateTime
+                            createdDate = logger.CreateDateTime.ToString("dd/MM/yyyy HH:mm")
                         };
                         loggerDataPR.Add(detail);
                     }
@@ -590,7 +667,7 @@ namespace PurchasingSystemDeveloper.Controllers
                             approvalId = getUserApproveId,
                             createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
                             purchaseRequestNumber = logger.PurchaseRequestNumber,
-                            createdDate = logger.CreateDateTime
+                            createdDate = logger.CreateDateTime.ToString("dd/MM/yyyy HH:mm")
                         };
                         loggerDataPR.Add(detail);
                     }
@@ -607,7 +684,7 @@ namespace PurchasingSystemDeveloper.Controllers
                             approvalId = getUserApproveId,
                             createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
                             qtyDifferenceNumber = logger.QtyDifferenceNumber,
-                            createdDate = logger.CreateDateTime
+                            createdDate = logger.CreateDateTime.ToString("dd/MM/yyyy HH:mm")
                         };
                         loggerDataQtyDiff.Add(detail);
                     }
@@ -620,7 +697,7 @@ namespace PurchasingSystemDeveloper.Controllers
                             approvalId = getUserApproveId,
                             createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
                             qtyDifferenceNumber = logger.QtyDifferenceNumber,
-                            createdDate = logger.CreateDateTime
+                            createdDate = logger.CreateDateTime.ToString("dd/MM/yyyy HH:mm")
                         };
                         loggerDataQtyDiff.Add(detail);
                     }
@@ -637,21 +714,64 @@ namespace PurchasingSystemDeveloper.Controllers
                             approvalId = getUserApproveId,
                             createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
                             unitRequestNumber = logger.UnitRequestNumber,
-                            createdDate = logger.CreateDateTime
+                            createdDate = logger.CreateDateTime.ToString("dd/MM/yyyy HH:mm")
                         };
                         loggerDataUnitReq.Add(detail);
                     }
                 }
 
-                if (loggerDataPR.Count == 0 && loggerDataQtyDiff.Count == 0 && loggerDataUnitReq.Count == 0)
+                foreach (var logger in DataProductReturn)
+                {
+                    if (logger.ApproveStatusUser1 == null && logger.ApplicationUser.KodeUser == getUserActiveCode)
+                    {
+                        var getUserApproveId = _approvalProductReturnRepository.GetAllApproval().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User1" && u.ProductReturnNumber == logger.ProductReturnNumber).FirstOrDefault().ApprovalProductReturnId;
+
+                        var detail = new
+                        {
+                            approvalId = getUserApproveId,
+                            createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
+                            productReturnNumber = logger.ProductReturnNumber,
+                            createdDate = logger.CreateDateTime.ToString("dd/MM/yyyy HH:mm")
+                        };
+                        loggerDataProductReturn.Add(detail);
+                    }
+                    else if (logger.ApproveStatusUser1 == "Approve" && logger.ApproveStatusUser2 == null && logger.ApplicationUser.KodeUser == getUserActiveCode)
+                    {
+                        var getUserApproveId = _approvalProductReturnRepository.GetAllApproval().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User2" && u.ProductReturnNumber == logger.ProductReturnNumber).FirstOrDefault().ApprovalProductReturnId;
+
+                        var detail = new
+                        {
+                            approvalId = getUserApproveId,
+                            createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
+                            productReturnNumber = logger.ProductReturnNumber,
+                            createdDate = logger.CreateDateTime.ToString("dd/MM/yyyy HH:mm")
+                        };
+                        loggerDataProductReturn.Add(detail);
+                    }
+                    else if (logger.ApproveStatusUser1 == "Approve" && logger.ApproveStatusUser2 == "Approve" && logger.ApproveStatusUser3 == null && logger.ApplicationUser.KodeUser == getUserActiveCode)
+                    {
+                        var getUserApproveId = _approvalProductReturnRepository.GetAllApproval().Where(u => u.UserApproveId == getUserActiveId && u.ApprovalStatusUser == "User3" && u.ProductReturnNumber == logger.ProductReturnNumber).FirstOrDefault().ApprovalProductReturnId;
+
+                        var detail = new
+                        {
+                            approvalId = getUserApproveId,
+                            createdBy = _userActiveRepository.GetAllUserLogin().Where(u => u.Id == logger.CreateBy.ToString()).FirstOrDefault()?.NamaUser,
+                            productReturnNumber = logger.ProductReturnNumber,
+                            createdDate = logger.CreateDateTime.ToString("dd/MM/yyyy HH:mm")
+                        };
+                        loggerDataProductReturn.Add(detail);
+                    }
+                }
+
+                if (loggerDataPR.Count == 0 && loggerDataQtyDiff.Count == 0 && loggerDataUnitReq.Count == 0 && loggerDataProductReturn.Count == 0)
                 {
                     var totalNotification = 0;
-                    return Json(new { success = true, totalJsonAllNotification = totalNotification, loggerDataJsonPR = loggerDataPR, loggerDataJsonQtyDiff = loggerDataQtyDiff, loggerDataJsonUnitReq = loggerDataUnitReq });
+                    return Json(new { success = true, totalJsonAllNotification = totalNotification, loggerDataJsonPR = loggerDataPR, loggerDataJsonQtyDiff = loggerDataQtyDiff, loggerDataJsonUnitReq = loggerDataUnitReq, loggerDataJsonProductReturn = loggerDataProductReturn });
                 }
                 else 
                 {
-                    var totalNotification = DataPR.Count + DataQtyDiff.Count + DataUnitReq.Count;
-                    return Json(new { success = true, totalJsonAllNotification = totalNotification, loggerDataJsonPR = loggerDataPR, loggerDataJsonQtyDiff = loggerDataQtyDiff, loggerDataJsonUnitReq = loggerDataUnitReq });
+                    var totalNotification = DataPR.Count + DataQtyDiff.Count + DataUnitReq.Count + DataProductReturn.Count;
+                    return Json(new { success = true, totalJsonAllNotification = totalNotification, loggerDataJsonPR = loggerDataPR, loggerDataJsonQtyDiff = loggerDataQtyDiff, loggerDataJsonUnitReq = loggerDataUnitReq, loggerDataJsonProductReturn = loggerDataProductReturn });
                 }                
             }                       
         }

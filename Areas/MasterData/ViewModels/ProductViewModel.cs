@@ -1,4 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using PurchasingSystemDeveloper.Areas.MasterData.Models;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PurchasingSystemDeveloper.Areas.MasterData.ViewModels
 {
@@ -10,6 +13,8 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.ViewModels
         public string ProductName { get; set; }
         [Required(ErrorMessage = "Supplier is required !")]
         public Guid? SupplierId { get; set; }
+        List<SelectListItem>? SupplierList { get; set; }
+
         [Required(ErrorMessage = "Category is required !")]
         public Guid? CategoryId { get; set; }
         [Required(ErrorMessage = "Measure is required !")]
@@ -18,6 +23,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.ViewModels
         public Guid? DiscountId { get; set; }
         [Required(ErrorMessage = "Warehouse Location is required !")]
         public Guid? WarehouseLocationId { get; set; }
+        public DateTimeOffset ExpiredDate { get; set; } = DateTimeOffset.Now;
         public int? MinStock { get; set; } = 0;
         public int? MaxStock { get; set; } = 0;
         public int? BufferStock { get; set; } = 0;
@@ -29,6 +35,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.ViewModels
         public decimal RetailPrice { get; set; }
         public string? StorageLocation { get; set; }
         public string? RackNumber { get; set; }
+        public bool IsActive { get; set; }
         public string? Note { get; set; }
 
         // Jalur Api

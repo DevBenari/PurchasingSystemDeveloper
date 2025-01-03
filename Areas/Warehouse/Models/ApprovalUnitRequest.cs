@@ -3,6 +3,7 @@ using PurchasingSystemDeveloper.Areas.Order.Models;
 using PurchasingSystemDeveloper.Areas.Transaction.Models;
 using PurchasingSystemDeveloper.Models;
 using PurchasingSystemDeveloper.Repositories;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PurchasingSystemDeveloper.Areas.Warehouse.Models
@@ -10,6 +11,7 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Models
     [Table("WrhApprovalUnitRequest", Schema = "dbo")]
     public class ApprovalUnitRequest : UserActivity
     {
+        [Key]
         public Guid ApprovalUnitRequestId { get; set; }
         public Guid? UnitRequestId { get; set; }
         public string UnitRequestNumber { get; set; }

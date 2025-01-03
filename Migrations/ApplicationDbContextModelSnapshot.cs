@@ -47,176 +47,6 @@ namespace PurchasingSystemDeveloper.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "1c1fb17a-b16f-4877-b63e-0c981fce4e55",
-                            ConcurrencyStamp = "DASHBOARD",
-                            Name = "Dashboard",
-                            NormalizedName = "DASHBOARD"
-                        },
-                        new
-                        {
-                            Id = "29667799-9a77-476f-a4a2-f98f16e3413e",
-                            ConcurrencyStamp = "MASTER DATA",
-                            Name = "Dashboard Master Data",
-                            NormalizedName = "DASHBOARD MASTER DATA"
-                        },
-                        new
-                        {
-                            Id = "3155ad0b-3ff9-4336-80a9-a83f4d619392",
-                            ConcurrencyStamp = "MASTER DATA",
-                            Name = "Master Data",
-                            NormalizedName = "MASTER DATA"
-                        },
-                        new
-                        {
-                            Id = "49b394a6-6d27-4872-932e-e3a50a075808",
-                            ConcurrencyStamp = "MASTER DATA",
-                            Name = "Role",
-                            NormalizedName = "ROLE"
-                        },
-                        new
-                        {
-                            Id = "5ba73d55-d106-4bf6-8097-8e2b9ee5fd47",
-                            ConcurrencyStamp = "MASTER DATA",
-                            Name = "Users",
-                            NormalizedName = "USERS"
-                        },
-                        new
-                        {
-                            Id = "6815db3b-87e3-482b-a75a-e0555364d54c",
-                            ConcurrencyStamp = "MASTER DATA",
-                            Name = "Bank",
-                            NormalizedName = "BANK"
-                        },
-                        new
-                        {
-                            Id = "73f28f66-00fe-479d-835f-83a46a2a1274",
-                            ConcurrencyStamp = "MASTER DATA",
-                            Name = "Lead Time",
-                            NormalizedName = "LEAD TIME"
-                        },
-                        new
-                        {
-                            Id = "8c65bb85-5e35-4306-a0d6-594c94ac0f94",
-                            ConcurrencyStamp = "MASTER DATA",
-                            Name = "Product",
-                            NormalizedName = "PRODUCT"
-                        },
-                        new
-                        {
-                            Id = "90e4a277-18cb-4c89-9800-e94a0a87e64e",
-                            ConcurrencyStamp = "MASTER DATA",
-                            Name = "Warehouse",
-                            NormalizedName = "WAREHOUSE"
-                        },
-                        new
-                        {
-                            Id = "91331c73-4934-4010-b7a6-8c78ec7e0799",
-                            ConcurrencyStamp = "MASTER DATA",
-                            Name = "Supplier",
-                            NormalizedName = "SUPPLIER"
-                        },
-                        new
-                        {
-                            Id = "9225dc73-b091-4658-ab5c-67e10ca8f194",
-                            ConcurrencyStamp = "MASTER DATA",
-                            Name = "Get Data API",
-                            NormalizedName = "GET DATA API"
-                        },
-                        new
-                        {
-                            Id = "939a0bfa-0dd5-4d4c-81d9-c177ed1fb622",
-                            ConcurrencyStamp = "MASTER DATA",
-                            Name = "Term Of Payment",
-                            NormalizedName = "TERM OF PAYMENT"
-                        },
-                        new
-                        {
-                            Id = "944116d7-c153-449e-97a7-51fa0f835d45",
-                            ConcurrencyStamp = "MASTER DATA",
-                            Name = "Calculate Min-Max Stock",
-                            NormalizedName = "CALCULATE MIN-MAX STOCK"
-                        },
-                        new
-                        {
-                            Id = "95d13c25-2b6d-4667-bbe2-8d149c20ef93",
-                            ConcurrencyStamp = "UNIT REQUEST",
-                            Name = "Unit Request",
-                            NormalizedName = "UNIT REQUEST"
-                        },
-                        new
-                        {
-                            Id = "962a8321-789d-488c-97ba-e4bb60feb9ef",
-                            ConcurrencyStamp = "APPROVAL PURCHASE REQ",
-                            Name = "Approval Purchase Req",
-                            NormalizedName = "APPROVAL PURCHASE REQ"
-                        },
-                        new
-                        {
-                            Id = "973250b1-e8f7-4a25-aece-350724c7281a",
-                            ConcurrencyStamp = "7cf929a2-f126-4179-84ff-5366f63f6ff7",
-                            Name = "IndexRole",
-                            NormalizedName = "INDEXROLE"
-                        },
-                        new
-                        {
-                            Id = "98efd437-dd11-4ad9-966a-dea874e5eeed",
-                            ConcurrencyStamp = "STOCK MONITORING",
-                            Name = "Stock Monitoring",
-                            NormalizedName = "STOCK MONITORING"
-                        },
-                        new
-                        {
-                            Id = "99471211-2e67-4b1d-a3d4-dfbaacf36586",
-                            ConcurrencyStamp = "QTY DIFFERENCE",
-                            Name = "Qty Difference",
-                            NormalizedName = "QTY DIFFERENCE"
-                        },
-                        new
-                        {
-                            Id = "99516357-af9d-42f4-992f-f038e6128b4a",
-                            ConcurrencyStamp = "PURCHASE ORDER",
-                            Name = "Purchase Order",
-                            NormalizedName = "PURCHASE ORDER"
-                        },
-                        new
-                        {
-                            Id = "996aa5d5-ca72-4b4b-abc1-4135cdb8cf76",
-                            ConcurrencyStamp = "APPROVAL UNIT REQUEST",
-                            Name = "Approval Unit Request",
-                            NormalizedName = "APPROVAL UNIT REQUEST"
-                        },
-                        new
-                        {
-                            Id = "997984b2-3085-4ce5-b91a-88f6537e13ea",
-                            ConcurrencyStamp = "KPI",
-                            Name = "KPI",
-                            NormalizedName = "KPI"
-                        },
-                        new
-                        {
-                            Id = "99808c34-0ba4-49c4-afd7-96d1ae9dd55e",
-                            ConcurrencyStamp = "PURCHASE REQUEST",
-                            Name = "Purchase Request",
-                            NormalizedName = "PURCHASE REQUEST"
-                        },
-                        new
-                        {
-                            Id = "999d95b7-81ec-4ca1-b565-021c2f42befd",
-                            ConcurrencyStamp = "RECEIVE ORDER",
-                            Name = "Receive Order",
-                            NormalizedName = "RECEIVE ORDER"
-                        },
-                        new
-                        {
-                            Id = "9999707a-96a7-4fba-87ce-09ceac2bb27b",
-                            ConcurrencyStamp = "REPORT",
-                            Name = "Report",
-                            NormalizedName = "REPORT"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -798,6 +628,12 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.Property<Guid?>("DiscountId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<DateTimeOffset>("ExpiredDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<bool>("IsCancel")
                         .HasColumnType("bit");
 
@@ -1166,7 +1002,7 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.ToTable("MstWarehouseLocation", "dbo");
                 });
 
-            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Order.Models.Approval", b =>
+            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Order.Models.ApprovalPurchaseRequest", b =>
                 {
                     b.Property<Guid>("ApprovalId")
                         .ValueGeneratedOnAdd()
@@ -1250,7 +1086,7 @@ namespace PurchasingSystemDeveloper.Migrations
 
                     b.HasIndex("UserApproveId");
 
-                    b.ToTable("OrdApproval", "dbo");
+                    b.ToTable("OrdApprovalPurchaseRequest", "dbo");
                 });
 
             modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Order.Models.ApprovalQtyDifference", b =>
@@ -1774,6 +1610,128 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.ToTable("OrdPurchaseRequestDetail", "dbo");
                 });
 
+            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Report.Models.ClosingPurchaseOrder", b =>
+                {
+                    b.Property<Guid>("ClosingPurchaseOrderId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ClosingPurchaseOrderNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CreateBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreateDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("DeleteBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("DeleteDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<decimal>("GrandTotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<bool>("IsCancel")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalPo")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalQty")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("UpdateBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("UpdateDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("UserAccessId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
+
+                    b.HasKey("ClosingPurchaseOrderId");
+
+                    b.HasIndex("UserAccessId");
+
+                    b.ToTable("RptClosingPurchaseOrder", "dbo");
+                });
+
+            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Report.Models.ClosingPurchaseOrderDetail", b =>
+                {
+                    b.Property<Guid>("ClosingPurchaseOrderDetailId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("ClosingPurchaseOrderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreateBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreateDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("DeleteBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("DeleteDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsCancel")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PurchaseOrderNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Qty")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SupplierName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TermOfPaymentName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("UpdateBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("UpdateDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("ClosingPurchaseOrderDetailId");
+
+                    b.HasIndex("ClosingPurchaseOrderId");
+
+                    b.ToTable("RptClosingPurchaseOrderDetail", "dbo");
+                });
+
             modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Transaction.Models.UnitRequest", b =>
                 {
                     b.Property<Guid>("UnitRequestId")
@@ -1922,6 +1880,84 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.ToTable("TscUnitRequestDetail", "dbo");
                 });
 
+            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.ApprovalProductReturn", b =>
+                {
+                    b.Property<Guid>("ApprovalProductReturnId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("ApprovalDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("ApprovalStatusUser")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ApprovalTime")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ApproveBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CreateBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreateDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("DeleteBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("DeleteDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsCancel")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Message")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ProductReturnId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ProductReturnNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UpdateBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("UpdateDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("UserAccessId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid?>("UserApproveId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ApprovalProductReturnId");
+
+                    b.HasIndex("ProductReturnId");
+
+                    b.HasIndex("UserAccessId");
+
+                    b.HasIndex("UserApproveId");
+
+                    b.ToTable("WrhApprovalProductReturn", "dbo");
+                });
+
             modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.ApprovalUnitRequest", b =>
                 {
                     b.Property<Guid>("ApprovalUnitRequestId")
@@ -2008,6 +2044,211 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.HasIndex("WarehouseLocationId");
 
                     b.ToTable("WrhApprovalUnitRequest", "dbo");
+                });
+
+            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.ProductReturn", b =>
+                {
+                    b.Property<Guid>("ProductReturnId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ApproveStatusUser1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ApproveStatusUser2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ApproveStatusUser3")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("CreateBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreateDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("DeleteBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("DeleteDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid?>("Department1Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("Department2Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("Department3Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsCancel")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MessageApprove1")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MessageApprove2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MessageApprove3")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("Position1Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("Position2Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("Position3Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ProductReturnNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PurchaseOrderNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReasonForReturn")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("ReturnDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UpdateBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("UpdateDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("UserAccessId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<Guid?>("UserApprove1Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UserApprove2Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("UserApprove3Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ProductReturnId");
+
+                    b.HasIndex("Department1Id");
+
+                    b.HasIndex("Department2Id");
+
+                    b.HasIndex("Department3Id");
+
+                    b.HasIndex("Position1Id");
+
+                    b.HasIndex("Position2Id");
+
+                    b.HasIndex("Position3Id");
+
+                    b.HasIndex("UserAccessId");
+
+                    b.HasIndex("UserApprove1Id");
+
+                    b.HasIndex("UserApprove2Id");
+
+                    b.HasIndex("UserApprove3Id");
+
+                    b.ToTable("WrhProductReturn", "dbo");
+                });
+
+            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.ProductReturnDetail", b =>
+                {
+                    b.Property<Guid>("ProductReturnDetailId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("CreateBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreateDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("DeleteBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("DeleteDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("Discount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("ExpiredDate")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("IsCancel")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsDelete")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Measurement")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ProductName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ProductNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("ProductReturnId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Qty")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("SubTotal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("Supplier")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UpdateBy")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("UpdateDateTime")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("WarehouseExpired")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WarehouseOrigin")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ProductReturnDetailId");
+
+                    b.HasIndex("ProductReturnId");
+
+                    b.ToTable("WrhProductReturnDetail", "dbo");
                 });
 
             modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.QtyDifference", b =>
@@ -2641,6 +2882,9 @@ namespace PurchasingSystemDeveloper.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<DateTime?>("LastActivityTime")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -2862,7 +3106,7 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.Navigation("WarehouseManager");
                 });
 
-            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Order.Models.Approval", b =>
+            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Order.Models.ApprovalPurchaseRequest", b =>
                 {
                     b.HasOne("PurchasingSystemDeveloper.Areas.Order.Models.PurchaseRequest", "PurchaseRequest")
                         .WithMany()
@@ -3076,6 +3320,27 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.Navigation("PurchaseRequest");
                 });
 
+            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Report.Models.ClosingPurchaseOrder", b =>
+                {
+                    b.HasOne("PurchasingSystemDeveloper.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("UserAccessId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ApplicationUser");
+                });
+
+            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Report.Models.ClosingPurchaseOrderDetail", b =>
+                {
+                    b.HasOne("PurchasingSystemDeveloper.Areas.Report.Models.ClosingPurchaseOrder", "ClosingPurchaseOrder")
+                        .WithMany("ClosingPurchaseOrderDetails")
+                        .HasForeignKey("ClosingPurchaseOrderId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ClosingPurchaseOrder");
+                });
+
             modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Transaction.Models.UnitRequest", b =>
                 {
                     b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.Department", "Department1")
@@ -3132,6 +3397,31 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.Navigation("UnitRequest");
                 });
 
+            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.ApprovalProductReturn", b =>
+                {
+                    b.HasOne("PurchasingSystemDeveloper.Areas.Warehouse.Models.ProductReturn", "ProductReturn")
+                        .WithMany()
+                        .HasForeignKey("ProductReturnId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PurchasingSystemDeveloper.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("UserAccessId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UserActive", "UserApprove")
+                        .WithMany()
+                        .HasForeignKey("UserApproveId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("ProductReturn");
+
+                    b.Navigation("UserApprove");
+                });
+
             modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.ApprovalUnitRequest", b =>
                 {
                     b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UnitLocation", "UnitLocation")
@@ -3169,6 +3459,90 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.Navigation("UserApprove");
 
                     b.Navigation("WarehouseLocation");
+                });
+
+            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.ProductReturn", b =>
+                {
+                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.Department", "Department1")
+                        .WithMany()
+                        .HasForeignKey("Department1Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.Department", "Department2")
+                        .WithMany()
+                        .HasForeignKey("Department2Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.Department", "Department3")
+                        .WithMany()
+                        .HasForeignKey("Department3Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.Position", "Position1")
+                        .WithMany()
+                        .HasForeignKey("Position1Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.Position", "Position2")
+                        .WithMany()
+                        .HasForeignKey("Position2Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.Position", "Position3")
+                        .WithMany()
+                        .HasForeignKey("Position3Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PurchasingSystemDeveloper.Models.ApplicationUser", "ApplicationUser")
+                        .WithMany()
+                        .HasForeignKey("UserAccessId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UserActive", "UserApprove1")
+                        .WithMany()
+                        .HasForeignKey("UserApprove1Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UserActive", "UserApprove2")
+                        .WithMany()
+                        .HasForeignKey("UserApprove2Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("PurchasingSystemDeveloper.Areas.MasterData.Models.UserActive", "UserApprove3")
+                        .WithMany()
+                        .HasForeignKey("UserApprove3Id")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ApplicationUser");
+
+                    b.Navigation("Department1");
+
+                    b.Navigation("Department2");
+
+                    b.Navigation("Department3");
+
+                    b.Navigation("Position1");
+
+                    b.Navigation("Position2");
+
+                    b.Navigation("Position3");
+
+                    b.Navigation("UserApprove1");
+
+                    b.Navigation("UserApprove2");
+
+                    b.Navigation("UserApprove3");
+                });
+
+            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.ProductReturnDetail", b =>
+                {
+                    b.HasOne("PurchasingSystemDeveloper.Areas.Warehouse.Models.ProductReturn", "ProductReturn")
+                        .WithMany("ProductReturnDetails")
+                        .HasForeignKey("ProductReturnId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ProductReturn");
                 });
 
             modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.QtyDifference", b =>
@@ -3382,9 +3756,19 @@ namespace PurchasingSystemDeveloper.Migrations
                     b.Navigation("PurchaseRequestDetails");
                 });
 
+            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Report.Models.ClosingPurchaseOrder", b =>
+                {
+                    b.Navigation("ClosingPurchaseOrderDetails");
+                });
+
             modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Transaction.Models.UnitRequest", b =>
                 {
                     b.Navigation("UnitRequestDetails");
+                });
+
+            modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.ProductReturn", b =>
+                {
+                    b.Navigation("ProductReturnDetails");
                 });
 
             modelBuilder.Entity("PurchasingSystemDeveloper.Areas.Warehouse.Models.QtyDifference", b =>

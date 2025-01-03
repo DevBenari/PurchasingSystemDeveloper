@@ -1,6 +1,8 @@
 ﻿<!DOCTYPE html>
 @{
     Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    var listRole = Context.Session.GetString("ListRole");
+    var roles = listRole.Split(',');
 }
 
 <html>
@@ -16,16 +18,41 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
                     <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <div class="btn btn-orange" style="color:#ffffff" data-href="@Url.Action("RedirectToIndex", "PurchaseOrder", new { area = "Order" })">
-                                Purchase Order
-                            </div>
-                        </li>
-                        <li class="nav-item">
-                            <div class="btn btn-orange" style="color:#ffffff" data-href="@Url.Action("RedirectToIndex", "Email", new { area = "Order" })">
-                                Email
-                            </div>
-                        </li>
+                        @if (User.Identity.Name == "superadmin@admin.com")
+                        {
+                            <li class="nav-item">
+                                <div class="btn btn-orange" style="color:#ffffff" data-href="@Url.Action("Index", "PurchaseOrder", new { area = "Order" })">
+                                    Purchase Order
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <div class="btn btn-orange" style="color:#ffffff" data-href="@Url.Action("Index", "Email", new { area = "Order" })">
+                                    Email
+                                </div>
+                            </li>
+                        }
+                        else
+                        {
+                            @if (!string.IsNullOrEmpty(listRole))
+                            {
+                                @if (roles.Contains("ReadPurchaseOrder"))
+                                {
+                                    <li class="nav-item">
+                                        <div class="btn btn-orange" style="color:#ffffff" data-href="@Url.Action("Index", "PurchaseOrder", new { area = "Order" })">
+                                            Purchase Order
+                                        </div>
+                                    </li>
+                                }
+                                @if (roles.Contains("ReadEmail"))
+                                {
+                                    <li class="nav-item">
+                                        <div class="btn btn-orange" style="color:#ffffff" data-href="@Url.Action("Index", "Email", new { area = "Order" })">
+                                            Email
+                                        </div>
+                                    </li>
+                                }
+                            }
+                        }
                     </ul>
                 </div>
             </div>

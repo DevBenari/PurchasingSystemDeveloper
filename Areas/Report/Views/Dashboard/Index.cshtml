@@ -1,6 +1,8 @@
 ﻿@{
     ViewData["Title"] = "Dashboard Report";
-    Layout = "~/Views/Shared/_TopNavbarReport.cshtml";
+    Layout = "~/Views/Shared/_TopNavbarReportPurchaseOrder.cshtml";
+    var listRole = Context.Session.GetString("ListRole");
+    var roles = listRole.Split(',');
 }
 
 <!-- Main content -->
@@ -16,21 +18,81 @@
     </div>
     <!-- /.row -->
     <div class="row mb-2">
-        <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="cursor-pointer" data-href="@Url.Action("RedirectToIndex", "ReportPurchaseOrder", new { area = "Report" })">
-                <div class="small-box " style="background-color:#347FC4">
-                    @*change color in adminlte.min.cs*@
-                    <div class="inner">
-                        <h4 class="fw-bold" style="color:#ffffff">Purchase Order</h4>
-                        <p style="color:#ffffff">Calculation</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-user-plus"></i>
+        @if (User.Identity.Name == "superadmin@admin.com")
+        {
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="cursor-pointer" data-href="@Url.Action("Index", "CalculatedPurchaseOrder", new { area = "Report" })">
+                    <div class="small-box " style="background-color:#347FC4">
+                        @*change color in adminlte.min.cs*@
+                        <div class="inner">
+                            <h4 class="fw-bold" style="color:#ffffff">Calculated</h4>
+                            <p style="color:#ffffff">Purchase Order</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-cash-register"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>        
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="cursor-pointer" data-href="@Url.Action("Index", "ClosedPurchaseOrder", new { area = "Report" })">
+                    <div class="small-box " style="background-color:#347FC4">
+                        @*change color in adminlte.min.cs*@
+                        <div class="inner">
+                            <h4 class="fw-bold" style="color:#ffffff">Closed</h4>
+                            <p style="color:#ffffff">Purchase Order</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            @if (!string.IsNullOrEmpty(listRole))
+            {
+                @if (roles.Contains("ReadCalculatedPurchaseOrder"))
+                {
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="cursor-pointer" data-href="@Url.Action("Index", "CalculatedPurchaseOrder", new { area = "Report" })">
+                            <div class="small-box " style="background-color:#347FC4">
+                                @*change color in adminlte.min.cs*@
+                                <div class="inner">
+                                    <h4 class="fw-bold" style="color:#ffffff">Calculated</h4>
+                                    <p style="color:#ffffff">Purchase Order</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-cash-register"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (roles.Contains("ReadClosedPurchaseOrder"))
+                {
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="cursor-pointer" data-href="@Url.Action("Index", "ClosedPurchaseOrder", new { area = "Report" })">
+                            <div class="small-box " style="background-color:#347FC4">
+                                @*change color in adminlte.min.cs*@
+                                <div class="inner">
+                                    <h4 class="fw-bold" style="color:#ffffff">Closed</h4>
+                                    <p style="color:#ffffff">Purchase Order</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-chart-pie"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        }                
     </div>    
     <!-- /.row -->
 </section>
@@ -53,6 +115,6 @@
                 });
             });
         });
-                            //End Pengaturan Click Pada Button DIV Index
+        //End Pengaturan Click Pada Button DIV Index
     </script>
     }

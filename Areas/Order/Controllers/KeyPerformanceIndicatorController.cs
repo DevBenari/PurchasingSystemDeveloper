@@ -36,7 +36,7 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _applicationDbContext;
-        private readonly IApprovalRepository _approvalRepository;
+        private readonly IApprovalPurchaseRequestRepository _approvalRepository;
         private readonly IPurchaseOrderRepository _purchaseOrderRepository;
         private readonly IPurchaseRequestRepository _purchaseRequestRepository;
         private readonly IUserActiveRepository _userActiveRepository;
@@ -48,7 +48,7 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ApplicationDbContext applicationDbContext,
-            IApprovalRepository approvalRepository,
+            IApprovalPurchaseRequestRepository approvalRepository,
             IPurchaseOrderRepository purchaseOrderRepository,
             IPurchaseRequestRepository purchaseRequestRepository,
             IUserActiveRepository userActiveRepository,

@@ -434,8 +434,8 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
                             ApproveStatusUser3 = getPR.ApproveStatusUser3,
                             TermOfPaymentId = getPR.TermOfPaymentId,
                             Status = "In Order",
-                            QtyTotal = getPR.QtyTotal,
-                            GrandTotal = Math.Truncate(getPR.GrandTotal),
+                            //QtyTotal = getPR.QtyTotal,
+                            //GrandTotal = Math.Truncate(getPR.GrandTotal),
                             Note = "Reference from PO Number " + getPO.PurchaseOrderNumber,
                         };
 
@@ -443,7 +443,7 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
 
                         foreach (var item in getPO.PurchaseOrderDetails)
                         {
-                            if (getPO.PurchaseOrderDetails.Count != 1)
+                            if (getPO.PurchaseOrderDetails.Count != 0)
                             {
                                 foreach (var itemQtyDiff in getQtyDiff.QtyDifferenceDetails)
                                 {
@@ -476,29 +476,15 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
                                             Qty = itemQtyDiff.QtyReceive,
                                             Price = Math.Truncate(item.Price),
                                             Discount = item.Discount,
-                                            SubTotal = Math.Truncate(item.SubTotal)
+                                            SubTotal = Math.Truncate((itemQtyDiff.QtyReceive * item.Price) - (item.Discount))
                                         });
                                     }
                                 }
-                            }
-                            else
-                            {
-                                ItemsList.Add(new PurchaseOrderDetail
-                                {
-                                    CreateDateTime = DateTimeOffset.Now,
-                                    CreateBy = new Guid(getUser.Id),
-                                    ProductNumber = item.ProductNumber,
-                                    ProductName = item.ProductName,
-                                    Supplier = item.Supplier,
-                                    Measurement = item.Measurement,
-                                    Qty = item.Qty,
-                                    Price = Math.Truncate(item.Price),
-                                    Discount = item.Discount,
-                                    SubTotal = Math.Truncate(item.SubTotal)
-                                });
-                            }
+                            }                           
                         }
 
+                        newPO.QtyTotal = ItemsList.Sum(p => p.Qty);
+                        newPO.GrandTotal = ItemsList.Sum(p => p.SubTotal);
                         newPO.PurchaseOrderDetails = ItemsList;
 
                         var dateNow = DateTimeOffset.Now;

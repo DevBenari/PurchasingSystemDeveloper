@@ -192,105 +192,230 @@
             </div>
 
             <div class="row">
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                     <div class="card">
                         <div class="card-header bg-indigo">
-                            <h3 class="card-title fw-bold" style="color:#ffffff">Stock Monitoring Under Min Stock</h3>
+                            <h3 class="card-title fw-bold" style="color:#ffffff">Monitoring Stock Product</h3>
                         </div>
                         <div class="card-body p-0">
-                            <div class="p-5" id="chartPie"></div>
+                            <div class="p-4" id="chartPie"></div>
+                            <div class="p-3" style="margin-top: -18%;">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div class="text-start">
+                                                <h4 id="total-stock"></h4>
+                                                <span>Total Stock</span>
+                                            </div>
+                                            <div class="text-center">
+                                                <div class="d-flex">
+                                                    <h4 id="stock-masuk"></h4>
+                                                    &nbsp;
+                                                    <i class="fa-solid fa-arrow-up fs-6 text-primary mt-2"></i>
+                                                </div>
+                                                <span>Stock Masuk</span>
+                                            </div>
+                                            <div class="text-center">
+                                                <div class="d-flex">
+                                                    <h4 id="stock-keluar"></h4>
+                                                    &nbsp;
+                                                    <i class="fa-solid fa-arrow-down fs-6 text-danger mt-2"></i>
+                                                </div>
+                                                <span>Stock Keluar</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                     <div class="card">
                         <div class="card-header bg-indigo">
-                            <h3 class="card-title fw-bold" style="color:#ffffff">Status Purchase Order</h3>
+                            <h3 class="card-title fw-bold" style="color:#ffffff">Monitoring Purchase Request</h3>
                         </div>
                         <div class="card-body p-0">
-                            <div class="p-5" id="chartStatusPie"></div>
+                            <div class="p-4" id="chartMonitoringPRByExpired"></div>
+                            <div class="p-3" style="margin-top: -18%;">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div class="text-start">
+                                                <h4 id="total-pr"></h4>
+                                                <span>Total PR</span>
+                                            </div>
+                                            <div class="text-center">
+                                                <div class="d-flex">
+                                                    <h4 id="onprocess-pr"></h4>
+                                                    &nbsp;
+                                                    <i class="fa-solid fa-circle fs-6 text-warning mt-2"></i>
+                                                </div>
+                                                <span>Stock Waiting PR</span>
+                                            </div>
+                                            <div class="text-center">
+                                                <div class="d-flex">
+                                                    <h4 id="finish-pr"></h4>
+                                                    &nbsp;
+                                                    <i class="fa-solid fa-circle fs-6 mt-2" style="color: #00E396"></i>
+                                                </div>
+                                                <span>Stock PO</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="card">
+                        <div class="card-header bg-indigo">
+                            <h3 class="card-title fw-bold" style="color:#ffffff">Monitoring Purchase Order</h3>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="p-4" id="chartStatusPie"></div>
+                            <div class="p-3" style="margin-top: -18%;">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div class="text-start">
+                                                <h4 id="total-po"></h4>
+                                                <span>Total Purchase Order</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-
-            @*<div class="row">
-                <div class="col-sm-12">
+            <div class="row">
+                <div class="col-sm-4">
                     <div class="card">
                         <div class="card-header bg-indigo">
-                            <h3 class="card-title fw-bold" style="color:#ffffff">Stock Monitoring Under Min Stock</h3>
-                        </div>                        
-                        <div class="card-body table-responsive p-0">
-                            <table id="tblTemplate" class="table table-hover table-head-fixed text-nowrap">
-                                <thead>
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Product Name</th>
-                                        <th>Supplier</th>
-                                        <th>Min Stock</th>
-                                        <th>Max Stock</th>
-                                        <th>Buffer Stock</th>
-                                        <th>Stock</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="show_data">
-                                    @foreach (var prd in Model.Products)
-                                    {
-                                        <tr>
-                                            <td></td>
-                                            <td>@prd.ProductName</td>
-                                            <td>@prd.Supplier.SupplierName</td>
-                                            <td>@prd.MinStock</td>
-                                            <td>@prd.MaxStock</td>
-                                            <td>@prd.BufferStock</td>
-                                            <td>@prd.Stock</td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
+                            <h3 class="card-title fw-bold" style="color:#ffffff">Monitoring Approve PR</h3>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="p-4" id="chartPRApprove"></div>
+                            <div class="p-3" style="margin-top: -18%;">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div class="text-start">
+                                                <h4 id="total-pr-status"></h4>
+                                                <span>Total Purchase Request</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>*@
+                <div class="col-sm-4">
+                    <div class="card">
+                        <div class="card-header bg-indigo">
+                            <h3 class="card-title fw-bold" style="color:#ffffff">Monitoring Approve Unit Request</h3>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="p-4" id="chartUnitRequestApprove"></div>
+                            <div class="p-3" style="margin-top: -18%;">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div class="text-start">
+                                                <h4 id="total-unit-request"></h4>
+                                                <span>Total Unit Request</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <div class="card">
+                        <div class="card-header bg-indigo">
+                            <h3 class="card-title fw-bold" style="color:#ffffff">Monitoring Approve Qty Difference</h3>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="p-4" id="chartQtyDiffApprove"></div>
+                            <div class="p-3" style="margin-top: -18%;">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <div class="text-start">
+                                                <h4 id="total-qty-diff"></h4>
+                                                <span>Total Quantity Different</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>            
         </div>
     </div>    
 </section>
 
 @section Scripts{
-    <script src="~/scripts/TableTemplate.js"></script>
-    <script src="~/scripts/TableTemplate2.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <script>
-        $(document).ready(function () {
-            $('#tblTemplate').DataTable();
-        });
-    </script>
-
+    <!-- /.content -->
     <script>
         $(document).ready(function () {
             get_monitoring();
             get_status();
+            get_pr_by_expired();
+            get_pr_by_status();
+            get_unit_request_monitoring();
+            get_qty_diff_monitoring();
             $('#table-medicine').DataTable({
                 pageLength: 9 // Menampilkan 10 baris per halaman
             });
         });
 
-        function get_monitoring() {
+                function get_monitoring() {
             $.get('@Url.Action("GetMonitoringProduct")', function (r) {
-                let UnderMinstock = r['warning'];
-                let AboveMinstock = r['save'];
+                console.log(r);
+                let UnderMinstock = (r.warning == undefined) ? 0 : r.warning ;
+                let AboveMinstock = (r.save == undefined) ? 0 : r.save;
+                let NotInitialized = (r.notinitialized == undefined) ? 0 : r.notinitialized;
+                let GetDataQtyMasuk = (r.dataReceived[0] == undefined) ? 0 : r.dataReceived[0];
+                let validationQty = (GetDataQtyMasuk == 0) ? 0 : GetDataQtyMasuk.dataReceivedOrderDetail;
+                let QtyMasuk = (validationQty == undefined) ? 0 : GetDataQtyMasuk.dataReceivedOrderDetail;
+                let StockKeluar = (r.StockKeluar == undefined) ? 0 : r.StockKeluar;
+                let TotalStock = (r.totalStock == undefined) ? 0 : r.totalStock;
+                $("#stock-keluar").text(StockKeluar);
+                $("#stock-masuk").text(QtyMasuk);
+                $("#total-stock").text(TotalStock);
 
-                console.log(UnderMinstock, AboveMinstock);
+                let serie = [];
+                let label = [];
+                let color = [];
+
+                if (UnderMinstock == 0 && AboveMinstock == 0 && NotInitialized == 0) {
+                    serie = [100];
+                    label = ['Data Kosong'];
+                    color = ['#808080'];
+                } else {
+                    serie = [NotInitialized, UnderMinstock, AboveMinstock];
+                    label = ['Belum di Inisialisasi', 'Dibawah Minimal Stok', 'Diatas Minimal Stok'];
+                    color = ['#E53D00', '#FFE900', '#00E396'];
+                }
 
                 var options = {
                     chart: {
                         type: 'donut', // Tipe chart donut
                         height: 455
                     },
-                    series: [UnderMinstock, AboveMinstock], // Data nilai
-                    labels: ['Dibawah Minimal Stok', 'Diatas Minimal Stok'], // Label kategori
-                    colors: ['#E53D00', '#00E396'],
+                    series: serie, // Data nilai
+                    labels: label, // Label kategori
+                    colors: color,
                     dataLabels: {
                         enabled: true, // Aktifkan data labels
                         style: {
@@ -301,13 +426,21 @@
                             enabled: true // Tambahkan efek bayangan
                         },
                         formatter: function (val, opts) {
-                            return opts.w.config.series[opts.seriesIndex]; // Menampilkan nilai asli
+                            if(UnderMinstock == 0 && AboveMinstock == 0 && NotInitialized == 0) {
+                                return '';
+                            } else {
+                                return opts.w.config.series[opts.seriesIndex];
+                            }
                         }
                     },
                     tooltip: {
                         y: {
                             formatter: function (val) {
-                                return val + " units"; // Menampilkan nilai asli di tooltip
+                                if (UnderMinstock == 0 && AboveMinstock == 0 && NotInitialized == 0) {
+                                    return '';
+                                } else {
+                                    return val + " units";
+                                } // Menampilkan nilai asli di tooltip
                             }
                         }
                     },
@@ -332,58 +465,406 @@
             })
         }
 
-        function get_status() {
-            $.get('@Url.Action("GetMonitoringStatus")', function (r) {
-                let inorder = r['inorder'];
-                let completed = r['completed'];
-                let cancelled = r['cancelled'];
+
+
+                function get_pr_by_expired() {
+            $.get('@Url.Action("GetMonitoringByExpired")', function (r) {
+                let waiting = (r.waiting == undefined) ? 0 : r.waiting;
+                let rejected = (r.rejected == undefined) ? 0 : r.rejected;
+                let completed = (r.completed == undefined) ? 0 : r.completed;
+                let totalPRData = (r.totalPRData == undefined) ? 0 : r.totalPRData;
+                let onProcessStock = (r.onProcessStock == undefined) ? 0 : r.onProcessStock;
+                let finishProcessStock = (r.finishProcess == undefined) ? 0 : r.finishProcess;
+                $("#total-pr").text(totalPRData);
+                $("#onprocess-pr").text(onProcessStock);
+                $("#finish-pr").text(finishProcessStock);
+
+                let serie = [];
+                let label = [];
+                let color = [];
+
+                if (waiting == 0 && rejected == 0 && completed == 0) {
+                    serie = [100];
+                    label = ['Data Kosong'];
+                    color = ['#808080'];
+                } else {
+                    serie = [waiting, rejected, completed];
+                    label = ['Status PR Waiting', 'Status PR Rejected', 'Status PR Completed'];
+                    color = ['#FFE900', '#E53D00', '#00E396'];
+                }
 
                 var options = {
-                    series: [inorder, completed, cancelled],
-                    labels: ["In Order", "completed", "Cancelled"],
                     chart: {
-                        height: 455,
-                        type: 'donut',
+                        type: 'donut', // Tipe chart donut
+                        height: 455
+                    },
+                    series: serie, // Data nilai
+                    labels: label, // Label kategori
+                    colors: color,
+                    dataLabels: {
+                        enabled: true, // Aktifkan data labels
+                        style: {
+                            fontSize: '14px', // Ukuran font data labels
+                            fontWeight: 'bold'
+                        },
+                        dropShadow: {
+                            enabled: true // Tambahkan efek bayangan
+                        },
+                        formatter: function (val, opts) {
+                            if (waiting == 0 && rejected == 0 && completed == 0) {
+                                return '';
+                            } else {
+                                return opts.w.config.series[opts.seriesIndex]; // Menampilkan nilai asli
+                            }
+                        }
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function (val) {
+                                if (waiting == 0 && rejected == 0 && completed == 0) {
+                                    return '';
+                                } else {
+                                    return val + " units"; // Menampilkan nilai asli di tooltip
+                                }
+                            }
+                        }
                     },
                     plotOptions: {
                         pie: {
-                            startAngle: -90,
-                            endAngle: 270
-                        }
-                    },
-                    dataLabels: {
-                        formatter: function (val, opts) {
-                            return opts.w.config.series[opts.seriesIndex]; // Menampilkan nilai asli
-                        }
-                    },
-                    fill: {
-                        type: 'gradient'
-                    },
-                    legend: {
-                        // formatter: function (val, opts) {
-                        //     return val + " - " + opts.w.globals.series[opts.seriesIndex]
-                        // },
-                        position: 'top'
-                    },
-                    responsive: [{
-                        breakpoint: 480,
-                        options: {
-                            chart: {
-                                width: 300
+                            donut: {
+                                size: '65%' // Ukuran lubang tengah
                             },
-                            legend: {
-                                position: 'bottom'
+                            dataLabels: {
+                                offset: -10 // Menyesuaikan posisi label agar berada di atas segmen
                             }
                         }
-                    }]
+                    },
+                    legend: {
+                        position: 'top' // Posisi legend di bawah
+                    }
+                };
+
+                // Inisialisasi dan render chart
+                var chart = new ApexCharts(document.querySelector("#chartMonitoringPRByExpired"), options);
+                chart.render();
+            })
+        }
+
+
+                function get_status() {
+            $.get('@Url.Action("GetMonitoringStatus")', function (r) {
+                let inorder = (r.inorder == undefined) ? 0 : r.inorder;
+                let completed = (r.completed == undefined) ? 0 : r.completed;
+                let cancelled = (r.cancelled == undefined) ? 0 : r.cancelled;
+                $("#total-po").text(r.totalPO);
+
+                let serie = [];
+                let label = [];
+                let color = [];
+
+                if(inorder == 0 && completed == 0 && cancelled == 0) {
+                    serie = [100];
+                    label = ['Data Kosong'];
+                    color = ['#808080'];
+                } else {
+                    serie = [inorder, completed, cancelled];
+                    label = ['PO Status Inorder', 'PO Status Completed', 'PO Status Cancelled'];
+                    color = ['#FFE900', '#00E396', '#E53D00'];
+                }
+
+                var options = {
+                    chart: {
+                        type: 'donut', // Tipe chart donut
+                        height: 455,
+                    },
+                    series: serie, // Data nilai
+                    labels: label, // Label kategori
+                    colors: color,
+                    dataLabels: {
+                        enabled: true, // Aktifkan data labels
+                        style: {
+                            fontSize: '14px', // Ukuran font data labels
+                            fontWeight: 'bold'
+                        },
+                        dropShadow: {
+                            enabled: true // Tambahkan efek bayangan
+                        },
+                        formatter: function (val, opts) {
+                            if (inorder == 0 && completed == 0 && cancelled == 0) {
+                                return '';
+                            } else {
+                                return opts.w.config.series[opts.seriesIndex]; // Menampilkan nilai asli
+                            }
+                        }
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function (val) {
+                                if (inorder == 0 && completed == 0 && cancelled == 0) {
+                                    return '';
+                                } else {
+                                    return val + " units"; // Menampilkan nilai asli di tooltip
+                                }
+                            }
+                        }
+                    },
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '65%' // Ukuran lubang tengah
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'top', // Posisi legend di bawah
+                    }
                 };
 
                 var chart = new ApexCharts(document.querySelector("#chartStatusPie"), options);
                 chart.render();
             })
         }
-    </script>
 
+
+                function get_pr_by_status() {
+            $.get('@Url.Action("GetPRByApprove")', function (r) {
+                let waiting = (r.waiting == undefined) ? 0 : r.waiting;
+                let rejected = (r.rejected == undefined) ? 0 : r.rejected;
+                let completed = (r.completed == undefined) ? 0 : r.completed;
+                let totalPRData = (r.totalPRData == undefined) ? 0 : r.totalPRData;
+                $("#total-pr-status").text(totalPRData);
+
+                let serie = [];
+                let label = [];
+                let color = [];
+
+                if (waiting == 0 && rejected == 0 && completed == 0) {
+                    serie = [100];
+                    label = ['Data Kosong'];
+                    color = ['#808080'];
+                } else {
+                    serie = [waiting, rejected, completed];
+                    label = ['Waiting', 'Rejected', 'Completed'];
+                    color = ['#FFE900', '#E53D00', '#00E396'];
+                }
+
+                var options = {
+                    chart: {
+                        type: 'donut', // Tipe chart donut
+                        height: 455
+                    },
+                    series: serie, // Data nilai
+                    labels: label, // Label kategori
+                    colors: color,
+                    dataLabels: {
+                        enabled: true, // Aktifkan data labels
+                        style: {
+                            fontSize: '14px', // Ukuran font data labels
+                            fontWeight: 'bold'
+                        },
+                        dropShadow: {
+                            enabled: true // Tambahkan efek bayangan
+                        },
+                        formatter: function (val, opts) {
+                            if(waiting == 0 && rejected == 0 && completed == 0) {
+                                return '';
+                            } else {
+                                return opts.w.config.series[opts.seriesIndex]; // Menampilkan nilai asli
+                            }
+                        }
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function (val) {
+                                if (waiting == 0 && rejected == 0 && completed == 0) {
+                                    return '';
+                                } else {
+                                    return val + " units"; // Menampilkan nilai asli di tooltip
+                                }
+                            }
+                        }
+                    },
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '65%' // Ukuran lubang tengah
+                            },
+                            dataLabels: {
+                                offset: -10 // Menyesuaikan posisi label agar berada di atas segmen
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'top' // Posisi legend di bawah
+                    }
+                };
+
+                // Inisialisasi dan render chart
+                var chart = new ApexCharts(document.querySelector("#chartPRApprove"), options);
+                chart.render();
+            })
+        }
+
+
+                function get_unit_request_monitoring() {
+            $.get('@Url.Action("GetUnitRequestMonitoring")', function (r) {
+                let waiting = (r.waiting == undefined) ? 0 : r.waiting;
+                let rejected = (r.rejected == undefined) ? 0 : r.rejected;
+                let completed = (r.completed == undefined) ? 0 : r.completed;
+                let totalUnitRequest = (r.totalUnitRequest == undefined) ? 0 : r.totalUnitRequest;
+                $("#total-unit-request").text(totalUnitRequest);
+
+                let serie = [];
+                let label = [];
+                let color = [];
+
+                if (waiting == 0 && rejected == 0 && completed == 0) {
+                    serie = [100];
+                    label = ['Data Kosong'];
+                    color = ['#808080'];
+                } else {
+                    serie = [waiting, rejected, completed];
+                    label = ['Waiting', 'Rejected', 'Completed'];
+                    color = ['#FFE900', '#E53D00', '#00E396'];
+                }
+
+                var options = {
+                    chart: {
+                        type: 'donut', // Tipe chart donut
+                        height: 455
+                    },
+                    series: serie, // Data nilai
+                    labels: label, // Label kategori
+                    colors: color,
+                    dataLabels: {
+                        enabled: true, // Aktifkan data labels
+                        style: {
+                            fontSize: '14px', // Ukuran font data labels
+                            fontWeight: 'bold'
+                        },
+                        dropShadow: {
+                            enabled: true // Tambahkan efek bayangan
+                        },
+                        formatter: function (val, opts) {
+                            if (waiting == 0 && rejected == 0 && completed == 0) {
+                                return '';
+                            } else {
+                                return opts.w.config.series[opts.seriesIndex]; // Menampilkan nilai asli
+                            }
+                        }
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function (val) {
+                                if (waiting == 0 && rejected == 0 && completed == 0) {
+                                    return '';
+                                } else {
+                                    return val + " units"; // Menampilkan nilai asli di tooltip
+                                }
+                            }
+                        }
+                    },
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '65%' // Ukuran lubang tengah
+                            },
+                            dataLabels: {
+                                offset: -10 // Menyesuaikan posisi label agar berada di atas segmen
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'top' // Posisi legend di bawah
+                    }
+                };
+
+                // Inisialisasi dan render chart
+                var chart = new ApexCharts(document.querySelector("#chartUnitRequestApprove"), options);
+                chart.render();
+            })
+        }
+
+
+                function get_qty_diff_monitoring() {
+            $.get('@Url.Action("GetQtyDiffMonitoring")', function (r) {
+                let waiting = (r.waiting == undefined) ? 0 : r.waiting;
+                let rejected = (r.rejected == undefined) ? 0 : r.rejected;
+                let completed = (r.completed == undefined) ? 0 : r.completed;
+                let totalQtyDiff = (r.totalQtyDiff == undefined) ? 0 : r.totalQtyDiff;
+                $("#total-qty-diff").text(totalQtyDiff);
+
+                let serie = [];
+                let label = [];
+                let color = [];
+
+                if (waiting == 0 && rejected == 0 && completed == 0) {
+                    serie = [100];
+                    label = ['Data Kosong'];
+                    color = ['#808080'];
+                } else {
+                    serie = [waiting, rejected, completed];
+                    label = ['Waiting', 'Rejected', 'Completed'];
+                    color = ['#FFE900', '#E53D00', '#00E396'];
+                }
+
+                var options = {
+                    chart: {
+                        type: 'donut', // Tipe chart donut
+                        height: 455
+                    },
+                    series: serie, // Data nilai
+                    labels: label, // Label kategori
+                    colors: color,
+                    dataLabels: {
+                        enabled: true, // Aktifkan data labels
+                        style: {
+                            fontSize: '14px', // Ukuran font data labels
+                            fontWeight: 'bold'
+                        },
+                        dropShadow: {
+                            enabled: true // Tambahkan efek bayangan
+                        },
+                        formatter: function (val, opts) {
+                            if (waiting == 0 && rejected == 0 && completed == 0) {
+                                return '';
+                            } else {
+                                return opts.w.config.series[opts.seriesIndex]; // Menampilkan nilai asli
+                            }
+                        }
+                    },
+                    tooltip: {
+                        y: {
+                            formatter: function (val) {
+                                if (waiting == 0 && rejected == 0 && completed == 0) {
+                                    return '';
+                                } else {
+                                    return val + " units"; // Menampilkan nilai asli di tooltip
+                                }
+                            }
+                        }
+                    },
+                    plotOptions: {
+                        pie: {
+                            donut: {
+                                size: '65%' // Ukuran lubang tengah
+                            },
+                            dataLabels: {
+                                offset: -10 // Menyesuaikan posisi label agar berada di atas segmen
+                            }
+                        }
+                    },
+                    legend: {
+                        position: 'top' // Posisi legend di bawah
+                    }
+                };
+
+                // Inisialisasi dan render chart
+                var chart = new ApexCharts(document.querySelector("#chartQtyDiffApprove"), options);
+                chart.render();
+            })
+        }
+    </script>
     <style>
 
         * {
@@ -405,9 +886,9 @@
             transition: transform .2s;
         }
             /* .box:hover
-            {
-             transform:scale(1.2);
-            } */
+                    {
+                     transform:scale(1.2);
+                    } */
             .box .percent {
                 width: 150px;
                 height: 150px;
@@ -468,6 +949,14 @@
                 font-weight: 700;
                 letter-spacing: 1px;
             }
+
+        .small-text {
+            font-size: 12px;
+        }
+
+        .large-text {
+            font-size: 24px;
+        }
 
     </style>
 }

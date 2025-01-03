@@ -115,18 +115,18 @@
                     <!-- /.card-header -->
                     <div class="card-body">
                         <div class="form-group row">
-                            <div class="col-sm-5">
+                            <div class="col-md-5">
                                 <div class="form-group">
                                     <select asp-items="@ViewBag.Product" class="form-control select2bs4" style="width: 100%;" id="produklist" data-placeholder="--Choose Product--">
                                         <option value="" hidden disabled selected>--Choose Product--</option>
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-sm-1">
+                            <div class="col-md-1">
                                 <input autocomplete="off" class="form-control" type="number" pattern="/^-?\d+\.?\d*$/" onKeyUp="qtyInput(this.value)" onKeyPress="if(this.value.length==6) return false;" min="1" max="1000" id="qty" placeholder="Qty">
                                 <span class="error">Required !</span>
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-md-2">
                                 <div class="form-group">
                                     @if (signInManager.IsSignedIn(User))
                                     {
@@ -136,38 +136,38 @@
                                     }
                                 </div>
                             </div>
-                            <div class="col-sm-1">
+                            <div class="col-md-1">
                                 <input autocomplete="off" class="form-control" id="minstock" type="hidden" placeholder="Min Stock" readonly>
                             </div>
-                            <div class="col-sm-1">
+                            <div class="col-md-1">
                                 <input autocomplete="off" class="form-control" id="maxstock" type="hidden" placeholder="Max Stock" readonly>
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-md-2">
                                 <input autocomplete="off" class="form-control" id="bufferstock" type="hidden" placeholder="Buffer Stock" readonly>
                             </div>
                         </div>
                         <div class="form-group row">
-                            <div class="col-sm-3">
+                            <div class="col-md-3">
                                 <span>Product Number</span>
                                 <input autocomplete="off" class="form-control" id="productnumber" placeholder="Product Number" readonly>
                                 <span class="error">Required !</span>
                             </div>
-                            <div class="col-sm-4">
+                            <div class="col-md-4">
                                 <span>Product Name</span>
                                 <input autocomplete="off" class="form-control" id="productname" placeholder="Product Name" readonly>
                                 <span class="error">Required !</span>
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-md-2">
                                 <span>Stock</span>
                                 <input autocomplete="off" class="form-control" id="stock" placeholder="Stock" readonly>
                                 <span class="error">Required !</span>
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-md-2">
                                 <span>Supplier</span>
                                 <input autocomplete="off" class="form-control" id="Supplier" placeholder="Supplier" readonly>
                                 <span class="error">Required !</span>
                             </div>
-                            <div class="col-sm-1">
+                            <div class="col-md-1">
                                 <span>Measure</span>
                                 <input autocomplete="off" class="form-control" id="measure" placeholder="Measure" readonly>
                                 <span class="error">Required !</span>

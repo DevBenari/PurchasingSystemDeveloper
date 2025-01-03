@@ -5,7 +5,11 @@
 
 @using Microsoft.AspNetCore.Identity;
 
-@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@{
+    var listRole = Context.Session.GetString("ListRole");
+    @inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+
+}
 @model PurchasingSystemDeveloper.Areas.Transaction.Models.UnitRequest
 
 <!-- Tempusdominus Bootstrap 4 -->
@@ -89,7 +93,7 @@
                         @if (Model.ApproveStatusUser1 == null)
                         {
                             <div class="form-group row" id="inputProduct">
-                                <div class="col-sm-5">
+                                <div class="col-md-5">
                                     <span>Search Product</span>
                                     <div class="form-group">
                                         <select asp-items="@ViewBag.Product" class="form-control select2bs4" style="width: 100%;" id="produklist" data-placeholder="--Choose Product--">
@@ -97,12 +101,12 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-1">
+                                <div class="col-md-1">
                                     <span>Qty</span>
                                     <input autocomplete="off" class="form-control" type="number" pattern="/^-?\d+\.?\d*$/" onKeyUp="qtyInput(this.value)" onKeyPress="if(this.value.length==4) return false;" min="1" max="1000" id="qty" placeholder="Qty">
                                     <span class="error">Required !</span>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-md-2">
                                     <span>&nbsp;</span>
                                     <div class="form-group">
                                         @if (signInManager.IsSignedIn(User))
@@ -113,39 +117,39 @@
                                         }
                                     </div>
                                 </div>
-                                <div class="col-sm-1">
+                                <div class="col-md-1">
                                     <input autocomplete="off" class="form-control" id="minstock" type="hidden" placeholder="Min Stock" readonly>
                                 </div>
-                                <div class="col-sm-1">
+                                <div class="col-md-1">
                                     <input autocomplete="off" class="form-control" id="maxstock" type="hidden" placeholder="Max Stock" readonly>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-md-2">
                                     <input autocomplete="off" class="form-control" id="bufferstock" type="hidden" placeholder="Buffer Stock" readonly>
                                 </div>
                             </div>
 
                             <div class="form-group row" id="descriptionProduct">
-                                <div class="col-sm-3" id="GroupProductNumber">
+                                <div class="col-md-3" id="GroupProductNumber">
                                     <span>Product Number</span>
                                     <input autocomplete="off" class="form-control" id="productnumber" placeholder="Product Number" readonly>
                                     <span class="error">Required !</span>
                                 </div>
-                                <div class="col-sm-4" id="GroupProductName">
+                                <div class="col-md-4" id="GroupProductName">
                                     <span>Product Name</span>
                                     <input autocomplete="off" class="form-control" id="productname" placeholder="Product Name" readonly>
                                     <span class="error">Required !</span>
                                 </div>
-                                <div class="col-sm-2" id="GroupStock">
+                                <div class="col-md-2" id="GroupStock">
                                     <span>Stock</span>
                                     <input autocomplete="off" class="form-control" id="stock" placeholder="Stock" readonly>
                                     <span class="error">Required !</span>
                                 </div>
-                                <div class="col-sm-2" id="GroupSupplier">
+                                <div class="col-md-2" id="GroupSupplier">
                                     <span>Supplier</span>
                                     <input autocomplete="off" class="form-control" id="Supplier" placeholder="Supplier" readonly>
                                     <span class="error">Required !</span>
                                 </div>
-                                <div class="col-sm-1" id="GroupMeasure">
+                                <div class="col-md-1" id="GroupMeasure">
                                     <span>Measure</span>
                                     <input autocomplete="off" class="form-control" id="measure" placeholder="Measure" readonly>
                                     <span class="error">Required !</span>
@@ -235,21 +239,45 @@
                 <!-- start button footer -->
                 <div class="card card-orange">
                     <div class="card-body">
-                        @if (Model.ApproveStatusUser1 == null)
+                        @if (User.Identity.Name == "superadmin@admin.com")
                         {
-                            @****Perhatikan type nya jika submit akan berbeda hasil pada json, jadi pakai type button*@
-                            <input type="button" value="Save" id="submit" class="btn btn-primary bg-indigo float-left fw-bold">
                             <a class="btn bg-indigo" id="btnubah">Change</a>
                             <a class="btn bg-gray" asp-action="PrintUnitRequest" asp-controller="UnitRequest" asp-area="Transaction" asp-route-id="@Model.UnitRequestId"><i class="far fa-file-alt" style="color:white"></i> Save As PDF</a>
-                            <a class="btn btn-default" id="btnbatalubah">Cancel Change</a>
-                            <a class="btn btn-default" id="btnbatal" asp-action="Index" asp-controller="UnitRequest">Cancel</a>
                         }
                         else
                         {
-                            <a class="btn bg-gray" asp-action="PrintUnitRequest" asp-controller="UnitRequest" asp-area="Transaction" asp-route-id="@Model.UnitRequestId"><i class="far fa-file-alt" style="color:white"></i> Save As PDF</a>
-                            @*<a class="btn btn-default" id="btnbatal" asp-action="Index" asp-controller="UnitRequest">Cancel</a>*@
-                            <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "UnitRequest", new { area = "Transaction" })">Cancel</div>
-                        }
+                            @if (Model.ApproveStatusUser1 == null)
+                            {
+                                @****Perhatikan type nya jika submit akan berbeda hasil pada json, jadi pakai type button*@
+                                <input type="button" value="Save" id="submit" class="btn btn-primary bg-indigo float-left fw-bold">
+                                @if (!string.IsNullOrEmpty(listRole))
+                                {
+                                    var roles = listRole.Split(',');
+                                    if (roles.Contains("UpdateUnitRequest"))
+                                    {
+                                        <a class="btn bg-indigo" id="btnubah">Change</a>
+                                    }
+                                    <a class="btn btn-default" id="btnbatalubah">Cancel Change</a>
+                                    if (roles.Contains("PrintUnitRequest"))
+                                    {
+                                        <a class="btn bg-gray" asp-action="PrintUnitRequest" asp-controller="UnitRequest" asp-area="Transaction" asp-route-id="@Model.UnitRequestId"><i class="far fa-file-alt" style="color:white"></i> Save As PDF</a>
+                                    }
+                                }
+                                <div class="btn btn-default" id="btnbatal" data-href="@Url.Action("Index", "UnitRequest", new { area = "Transaction" })">Cancel</div>
+                            }
+                            else
+                            {
+                                @if (!string.IsNullOrEmpty(listRole))
+                                {
+                                    var roles = listRole.Split(',');
+                                    if (roles.Contains("PrintUnitRequest"))
+                                    {
+                                        <a class="btn bg-gray" asp-action="PrintUnitRequest" asp-controller="UnitRequest" asp-area="Transaction" asp-route-id="@Model.UnitRequestId"><i class="far fa-file-alt" style="color:white"></i> Save As PDF</a>
+                                    }
+                                }
+                                <div class="btn btn-default" id="btnbatal" data-href="@Url.Action("Index", "UnitRequest", new { area = "Transaction" })">Cancel</div>
+                            }
+                        }                        
                     </div>
                 </div>
                 <!-- /.end button footer -->

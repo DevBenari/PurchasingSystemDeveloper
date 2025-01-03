@@ -52,7 +52,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             _hostingEnvironment = hostingEnvironment;
         }
 
-        //[Authorize(Roles = "IndexDepartment")]
+        //[Authorize(Roles = "IndexDepartment")]       
         public IActionResult RedirectToIndex(string filterOptions = "", string searchTerm = "", DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, int page = 1, int pageSize = 10)
         {
             try
@@ -82,8 +82,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 return Redirect(Request.Path);
             }            
         }
-
-        [HttpGet]
+        
         //[Authorize(Roles = "IndexDepartment")]
         public async Task<IActionResult> Index(string filterOptions = "", string searchTerm = "", DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, int page = 1, int pageSize = 10)
         {
@@ -154,8 +153,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 return Redirect(Request.Path);
             }            
         }
-
-        [HttpGet]
+        
         //[Authorize(Roles = "CreateDepartment")]
         public async Task<ViewResult> CreateDepartment()
         {
@@ -281,8 +279,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 return Redirect(Request.Path);
             }            
         }
-
-        [HttpGet]
+        
         //[Authorize(Roles = "DetailDepartment")]
         public async Task<IActionResult> DetailDepartment(Guid Id)
         {
@@ -377,8 +374,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                 return Redirect(Request.Path);
             }            
         }
-
-        [HttpGet]
+        
         //[Authorize(Roles = "DeleteDepartment")]
         public async Task<IActionResult> DeleteDepartment(Guid Id)
         {

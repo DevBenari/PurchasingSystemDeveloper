@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.DataProtection;
 using System.Text;
 using PurchasingSystemDeveloper.Repositories;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Http.Extensions;
 
 public class DecryptUrlMiddleware
 {
@@ -16,10 +17,29 @@ public class DecryptUrlMiddleware
         _protector = provider.CreateProtector("UrlProtector");
         _urlMappingService = urlMappingService;
     }
-  
+
     public async Task InvokeAsync(HttpContext context)
     {
         var path = context.Request.Path.Value.Trim('/');
+
+        // Jika path kosong atau "undefined", fallback
+        if (string.IsNullOrEmpty(path) || path.Equals("undefined", StringComparison.OrdinalIgnoreCase))
+        {
+            var currentUrl = context.Request.GetDisplayUrl(); // URL penuh saat ini
+
+            if (!currentUrl.Contains("retry=1"))
+            {
+                // Tambah query param retry=1 untuk mencegah loop
+                var separator = currentUrl.Contains("?") ? "&" : "?";
+                context.Response.Redirect(currentUrl + separator + "retry=1");
+            }
+            else
+            {
+                // Sudah mencoba sekali, fallback ke halaman lain agar tidak loop selamanya
+                context.Response.Redirect("/Account/Login");
+            }
+            return;
+        }
 
         // Redirect '/Account/Login' ke URL terenkripsi
         if (string.Equals(path, "Account/Login", StringComparison.OrdinalIgnoreCase))
@@ -47,7 +67,7 @@ public class DecryptUrlMiddleware
             catch (Exception ex)
             {
                 Console.WriteLine($"Error creating encrypted URL: {ex.Message}");
-                context.Response.Redirect("Account/Login");
+                RedirectToFallback(context);
                 return;
             }
         }
@@ -58,7 +78,7 @@ public class DecryptUrlMiddleware
             try
             {
                 // Dekripsi path asli
-                var decryptedPath = _protector.Unprotect(encryptedPath);                
+                var decryptedPath = _protector.Unprotect(encryptedPath);
 
                 // Periksa prefix untuk menentukan jenis URL
                 if (decryptedPath.StartsWith("Create:"))
@@ -103,15 +123,49 @@ public class DecryptUrlMiddleware
                         }
                     }
                 }
+                else
+                {
+                    // Jika prefix tidak dikenali, fallback
+                    RedirectToFallback(context);
+                    return;
+                }
             }
             catch
             {
-                // Jika dekripsi gagal, kembalikan error
-                context.Response.Redirect(context.Request.Path);
+                // Jika tidak ditemukan mapping, fallback
+                RedirectToFallback(context);
                 return;
             }
         }
 
         await _next(context);
+    }
+
+    private void RedirectToFallback(HttpContext context)
+    {
+        try
+        {
+            // Fallback original path
+            string fallbackOriginalPath = "Page:Account/Login";
+            var fallbackEncryptedPath = _protector.Protect(fallbackOriginalPath);
+            string fallbackGuid = ConvertToGuidLikeCode(fallbackEncryptedPath);
+
+            _urlMappingService.InMemoryMapping[fallbackGuid] = fallbackEncryptedPath;
+            context.Response.Redirect("/" + fallbackGuid);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error creating fallback URL: {ex.Message}");
+            // Jika bahkan membuat fallback gagal, terakhir: direct redirect (daripada loop)
+            context.Response.Redirect("/Account/Login");
+        }
+    }
+
+    private string ConvertToGuidLikeCode(string encryptedPath)
+    {
+        return Convert.ToBase64String(SHA256.HashData(Encoding.UTF8.GetBytes(encryptedPath)))
+            .Replace('+', '-')
+            .Replace('/', '_')
+            .Substring(0, 36);
     }
 }

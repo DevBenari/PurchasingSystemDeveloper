@@ -2,6 +2,7 @@
 using PurchasingSystemDeveloper.Areas.Warehouse.Models;
 using PurchasingSystemDeveloper.Models;
 using PurchasingSystemDeveloper.Repositories;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PurchasingSystemDeveloper.Areas.Order.Models
@@ -9,6 +10,7 @@ namespace PurchasingSystemDeveloper.Areas.Order.Models
     [Table("OrdApprovalQtyDifference", Schema = "dbo")]
     public class ApprovalQtyDifference : UserActivity
     {
+        [Key]
         public Guid ApprovalQtyDifferenceId { get; set; }
         public Guid? QtyDifferenceId { get; set; }
         public string QtyDifferenceNumber { get; set; }

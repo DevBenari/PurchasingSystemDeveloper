@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.DataProtection;
+﻿using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Elfie.Model.Map;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +31,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
         private readonly IDiscountRepository _discountRepository;
         private readonly ISupplierRepository _supplierRepository;
         private readonly IWarehouseLocationRepository _warehouseLocationRepository;
+        private readonly ILeadTimeRepository _leadTimeRepository;
 
         private readonly IDataProtector _protector;
         private readonly UrlMappingService _urlMappingService;
@@ -45,6 +46,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             ISupplierRepository supplierRepository,
             HttpClient httpClient,
             IWarehouseLocationRepository warehouseLocationRepository,
+            ILeadTimeRepository leadTimeRepository,
 
             IDataProtectionProvider provider,
             UrlMappingService urlMappingService
@@ -59,11 +61,12 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             _discountRepository = DiscountRepository;
             _supplierRepository = supplierRepository;
             _warehouseLocationRepository = warehouseLocationRepository;
+            _leadTimeRepository = leadTimeRepository;
 
             _protector = provider.CreateProtector("UrlProtector");
             _urlMappingService = urlMappingService;
         }
-
+        
         public IActionResult RedirectToIndex()
         {
             try
@@ -126,7 +129,6 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             return View(); 
         }
 
-        [HttpGet]
         public async Task<IActionResult> CreateSupplier(string apiCode)
         {
             var apiUrl = apiCode; // URL API untuk mengambil data supplier
@@ -189,24 +191,33 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                                 }
                             }
 
-                            var supplier = new Supplier
+                            var getLeadTime = _leadTimeRepository.GetAllLeadTime().Where(l => l.LeadTimeValue == 7).FirstOrDefault();
+                            if (getLeadTime != null)
                             {
-                                CreateDateTime = DateTime.Now,
-                                CreateBy = new Guid(getUser.Id),
-                                SupplierId = Guid.NewGuid(),
-                                SupplierCode = SupplierCode,
-                                SupplierName = item.nama_supp,
-                                LeadTimeId = new Guid("28D557A4-DFF5-45D8-7AF6-08DCAD5EBA2E"),// Set Id LeadTime = 7
-                                Address = item.alamat_supp,
-                                Handphone = item.hp,
-                                Email = "supplier@email.com",
-                                Note = item.ket,
-                                IsPKS = true,
-                                IsActive = true,
-                            };
+                                var supplier = new Supplier
+                                {
+                                    CreateDateTime = DateTime.Now,
+                                    CreateBy = new Guid(getUser.Id),
+                                    SupplierId = Guid.NewGuid(),
+                                    SupplierCode = SupplierCode,
+                                    SupplierName = item.nama_supp,
+                                    LeadTimeId = getLeadTime.LeadTimeId,// Set Id LeadTime = 7
+                                    Address = item.alamat_supp,
+                                    Handphone = item.hp,
+                                    Email = "supplier@email.com",
+                                    Note = item.ket,
+                                    IsPKS = true,
+                                    IsActive = true,
+                                };
 
-                            // Simpan ke database
-                            _supplierRepository.Tambah(supplier);
+                                // Simpan ke database
+                                _supplierRepository.Tambah(supplier);
+                            }
+                            else
+                            {
+                                // Jika request gagal
+                                return View("Error", "Leadtime Null");
+                            }
                         }                                                
                     }
 
@@ -256,7 +267,6 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             return View(); 
         }
 
-        [HttpGet]
         public async Task<IActionResult> CreateSatuan(string apiCode)
         {
             var apiUrl = apiCode; // URL API untuk mengambil data supplier
@@ -376,7 +386,6 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             return View(); 
         }
 
-        [HttpGet]
         public async Task<IActionResult> CreateKategoriObat(string apiCode)
         {
             var apiUrl = apiCode; // URL API untuk mengambil data supplier
@@ -495,7 +504,6 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             return View(); 
         }
 
-        [HttpGet]
         public async Task<IActionResult> CreateObat(string apiCode, int limit = 20)
         {
             var apiUrlObat = "https://app.mmchospital.co.id/devel_mantap/api.php?mod=api&cmd=get_data_obat&return_type=json"; // URL API untuk mengambil data supplier
@@ -542,7 +550,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             {
                 foreach (var itemObat in productList)
                 {
-                    var getObat = _productRepository.GetAllProduct().Where(d => d.ProductName == Convert.ToString(itemObat.nama_brg)).FirstOrDefault();
+                    var getObat = _productRepository.GetAllProduct().Where(d => d.ProductName == Convert.ToString(itemObat.nama_brg) && d.Measurement.MeasurementName == Convert.ToString(itemObat.kode_satuan)).FirstOrDefault();
 
                     if (getObat == null)
                     {
@@ -605,32 +613,41 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                                         var getDiscount = _discountRepository.GetAllDiscount().Where(d => Convert.ToString(d.DiscountValue) == "0").FirstOrDefault();
                                         var getWarehouse = _warehouseLocationRepository.GetAllWarehouseLocation().Where(w => w.WarehouseLocationName == "Gudang 01").FirstOrDefault();
 
-                                        var product = new Product
+                                        if (getSupplier != null && getDiscount != null && getWarehouse != null)
                                         {
-                                            CreateDateTime = DateTime.Now,
-                                            CreateBy = new Guid(getUser.Id),
-                                            ProductId = Guid.NewGuid(),
-                                            ProductCode = ProductCode,
-                                            ProductName = itemObat.nama_brg,
-                                            SupplierId = getSupplier.SupplierId,
-                                            CategoryId = getCategory.CategoryId,
-                                            MeasurementId = getSatuan.MeasurementId,
-                                            DiscountId = getDiscount.DiscountId,
-                                            WarehouseLocationId = getWarehouse.WarehouseLocationId,
-                                            MinStock = 0,
-                                            MaxStock = 0,
-                                            BufferStock = 0,
-                                            Stock = 0,
-                                            Cogs = 0,
-                                            BuyPrice = 0,
-                                            RetailPrice = 0,
-                                            StorageLocation = "",
-                                            RackNumber = "",
-                                            Note = ""
-                                        };
+                                            var product = new Product
+                                            {
+                                                CreateDateTime = DateTime.Now,
+                                                CreateBy = new Guid(getUser.Id),
+                                                ProductId = Guid.NewGuid(),
+                                                ProductCode = ProductCode,
+                                                ProductName = itemObat.nama_brg,
+                                                SupplierId = getSupplier.SupplierId,
+                                                CategoryId = getCategory.CategoryId,
+                                                MeasurementId = getSatuan.MeasurementId,
+                                                DiscountId = getDiscount.DiscountId,
+                                                WarehouseLocationId = getWarehouse.WarehouseLocationId,
+                                                MinStock = 0,
+                                                MaxStock = 0,
+                                                BufferStock = 0,
+                                                Stock = 0,
+                                                Cogs = 0,
+                                                BuyPrice = 0,
+                                                RetailPrice = 0,
+                                                StorageLocation = "",
+                                                RackNumber = "",
+                                                Note = ""
+                                            };
 
-                                        // Simpan ke database
-                                        _productRepository.Tambah(product);
+                                            // Simpan ke database
+                                            _productRepository.Tambah(product);
+                                        }
+                                        else
+                                        {
+                                            // Jika request gagal, tampilkan pesan error
+                                            TempData["SuccessMessage"] = "Data Null";
+                                            return View();
+                                        }
                                     }
                                 }
                             }
@@ -698,32 +715,44 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                                                         }
                                                     }
 
-                                                    var product = new Product
-                                                    {
-                                                        CreateDateTime = DateTime.Now,
-                                                        CreateBy = new Guid(getUser.Id),
-                                                        ProductId = Guid.NewGuid(),
-                                                        ProductCode = ProductCode,
-                                                        ProductName = itemObat.nama_brg,
-                                                        SupplierId = getSupplier.SupplierId,
-                                                        CategoryId = getCategory.CategoryId,
-                                                        MeasurementId = getSatuan.MeasurementId,
-                                                        DiscountId = getDiscount.DiscountId,
-                                                        WarehouseLocationId = new Guid("4218A796-79B1-4F59-7767-08DCAE28EBBE"),
-                                                        MinStock = 0,
-                                                        MaxStock = 0,
-                                                        BufferStock = 0,
-                                                        Stock = 0,
-                                                        Cogs = 0,
-                                                        BuyPrice = Convert.ToDecimal(hargaObat),
-                                                        RetailPrice = 0,
-                                                        StorageLocation = "",
-                                                        RackNumber = "",
-                                                        Note = ""
-                                                    };
+                                                    var getWarehouse = _warehouseLocationRepository.GetAllWarehouseLocation().Where(w => w.WarehouseLocationName == "Gudang 01").FirstOrDefault();
 
-                                                    // Simpan ke database
-                                                    _productRepository.Tambah(product);
+                                                    if (getWarehouse != null)
+                                                    {
+                                                        var product = new Product
+                                                        {
+                                                            CreateDateTime = DateTime.Now,
+                                                            CreateBy = new Guid(getUser.Id),
+                                                            ProductId = Guid.NewGuid(),
+                                                            ProductCode = ProductCode,
+                                                            ProductName = itemObat.nama_brg,
+                                                            SupplierId = getSupplier.SupplierId,
+                                                            CategoryId = getCategory.CategoryId,
+                                                            MeasurementId = getSatuan.MeasurementId,
+                                                            DiscountId = getDiscount.DiscountId,
+                                                            WarehouseLocationId = getWarehouse.WarehouseLocationId,
+                                                            MinStock = 0,
+                                                            MaxStock = 0,
+                                                            BufferStock = 0,
+                                                            Stock = 0,
+                                                            Cogs = 0,
+                                                            BuyPrice = Convert.ToDecimal(hargaObat),
+                                                            RetailPrice = 0,
+                                                            StorageLocation = "",
+                                                            RackNumber = "",
+                                                            Note = ""
+                                                        };
+
+                                                        // Simpan ke database
+                                                        _productRepository.Tambah(product);
+                                                    }
+                                                    else
+                                                    {
+                                                        // Jika request gagal, tampilkan pesan error
+                                                        //return View("Error", "Data Warehouse Null");
+                                                        TempData["SuccessMessage"] = "Data Null";
+                                                        return View();
+                                                    }
                                                 }
                                             }
                                         }
@@ -775,7 +804,6 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             return View(); 
         }
 
-        [HttpGet]
         public async Task<IActionResult> CreateDiskon(string apiCode)
         {
             var apiUrl = apiCode; // URL API untuk mengambil data supplier
@@ -867,7 +895,6 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             }
         }
 
-        [HttpGet]
         public async Task<IActionResult> Impor(string apiCode)
         {
             var apiUrl = apiCode; // URL API GetProduct

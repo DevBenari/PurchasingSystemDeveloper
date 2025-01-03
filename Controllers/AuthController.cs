@@ -8,7 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace PurchasingSystemStaging.Controllers
+namespace PurchasingSystemDeveloper.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -32,16 +32,10 @@ namespace PurchasingSystemStaging.Controllers
             _signInManager = signInManager;
         }
 
-        [AllowAnonymous]
-        public IActionResult LoginApi()
-        {
-            return View();
-        }
-
         [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginViewModel model)
-        {
+        {            
             if (ModelState.IsValid)
             {
                 if (User.Identity.IsAuthenticated)
@@ -136,7 +130,7 @@ namespace PurchasingSystemStaging.Controllers
                             {
                                 return Unauthorized(new { message = "Password salah || 401 Unauthorized" });
                             }
-                        }                        
+                        }
                         else
                         {
                             return BadRequest(new { message = "Maaf, akun anda belum aktif... || 400 Bad Request" });

@@ -9,9 +9,6 @@
 @inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
 @model PurchasingSystemDeveloper.Areas.Order.Models.PurchaseRequest
 
-<!-- Tempusdominus Bootstrap 4 -->
-<link rel="stylesheet" href="~/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
-
 <!-- Main content -->
 <section class="content">
     <div class="row">
@@ -178,20 +175,20 @@
                     <!-- /.card-header -->
                     <div class="card-body">
                         <div class="form-group row">
-                            <div class="col-sm-5">
+                            <div class="col-md-5">
                                 <span>Search Product</span>
                                 <div class="form-group">
-                                    <select asp-items="@ViewBag.Product" class="form-control select2bs4" style="width: 100%;" id="produklist" data-placeholder="--Choose Product--">
+                                    <select id="productDropdown" class="form-control select2bs4" style="width: 100%;">
                                         <option value="" hidden disabled selected>--Choose Product--</option>
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-sm-1">
+                            <div class="col-md-1">
                                 <span>Qty</span>
                                 <input autocomplete="off" class="form-control" type="number" pattern="/^-?\d+\.?\d*$/" onKeyUp="qtyInput(this.value)" onKeyPress="if(this.value.length==6) return false;" min="1" max="1000" id="qty" placeholder="Qty">
                                 <span class="error">Required !</span>
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-md-2">
                                 <span>&nbsp;</span>
                                 <div class="form-group">
                                     @if (signInManager.IsSignedIn(User))
@@ -202,51 +199,51 @@
                                     }
                                 </div>
                             </div>
-                            <div class="col-sm-1">
+                            <div class="col-md-1">
                                 <span>Min Stock</span>
                                 <input autocomplete="off" class="form-control" id="minstock" type="text" placeholder="Min Stock" readonly>                                
                             </div>
-                            <div class="col-sm-1">
+                            <div class="col-md-1">
                                 <span>Max Stock</span>
                                 <input autocomplete="off" class="form-control" id="maxstock" type="text" placeholder="Max Stock" readonly>
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-md-2">
                                 <span>Buffer Stock</span>
                                 <input autocomplete="off" class="form-control" id="bufferstock" type="text" placeholder="Buffer Stock" readonly>
                             </div>
                         </div>
                         <div class="form-group row">
-                            <div class="col-sm-2">
+                            <div class="col-md-2">
                                 <span>Product Number</span>
                                 <input autocomplete="off" class="form-control" id="productnumber" placeholder="Product Number" readonly>
                                 <span class="error">Required !</span>
                             </div>
-                            <div class="col-sm-4">
+                            <div class="col-md-4">
                                 <span>Product Name</span>
                                 <input autocomplete="off" class="form-control" id="productname" placeholder="Product Name" readonly>
                                 <span class="error">Required !</span>
                             </div>
-                            <div class="col-sm-1">
+                            <div class="col-md-1">
                                 <span>Stock</span>
                                 <input autocomplete="off" class="form-control" id="stock" placeholder="Stock" readonly>
                                 <span class="error">Required !</span>
                             </div>
-                            <div class="col-sm-3">
+                            <div class="col-md-3">
                                 <span>Supplier</span>
                                 <input autocomplete="off" class="form-control" id="Supplier" placeholder="Supplier" readonly>
                                 <span class="error">Required !</span>
                             </div>
-                            <div class="col-sm-2">
+                            <div class="col-md-2">
                                 <span>Measure</span>
                                 <input autocomplete="off" class="form-control" id="measure" placeholder="Measure" readonly>
                                 <span class="error">Required !</span>
                             </div>
-                            <div class="col-sm-1" hidden>
+                            <div class="col-md-1" hidden>
                                 <span>Discount</span>
                                 <input autocomplete="off" class="form-control" id="discount" placeholder="Discount" hidden readonly>
                                 <span class="error">Required !</span>
                             </div>
-                            <div class="col-sm-2" hidden>
+                            <div class="col-md-2" hidden>
                                 <span>Price</span>
                                 <input autocomplete="off" class="form-control" id="price" placeholder="Price" hidden readonly>
                                 <span class="error">Required !</span>
@@ -289,7 +286,7 @@
                     <div class="card-body">
                         @****Perhatikan type nya jika submit akan berbeda hasil pada json, jadi pakai type button*@
                         <input type="button" value="Save" id="submit" class="btn btn-primary bg-indigo float-left fw-bold">
-                        <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "PurchaseRequest")">Cancel</div>
+                        <div class="btn btn-default" data-href="@Url.Action("Index", "PurchaseRequest")">Cancel</div>
                         @* <a class="btn btn-default" asp-action="Index" asp-controller="PurchaseRequest">Cancel</a> *@
                     </div>
                 </div>
@@ -316,16 +313,56 @@
                 theme: 'bootstrap4'
             })
         })
-    </script>    
+    </script>
+
+    <script>
+        $(function () {
+            // Inisialisasi Select2
+            $('#productDropdown').select2({
+                theme: 'bootstrap4',
+                placeholder: "--Choose Product--",
+                allowClear: true,
+
+                // Aktifkan AJAX di Select2
+                ajax: {
+                    url: '@Url.Action("GetProductsPaged", "PurchaseRequest")', // ganti ke Controller/Action sesuai
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        // params.term => teks yang diketik user
+                        // params.page => halaman ke berapa (dimulai dari 1)
+                        var query = {
+                            term: params.term || "",
+                            page: params.page || 1,
+                            pageSize: 10
+                        };
+                        return query;
+                    },
+                    processResults: function (data, params) {
+                        // data => response JSON dari server
+                        // params.page => halaman ke berapa
+                        params.page = params.page || 1;
+
+                        return {
+                            results: data.results,
+                            pagination: {
+                                more: data.pagination.more
+                            }
+                        };
+                    }
+                }
+            });
+        });
+    </script>
 
     <script>
         $(document).ready(function () {
-            $("#produklist").change(function () {
+            $("#productDropdown").change(function () {
                 $.ajax({
                     type: 'GET',
                     url: '@Url.Action("LoadProduk")',
                     dataType: 'json',
-                    data: { id: $("#produklist").val() },
+                    data: { id: $("#productDropdown").val() },
                     success: function (item) {
                         $.each(item, function () {
                             //Hidden
@@ -494,7 +531,7 @@
 
     <script>
         $(document).ready(function () {
-            $("#produklist").change(function () {
+            $("#productDropdown").change(function () {
                 $("#qty").val('1').focus();
             });
         });
@@ -632,8 +669,8 @@
                                             type: "warning"
                                         });
 
-                                        $('#produklist').select2('val', 'selectedIndex', 0);
-                                        $("#produklist").data('placeholder');
+                                        $('#productDropdown').select2('val', 'selectedIndex', 0);
+                                        $("#productDropdown").data('placeholder');
                                         $("#productnumber,#productname,#stock,#Supplier,#measure,#qty,#price,#discount,#minstock,#maxstock,#bufferstock").val('');
                                         return;
                                     }
@@ -644,8 +681,8 @@
                                             type: "warning"
                                         });
 
-                                        $('#produklist').select2('val', 'selectedIndex', 0);
-                                        $("#produklist").data('placeholder');
+                                        $('#productDropdown').select2('val', 'selectedIndex', 0);
+                                        $("#productDropdown").data('placeholder');
                                         $("#productnumber,#productname,#stock,#Supplier,#measure,#qty,#price,#discount,#minstock,#maxstock,#bufferstock").val('');
                                         return;
                                     }
@@ -682,8 +719,8 @@
                                 sumQty();
                                 sumGranTotal();
 
-                                $('#produklist').select2('val', 'selectedIndex', 0);
-                                $("#produklist").data('placeholder');
+                                $('#productDropdown').select2('val', 'selectedIndex', 0);
+                                $("#productDropdown").data('placeholder');
                                 $("#productnumber,#productname,#stock,#Supplier,#measure,#qty,#price,#discount,#minstock,#maxstock,#bufferstock").val('');
 
                                 $('.btn-sm').click(function () {
@@ -755,8 +792,8 @@
                         text: "Qty cannot be 0 !!!",
                         type: "warning"
                     });
-                    $('#produklist').select2('val', 'selectedIndex', 0);
-                    $("#produklist").data('placeholder');
+                    $('#productDropdown').select2('val', 'selectedIndex', 0);
+                    $("#productDropdown").data('placeholder');
                     $("#productnumber,#productname,#stock,#Supplier,#measure,#qty,#price,#discount,#minstock,#maxstock,#bufferstock").val('');
                 } 
                 else if ($('#minstock').val() == 0) {
@@ -765,8 +802,8 @@
                         text: "Sorry, Min Max Stock has not been determined!",
                         type: "warning"
                     });
-                    $('#produklist').select2('val', 'selectedIndex', 0);
-                    $("#produklist").data('placeholder');
+                    $('#productDropdown').select2('val', 'selectedIndex', 0);
+                    $("#productDropdown").data('placeholder');
                     $("#productnumber,#productname,#stock,#Supplier,#measure,#qty,#price,#discount,#minstock,#maxstock,#bufferstock").val('');
                 }                
                 else {
@@ -775,8 +812,8 @@
                         text: "Sorry, transactions cannot exceed Qty Order = " + qtyOrder + " !",
                         type: "warning"
                     });
-                    $('#produklist').select2('val', 'selectedIndex', 0);
-                    $("#produklist").data('placeholder');
+                    $('#productDropdown').select2('val', 'selectedIndex', 0);
+                    $("#productDropdown").data('placeholder');
                     $("#productnumber,#productname,#stock,#Supplier,#measure,#qty,#price,#discount,#minstock,#maxstock,#bufferstock").val('');
                 }
             });

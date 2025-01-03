@@ -92,7 +92,7 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
 
         public async Task<List<PurchaseOrder>> GetPurchaseOrders()
         {
-            return await _context.PurchaseOrders.OrderBy(p => p.CreateDateTime).Select(PurchaseOrder => new PurchaseOrder()
+            return await _context.PurchaseOrders.Where(s => s.Status.StartsWith("RO")).OrderBy(p => p.CreateDateTime).Select(PurchaseOrder => new PurchaseOrder()
             {
                 CreateDateTime = PurchaseOrder.CreateDateTime,
                 CreateBy = PurchaseOrder.CreateBy,

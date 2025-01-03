@@ -105,7 +105,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             {
                 // Jika enkripsi gagal, kembalikan view
                 return Redirect(Request.Path);
-            }            
+            }
         }
 
         [HttpGet]
@@ -175,7 +175,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             {
                 // Jika enkripsi gagal, kembalikan view
                 return Redirect(Request.Path);
-            }            
+            }
         }
 
         [HttpGet]
@@ -245,12 +245,12 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             if (ModelState.IsValid)
             {
 
-                if(vm.Foto != null)
+                if (vm.Foto != null)
                 {
                     long fileSize = vm.Foto.Length;
                     long maxSize = 2 * 1024 * 1024;
 
-                    if(fileSize> maxSize)
+                    if (fileSize > maxSize)
                     {
                         TempData["ErrorMessage"] = "Ukuran file tidak boleh lebih dari 2Mb";
                         ViewBag.Department = new SelectList(await _departmentRepository.GetDepartments(), "DepartmentId", "DepartmentName", SortOrder.Ascending);
@@ -290,7 +290,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
                     IsActive = true
                 };
 
-                var passTglLahir = vm.DateOfBirth.ToString("ddMMMyyyy");                
+                var passTglLahir = vm.DateOfBirth.ToString("ddMMMyyyy");
                 var resultLogin = await _userManager.CreateAsync(userLogin, passTglLahir);
 
                 _logger.LogInformation($"add a user to the create user page on : {DateTime.Now.TimeOfDay}");
@@ -336,7 +336,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             else
             {
                 ViewBag.Department = new SelectList(await _departmentRepository.GetDepartments(), "DepartmentId", "DepartmentName", SortOrder.Ascending);
-                ViewBag.Position = new SelectList(await _positionRepository.GetPositions(), "PositionId", "PositionName", SortOrder.Ascending);                
+                ViewBag.Position = new SelectList(await _positionRepository.GetPositions(), "PositionId", "PositionName", SortOrder.Ascending);
                 return View(vm);
             }
         }
@@ -364,7 +364,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             {
                 // Jika enkripsi gagal, kembalikan view
                 return Redirect(Request.Path);
-            }            
+            }
         }
 
         [HttpGet]
@@ -507,7 +507,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             else
             {
                 ViewBag.Department = new SelectList(await _departmentRepository.GetDepartments(), "DepartmentId", "DepartmentName", SortOrder.Ascending);
-                ViewBag.Position = new SelectList(await _positionRepository.GetPositions(), "PositionId", "PositionName", SortOrder.Ascending);                
+                ViewBag.Position = new SelectList(await _positionRepository.GetPositions(), "PositionId", "PositionName", SortOrder.Ascending);
                 return View(viewModel);
             }
 
@@ -539,7 +539,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             {
                 // Jika enkripsi gagal, kembalikan view
                 return Redirect(Request.Path);
-            }            
+            }
         }
 
         [HttpGet]
@@ -570,132 +570,154 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Controllers
             var userPurchaseRequest = _purchaseRequestRepository.GetAllPurchaseRequest().Where(p => p.UserAccessId == vm.UserActiveId.ToString()).FirstOrDefault();
             var userPurchaseOrder = _purchaseOrderRepository.GetAllPurchaseOrder().Where(p => p.UserAccessId == vm.UserActiveId.ToString()).FirstOrDefault();
             var userWarehouse = _warehouseLocationRepository.GetAllWarehouseLocation().Where(p => p.WarehouseManagerId == vm.UserActiveId).FirstOrDefault();
-            
-            if (userWarehouse == null)
+
+            //Hapus Akun Login
+            var userLogin = _signInManager.UserManager.Users.FirstOrDefault(s => s.KodeUser == vm.UserActiveCode);
+            var userActive = _applicationDbContext.UserActives.FirstOrDefault(x => x.UserActiveId == vm.UserActiveId);
+
+            // Mengambil Role yang terkait dengan user
+            var userRoles = await _signInManager.UserManager.GetRolesAsync(userLogin);
+
+            if (userRoles == null)
             {
-                //Hapus Akun Login
-                var userLogin = _signInManager.UserManager.Users.FirstOrDefault(s => s.KodeUser == vm.UserActiveCode);
-                _applicationDbContext.Attach(userLogin);
-                _applicationDbContext.Entry(userLogin).State = EntityState.Deleted;
-                _applicationDbContext.SaveChanges();
-
-                //Hapus Data Profil
-                var userActive = _applicationDbContext.UserActives.FirstOrDefault(x => x.UserActiveId == vm.UserActiveId);
-                _applicationDbContext.Attach(userActive);
-                _applicationDbContext.Entry(userActive).State = EntityState.Deleted;
-                _applicationDbContext.SaveChanges();
-
-                if (vm.UserPhotoPath != null)
+                if (userWarehouse == null)
                 {
-                    string filePath = Path.Combine(_hostingEnvironment.WebRootPath,
-                        "UserPhoto", vm.UserPhotoPath);
-                    System.IO.File.Delete(filePath);
+                    if (userLogin != null)
+                    {
+                        _applicationDbContext.Attach(userLogin);
+                        _applicationDbContext.Entry(userLogin).State = EntityState.Deleted;
+                        _applicationDbContext.SaveChanges();
+                    }
+                    
+                    if (userActive != null)
+                    {
+                        _applicationDbContext.Attach(userActive);
+                        _applicationDbContext.Entry(userActive).State = EntityState.Deleted;
+                        _applicationDbContext.SaveChanges();
+                    }
+
+                    if (vm.UserPhotoPath != null)
+                    {
+                        string filePath = Path.Combine(_hostingEnvironment.WebRootPath,
+                            "UserPhoto", vm.UserPhotoPath);
+                        System.IO.File.Delete(filePath);
+                    }
+
+                    userActive.Foto = ProcessUploadFile(vm);
+
+                    TempData["SuccessMessage"] = "Account " + vm.FullName + " Success Deleted";
+
+                    return RedirectToAction("RedirectToIndex", "UserActive");
                 }
-
-                userActive.Foto = ProcessUploadFile(vm);
-
-                TempData["SuccessMessage"] = "Account " + vm.FullName + " Success Deleted";
-
-                return RedirectToAction("Index", "UserActive");
-            }
-            else if (userPurchaseRequest == null)
-            {
-                //Hapus Akun Login
-                var userLogin = _signInManager.UserManager.Users.FirstOrDefault(s => s.KodeUser == vm.UserActiveCode);
-                _applicationDbContext.Attach(userLogin);
-                _applicationDbContext.Entry(userLogin).State = EntityState.Deleted;
-                _applicationDbContext.SaveChanges();
-
-                //Hapus Data Profil
-                var userActive = _applicationDbContext.UserActives.FirstOrDefault(x => x.UserActiveId == vm.UserActiveId);
-                _applicationDbContext.Attach(userActive);
-                _applicationDbContext.Entry(userActive).State = EntityState.Deleted;
-                _applicationDbContext.SaveChanges();
-
-                if (vm.UserPhotoPath != null)
+                else if (userPurchaseRequest == null)
                 {
-                    string filePath = Path.Combine(_hostingEnvironment.WebRootPath,
-                        "UserPhoto", vm.UserPhotoPath);
-                    System.IO.File.Delete(filePath);
+                    if (userLogin != null)
+                    {
+                        _applicationDbContext.Attach(userLogin);
+                        _applicationDbContext.Entry(userLogin).State = EntityState.Deleted;
+                        _applicationDbContext.SaveChanges();
+                    }                    
+                    
+                    if (userActive != null)
+                    {
+                        _applicationDbContext.Attach(userActive);
+                        _applicationDbContext.Entry(userActive).State = EntityState.Deleted;
+                        _applicationDbContext.SaveChanges();
+                    }
+
+                    if (vm.UserPhotoPath != null)
+                    {
+                        string filePath = Path.Combine(_hostingEnvironment.WebRootPath,
+                            "UserPhoto", vm.UserPhotoPath);
+                        System.IO.File.Delete(filePath);
+                    }
+
+                    userActive.Foto = ProcessUploadFile(vm);
+
+                    TempData["SuccessMessage"] = "Account " + vm.FullName + " Success Deleted";
+
+                    return RedirectToAction("RedirectToIndex", "UserActive");
                 }
-
-                userActive.Foto = ProcessUploadFile(vm);
-
-                TempData["SuccessMessage"] = "Account " + vm.FullName + " Success Deleted";
-
-                return RedirectToAction("Index", "UserActive");
-            }
-            else if (userPurchaseOrder == null)
-            {
-                //Hapus Akun Login
-                var userLogin = _signInManager.UserManager.Users.FirstOrDefault(s => s.KodeUser == vm.UserActiveCode);
-                _applicationDbContext.Attach(userLogin);
-                _applicationDbContext.Entry(userLogin).State = EntityState.Deleted;
-                _applicationDbContext.SaveChanges();
-
-                //Hapus Data Profil
-                var userActive = _applicationDbContext.UserActives.FirstOrDefault(x => x.UserActiveId == vm.UserActiveId);
-                _applicationDbContext.Attach(userActive);
-                _applicationDbContext.Entry(userActive).State = EntityState.Deleted;
-                _applicationDbContext.SaveChanges();
-
-                if (vm.UserPhotoPath != null)
+                else if (userPurchaseOrder == null)
                 {
-                    string filePath = Path.Combine(_hostingEnvironment.WebRootPath,
-                        "UserPhoto", vm.UserPhotoPath);
-                    System.IO.File.Delete(filePath);
+                    if (userLogin != null)
+                    {
+                        _applicationDbContext.Attach(userLogin);
+                        _applicationDbContext.Entry(userLogin).State = EntityState.Deleted;
+                        _applicationDbContext.SaveChanges();
+                    }
+       
+                    if (userActive != null)
+                    {
+                        _applicationDbContext.Attach(userActive);
+                        _applicationDbContext.Entry(userActive).State = EntityState.Deleted;
+                        _applicationDbContext.SaveChanges();
+                    }
+
+                    if (vm.UserPhotoPath != null)
+                    {
+                        string filePath = Path.Combine(_hostingEnvironment.WebRootPath,
+                            "UserPhoto", vm.UserPhotoPath);
+                        System.IO.File.Delete(filePath);
+                    }
+
+                    userActive.Foto = ProcessUploadFile(vm);
+
+                    TempData["SuccessMessage"] = "Account " + vm.FullName + " Success Deleted";
+
+                    return RedirectToAction("RedirectToIndex", "UserActive");
                 }
-
-                userActive.Foto = ProcessUploadFile(vm);
-
-                TempData["SuccessMessage"] = "Account " + vm.FullName + " Success Deleted";
-
-                return RedirectToAction("Index", "UserActive");
+                else
+                {
+                    TempData["WarningMessage"] = "Sorry, " + vm.FullName + " In used by the warehouse location !";
+                    return View(vm);
+                }
             }
             else
             {
-                TempData["WarningMessage"] = "Sorry, " + vm.FullName + " In used by the warehouse location !";
+                TempData["WarningMessage"] = "Sorry, " + vm.FullName + " In used by roles !";
                 return View(vm);
             }
         }
+
         private string ProcessUploadFile(UserActiveViewModel model)
         {
-            
-            if(model.Foto == null)
+
+            if (model.Foto == null)
             {
                 return null;
             }
 
-            string[] FileAkses = { ".jpg", ".jepg" ,".png", ".gif"};
+            string[] FileAkses = { ".jpg", ".jepg", ".png", ".gif" };
             string fileExtensions = Path.GetExtension(model.Foto.FileName).ToLowerInvariant();
 
-            if(!FileAkses.Contains(fileExtensions))
-                {
-                    throw new InvalidOperationException("format file harus png, jpg, jepg, gif");
-                }
+            if (!FileAkses.Contains(fileExtensions))
+            {
+                throw new InvalidOperationException("format file harus png, jpg, jepg, gif");
+            }
 
-            if(model.Foto.Length > 2 * 1024 * 1024)
-                {
-                    throw new InvalidOperationException("ukuran file telah melebihi batas maksimum 2MB");
-                }
+            if (model.Foto.Length > 2 * 1024 * 1024)
+            {
+                throw new InvalidOperationException("ukuran file telah melebihi batas maksimum 2MB");
+            }
 
             string safeFileName = Path.GetFileNameWithoutExtension(model.Foto.FileName);
             safeFileName = Regex.Replace(safeFileName, @"[^a-zA-Z0-9-_]", "");
 
-                var uniqueFileName = $"{Guid.NewGuid()}_{safeFileName}_{DateTime.Now.Ticks}{fileExtensions}";
-                string uploadFolder = Path.Combine(_hostingEnvironment.WebRootPath, "UserPhoto");
+            var uniqueFileName = $"{Guid.NewGuid()}_{safeFileName}_{DateTime.Now.Ticks}{fileExtensions}";
+            string uploadFolder = Path.Combine(_hostingEnvironment.WebRootPath, "UserPhoto");
 
-                if (!Directory.Exists(uploadFolder))
-                {
-                    Directory.CreateDirectory(uploadFolder);
-                }
+            if (!Directory.Exists(uploadFolder))
+            {
+                Directory.CreateDirectory(uploadFolder);
+            }
 
-                string filePath = Path.Combine(uploadFolder, uniqueFileName);
+            string filePath = Path.Combine(uploadFolder, uniqueFileName);
 
-                using (var fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    model.Foto.CopyTo(fileStream);
-                }
+            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            {
+                model.Foto.CopyTo(fileStream);
+            }
             return uniqueFileName;
         }
     }

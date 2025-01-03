@@ -1,6 +1,8 @@
 ﻿@{
     ViewData["Title"] = "Dashboard Master Data";
     Layout = "~/Views/Shared/_TopNavbarMasterData.cshtml";
+    var listRole = Context.Session.GetString("ListRole");
+    var roles = listRole.Split(',');
 }
 
 <!-- Main content -->
@@ -16,128 +18,290 @@
     </div>
     <!-- /.row -->
     <div class="row mb-2">
-        <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="cursor-pointer" data-href="@Url.Action("RedirectToIndex", "UserActive", new { area = "MasterData" })">
-                <div class="small-box " style="background-color:#347FC4">
-                    @*change color in adminlte.min.cs*@
-                    <div class="inner">
-                        <h4 class="fw-bold" style="color:#ffffff">User</h4>
-                        <p style="color:#ffffff">Total @ViewBag.CountUser User</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-user-plus"></i>
-                    </div>
-                </div>
-            </div>
-        </div>        
-        <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Supplier", new { area = "MasterData" })">
-                <div class="small-box " style="background-color:#347FC4">
-                    @*change color in adminlte.min.cs*@
-                    <div class="inner">
-                        <h4 class="fw-bold" style="color:#ffffff">Supplier</h4>
-                        <p style="color:#ffffff">Total @ViewBag.CountSupplier Supplier</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-users"></i>
+        @if (User.Identity.Name == "superadmin@admin.com")
+        {
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="cursor-pointer" data-href="@Url.Action("Index", "UserActive", new { area = "MasterData" })">
+                    <div class="small-box " style="background-color:#347FC4">
+                        @*change color in adminlte.min.cs*@
+                        <div class="inner">
+                            <h4 class="fw-bold" style="color:#ffffff">User</h4>
+                            <p style="color:#ffffff">Total @ViewBag.CountUser User</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="cursor-pointer" data-href="@Url.Action("RedirectToIndex", "UnitLocation", new { area = "MasterData" })">
-                <div class="small-box " style="background-color:#347FC4">
-                    @*change color in adminlte.min.cs*@
-                    <div class="inner">
-                        <h4 class="fw-bold" style="color:#ffffff">Unit Location</h4>
-                        <p style="color:#ffffff">Total @ViewBag.CountUnitLocation Unit Location</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-route"></i>
-                    </div>
-                </div>
-            </div>
-        </div>        
-        <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="cursor-pointer" data-href="@Url.Action("RedirectToIndex", "WarehouseLocation", new { area = "MasterData" })">
-                <div class="small-box " style="background-color:#347FC4">
-                    @*change color in adminlte.min.cs*@
-                    <div class="inner">
-                        <h4 class="fw-bold" style="color:#ffffff">Warehouse Location</h4>
-                        <p style="color:#ffffff">Total @ViewBag.CountWarehouseLocation Warehouse Location</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fa fa-building"></i>
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="cursor-pointer" data-href="@Url.Action("Index", "Supplier", new { area = "MasterData" })">
+                    <div class="small-box " style="background-color:#347FC4">
+                        @*change color in adminlte.min.cs*@
+                        <div class="inner">
+                            <h4 class="fw-bold" style="color:#ffffff">Supplier</h4>
+                            <p style="color:#ffffff">Total @ViewBag.CountSupplier Supplier</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-users"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="cursor-pointer" data-href="@Url.Action("Index", "UnitLocation", new { area = "MasterData" })">
+                    <div class="small-box " style="background-color:#347FC4">
+                        @*change color in adminlte.min.cs*@
+                        <div class="inner">
+                            <h4 class="fw-bold" style="color:#ffffff">Unit Location</h4>
+                            <p style="color:#ffffff">Total @ViewBag.CountUnitLocation Unit Location</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-route"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="cursor-pointer" data-href="@Url.Action("Index", "WarehouseLocation", new { area = "MasterData" })">
+                    <div class="small-box " style="background-color:#347FC4">
+                        @*change color in adminlte.min.cs*@
+                        <div class="inner">
+                            <h4 class="fw-bold" style="color:#ffffff">Warehouse Location</h4>
+                            <p style="color:#ffffff">Total @ViewBag.CountWarehouseLocation Warehouse Location</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fa fa-building"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            @if (!string.IsNullOrEmpty(listRole))
+            {
+                @if (roles.Contains("ReadUserActive"))
+                {
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="cursor-pointer" data-href="@Url.Action("Index", "UserActive", new { area = "MasterData" })">
+                            <div class="small-box " style="background-color:#347FC4">
+                                @*change color in adminlte.min.cs*@
+                                <div class="inner">
+                                    <h4 class="fw-bold" style="color:#ffffff">User</h4>
+                                    <p style="color:#ffffff">Total @ViewBag.CountUser User</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-user-plus"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (roles.Contains("ReadSupplier"))
+                {
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="cursor-pointer" data-href="@Url.Action("Index", "Supplier", new { area = "MasterData" })">
+                            <div class="small-box " style="background-color:#347FC4">
+                                @*change color in adminlte.min.cs*@
+                                <div class="inner">
+                                    <h4 class="fw-bold" style="color:#ffffff">Supplier</h4>
+                                    <p style="color:#ffffff">Total @ViewBag.CountSupplier Supplier</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (roles.Contains("ReadUnitLocation"))
+                {
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="cursor-pointer" data-href="@Url.Action("Index", "UnitLocation", new { area = "MasterData" })">
+                            <div class="small-box " style="background-color:#347FC4">
+                                @*change color in adminlte.min.cs*@
+                                <div class="inner">
+                                    <h4 class="fw-bold" style="color:#ffffff">Unit Location</h4>
+                                    <p style="color:#ffffff">Total @ViewBag.CountUnitLocation Unit Location</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-route"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (roles.Contains("ReadWarehouseLocation"))
+                {
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="cursor-pointer" data-href="@Url.Action("Index", "WarehouseLocation", new { area = "MasterData" })">
+                            <div class="small-box " style="background-color:#347FC4">
+                                @*change color in adminlte.min.cs*@
+                                <div class="inner">
+                                    <h4 class="fw-bold" style="color:#ffffff">Warehouse Location</h4>
+                                    <p style="color:#ffffff">Total @ViewBag.CountWarehouseLocation Warehouse Location</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fa fa-building"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        }                
     </div>
     <div class="row mb-2">
-        <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Product", new { area = "MasterData" })">
-                <div class="small-box " style="background-color:#347FC4">
-                    @*change color in adminlte.min.cs*@
-                    <div class="inner">
-                        <h4 class="fw-bold" style="color:#ffffff">Product</h4>
-                        <p style="color:#ffffff">Total @ViewBag.CountProduct Product</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-heartbeat"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Category", new { area = "MasterData" })">
-                <div class="small-box " style="background-color:#347FC4">
-                    @*change color in adminlte.min.cs*@
-                    <div class="inner">
-                        <h4 class="fw-bold" style="color:#ffffff">Category</h4>
-                        <p style="color:#ffffff">Total @ViewBag.CountCategory Category</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-clone"></i>
+        @if (User.Identity.Name == "superadmin@admin.com")
+        {
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="cursor-pointer" data-href="@Url.Action("Index", "Product", new { area = "MasterData" })">
+                    <div class="small-box " style="background-color:#347FC4">
+                        @*change color in adminlte.min.cs*@
+                        <div class="inner">
+                            <h4 class="fw-bold" style="color:#ffffff">Product</h4>
+                            <p style="color:#ffffff">Total @ViewBag.CountProduct Product</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-heartbeat"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Measurement", new { area = "MasterData" })">
-                <div class="small-box " style="background-color:#347FC4">
-                    @*change color in adminlte.min.cs*@
-                    <div class="inner">
-                        <h4 class="fw-bold" style="color:#ffffff">Measurement</h4>
-                        <p style="color:#ffffff">Total @ViewBag.CountMeasurement Measurement</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-ruler-combined"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3 col-6">
-            <!-- small box -->
-            <div class="cursor-pointer" data-href="@Url.Action("RedirectToIndex", "Discount", new { area = "MasterData" })">
-                <div class="small-box " style="background-color:#347FC4">
-                    @*change color in adminlte.min.cs*@
-                    <div class="inner">
-                        <h4 class="fw-bold" style="color:#ffffff">Discount</h4>
-                        <p style="color:#ffffff">Total @ViewBag.CountDiscount Discount</p>
-                    </div>
-                    <div class="icon">
-                        <i class="fas fa-balance-scale-right"></i>
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="cursor-pointer" data-href="@Url.Action("Index", "Category", new { area = "MasterData" })">
+                    <div class="small-box " style="background-color:#347FC4">
+                        @*change color in adminlte.min.cs*@
+                        <div class="inner">
+                            <h4 class="fw-bold" style="color:#ffffff">Category</h4>
+                            <p style="color:#ffffff">Total @ViewBag.CountCategory Category</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-clone"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="cursor-pointer" data-href="@Url.Action("Index", "Measurement", new { area = "MasterData" })">
+                    <div class="small-box " style="background-color:#347FC4">
+                        @*change color in adminlte.min.cs*@
+                        <div class="inner">
+                            <h4 class="fw-bold" style="color:#ffffff">Measurement</h4>
+                            <p style="color:#ffffff">Total @ViewBag.CountMeasurement Measurement</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-ruler-combined"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="cursor-pointer" data-href="@Url.Action("Index", "Discount", new { area = "MasterData" })">
+                    <div class="small-box " style="background-color:#347FC4">
+                        @*change color in adminlte.min.cs*@
+                        <div class="inner">
+                            <h4 class="fw-bold" style="color:#ffffff">Discount</h4>
+                            <p style="color:#ffffff">Total @ViewBag.CountDiscount Discount</p>
+                        </div>
+                        <div class="icon">
+                            <i class="fas fa-balance-scale-right"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            @if (!string.IsNullOrEmpty(listRole))
+            {
+                @if (roles.Contains("ReadProduct"))
+                {
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="cursor-pointer" data-href="@Url.Action("Index", "Product", new { area = "MasterData" })">
+                            <div class="small-box " style="background-color:#347FC4">
+                                @*change color in adminlte.min.cs*@
+                                <div class="inner">
+                                    <h4 class="fw-bold" style="color:#ffffff">Product</h4>
+                                    <p style="color:#ffffff">Total @ViewBag.CountProduct Product</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-heartbeat"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (roles.Contains("ReadCategory"))
+                {
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="cursor-pointer" data-href="@Url.Action("Index", "Category", new { area = "MasterData" })">
+                            <div class="small-box " style="background-color:#347FC4">
+                                @*change color in adminlte.min.cs*@
+                                <div class="inner">
+                                    <h4 class="fw-bold" style="color:#ffffff">Category</h4>
+                                    <p style="color:#ffffff">Total @ViewBag.CountCategory Category</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-clone"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (roles.Contains("ReadMeasurement"))
+                {
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="cursor-pointer" data-href="@Url.Action("Index", "Measurement", new { area = "MasterData" })">
+                            <div class="small-box " style="background-color:#347FC4">
+                                @*change color in adminlte.min.cs*@
+                                <div class="inner">
+                                    <h4 class="fw-bold" style="color:#ffffff">Measurement</h4>
+                                    <p style="color:#ffffff">Total @ViewBag.CountMeasurement Measurement</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-ruler-combined"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                @if (roles.Contains("ReadDiscount"))
+                {
+                    <div class="col-lg-3 col-6">
+                        <!-- small box -->
+                        <div class="cursor-pointer" data-href="@Url.Action("Index", "Discount", new { area = "MasterData" })">
+                            <div class="small-box " style="background-color:#347FC4">
+                                @*change color in adminlte.min.cs*@
+                                <div class="inner">
+                                    <h4 class="fw-bold" style="color:#ffffff">Discount</h4>
+                                    <p style="color:#ffffff">Total @ViewBag.CountDiscount Discount</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-balance-scale-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        }                
     </div>
     <!-- /.row -->
 </section>

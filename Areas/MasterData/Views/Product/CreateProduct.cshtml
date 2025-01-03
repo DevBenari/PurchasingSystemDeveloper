@@ -43,7 +43,7 @@
                                 <div class="form-group row">
                                     <div class="col-sm-12">
                                         <label asp-for="SupplierId">Supplier Name</label>
-                                        <select class="form-control select2bs4" style="width: 100%;" asp-for="SupplierId" asp-items="@ViewBag.Supplier">
+                                        <select id="supplierDropdown" class="form-control select2bs4" style="width: 100%;">
                                             <option value="" hidden disabled selected>--Choose Supplier--</option>
                                         </select>
                                         <span asp-validation-for="SupplierId" class="text-danger"></span>
@@ -52,7 +52,7 @@
                                 <div class="form-group row">
                                     <div class="col-sm-12">
                                         <label asp-for="CategoryId">Category Name</label>
-                                        <select class="form-control select2bs4" style="width: 100%;" asp-for="CategoryId" asp-items="@ViewBag.Category">
+                                        <select id="categoryDropdown" class="form-control select2bs4" style="width: 100%;">
                                             <option value="" hidden disabled selected>--Choose Category--</option>
                                         </select>
                                         <span asp-validation-for="CategoryId" class="text-danger"></span>
@@ -61,7 +61,7 @@
                                 <div class="form-group row">
                                     <div class="col-sm-12">
                                         <label asp-for="MeasurementId">Measure Name</label>
-                                        <select class="form-control select2bs4" style="width: 100%;" asp-for="MeasurementId" asp-items="@ViewBag.Measurement">
+                                        <select id="measurementDropdown" class="form-control select2bs4" style="width: 100%;">
                                             <option value="" hidden disabled selected>--Choose Measurement--</option>
                                         </select>
                                         <span asp-validation-for="MeasurementId" class="text-danger"></span>
@@ -70,10 +70,17 @@
                                 <div class="form-group row">
                                     <div class="col-sm-12">
                                         <label asp-for="DiscountId">Discount Name</label>
-                                        <select class="form-control select2bs4" style="width: 100%;" asp-for="DiscountId" asp-items="@ViewBag.Discount">
+                                        <select id="discountDropdown" class="form-control select2bs4" style="width: 100%;">
                                             <option value="" hidden disabled selected>--Choose Discount--</option>
                                         </select>
                                         <span asp-validation-for="DiscountId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-12">
+                                        <label asp-for="ExpiredDate">Expired Date</label>
+                                        <input type="date" asp-for="ExpiredDate" maxlength="50" autocomplete="off" class="form-control form-control-border border-width-2" id="ExpiredDate" placeholder="Expired Date" readonly>
+                                        <span asp-validation-for="ExpiredDate" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="form-group row">
@@ -128,7 +135,7 @@
                                 <div class="form-group row">
                                     <div class="col-sm-12">
                                         <label asp-for="WarehouseLocationId">Warehouse Location</label>
-                                        <select class="form-control select2bs4" style="width: 100%;" asp-for="WarehouseLocationId" asp-items="@ViewBag.Warehouse">
+                                        <select id="warehouseDropdown" class="form-control select2bs4" style="width: 100%;">
                                             <option value="" hidden disabled selected>--Choose WarehouseLocation--</option>
                                         </select>
                                         <span asp-validation-for="WarehouseLocationId" class="text-danger"></span>
@@ -184,6 +191,181 @@
                                 theme: 'bootstrap4'
                             })
                         })
+                    </script>
+
+                    <script>
+                        $(function () {
+                            // Inisialisasi Supplier
+                            $('#supplierDropdown').select2({
+                                theme: 'bootstrap4',
+                                placeholder: "--Choose Supplier--",
+                                allowClear: true,
+
+                                ajax: {
+                                    url: '@Url.Action("GetSuppliersPaged", "Product")',
+                                    dataType: 'json',
+                                    delay: 250,
+                                    data: function (params) {
+                                        var query = {
+                                            term: params.term || "",
+                                            page: params.page || 1,
+                                            pageSize: 10
+                                        };
+                                        return query;
+                                    },
+                                    processResults: function (data, params) {
+                                        params.page = params.page || 1;
+
+                                        return {
+                                            results: data.results,
+                                            pagination: {
+                                                more: data.pagination.more
+                                            }
+                                        };
+                                    }
+                                }
+                            });
+                        });
+                    </script>
+
+                    <script>
+                        $(function () {
+                            // Inisialisasi Category
+                            $('#categoryDropdown').select2({
+                                theme: 'bootstrap4',
+                                placeholder: "--Choose Category--",
+                                allowClear: true,
+
+                                ajax: {
+                                    url: '@Url.Action("GetCategoriesPaged", "Product")',
+                                    dataType: 'json',
+                                    delay: 250,
+                                    data: function (params) {
+                                        var query = {
+                                            term: params.term || "",
+                                            page: params.page || 1,
+                                            pageSize: 10
+                                        };
+                                        return query;
+                                    },
+                                    processResults: function (data, params) {
+                                        params.page = params.page || 1;
+
+                                        return {
+                                            results: data.results,
+                                            pagination: {
+                                                more: data.pagination.more
+                                            }
+                                        };
+                                    }
+                                }
+                            });
+                        });
+                    </script>
+
+                    <script>
+                        $(function () {
+                            // Inisialisasi Measurement
+                            $('#measurementDropdown').select2({
+                                theme: 'bootstrap4',
+                                placeholder: "--Choose Measurement--",
+                                allowClear: true,
+
+                                ajax: {
+                                    url: '@Url.Action("GetMeasurementsPaged", "Product")',
+                                    dataType: 'json',
+                                    delay: 250,
+                                    data: function (params) {
+                                        var query = {
+                                            term: params.term || "",
+                                            page: params.page || 1,
+                                            pageSize: 10
+                                        };
+                                        return query;
+                                    },
+                                    processResults: function (data, params) {
+                                        params.page = params.page || 1;
+
+                                        return {
+                                            results: data.results,
+                                            pagination: {
+                                                more: data.pagination.more
+                                            }
+                                        };
+                                    }
+                                }
+                            });
+                        });
+                    </script>
+
+                    <script>
+                        $(function () {
+                            // Inisialisasi Measurement
+                            $('#discountDropdown').select2({
+                                theme: 'bootstrap4',
+                                placeholder: "--Choose Discount--",
+                                allowClear: true,
+
+                                ajax: {
+                                    url: '@Url.Action("GetDiscountsPaged", "Product")',
+                                    dataType: 'json',
+                                    delay: 250,
+                                    data: function (params) {
+                                        var query = {
+                                            term: params.term || "",
+                                            page: params.page || 1,
+                                            pageSize: 10
+                                        };
+                                        return query;
+                                    },
+                                    processResults: function (data, params) {
+                                        params.page = params.page || 1;
+
+                                        return {
+                                            results: data.results,
+                                            pagination: {
+                                                more: data.pagination.more
+                                            }
+                                        };
+                                    }
+                                }
+                            });
+                        });
+                    </script>
+
+                    <script>
+                        $(function () {
+                            // Inisialisasi Measurement
+                            $('#warehouseDropdown').select2({
+                                theme: 'bootstrap4',
+                                placeholder: "--Choose Warehouse Location--",
+                                allowClear: true,
+
+                                ajax: {
+                                    url: '@Url.Action("GetWarehouseLocationsPaged", "Product")',
+                                    dataType: 'json',
+                                    delay: 250,
+                                    data: function (params) {
+                                        var query = {
+                                            term: params.term || "",
+                                            page: params.page || 1,
+                                            pageSize: 10
+                                        };
+                                        return query;
+                                    },
+                                    processResults: function (data, params) {
+                                        params.page = params.page || 1;
+
+                                        return {
+                                            results: data.results,
+                                            pagination: {
+                                                more: data.pagination.more
+                                            }
+                                        };
+                                    }
+                                }
+                            });
+                        });
                     </script>
                 }
             </form>

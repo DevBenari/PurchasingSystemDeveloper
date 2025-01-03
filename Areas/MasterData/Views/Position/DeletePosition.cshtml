@@ -44,7 +44,7 @@
         <div class="card-footer">
             @*<form asp-action="DeletePengguna" method="post">*@
             @*<a class="btn btn-default" asp-action="Index" asp-controller="Position" asp-area="MasterData">Batal</a>*@
-            <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "Position", new { area = "MasterData" })">Cancel</div>
+            <div class="btn btn-default" data-href="@Url.Action("Index", "Position", new { area = "MasterData" })">Cancel</div>
             <button type="submit" class="btn btn-danger float-left fw-bold"><div style="color:#ffffff">Hapus</div></button>
             @*</form>*@
         </div>

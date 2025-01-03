@@ -1,16 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PurchasingSystemDeveloper.Areas.MasterData.Models;
-using PurchasingSystemDeveloper.Areas.Order.Models;
+using PurchasingSystemDeveloper.Areas.Warehouse.Models;
 using PurchasingSystemDeveloper.Data;
 
-namespace PurchasingSystemDeveloper.Areas.Order.Repositories
+namespace PurchasingSystemDeveloper.Areas.Warehouse.Repositories
 {
-    public class IApprovalRepository
+    public class IApprovalProductReturnRepository
     {
         private string _errors = "";
         private readonly ApplicationDbContext _context;
 
-        public IApprovalRepository(ApplicationDbContext context)
+        public IApprovalProductReturnRepository(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -20,25 +19,25 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
             return _errors;
         }
 
-        public Approval Tambah(Approval Approval)
+        public ApprovalProductReturn Tambah(ApprovalProductReturn Approval)
         {
-            _context.Approvals.Add(Approval);
+            _context.ApprovalProductReturns.Add(Approval);
             _context.SaveChanges();
             return Approval;
         }
 
-        public async Task<Approval> GetApprovalById(Guid Id)
+        public async Task<ApprovalProductReturn> GetApprovalById(Guid Id)
         {
-            var Approval = _context.Approvals
-                .Where(i => i.ApprovalId == Id)
+            var Approval = _context.ApprovalProductReturns
+                .Where(i => i.ApprovalProductReturnId == Id)
                 .Include(u => u.ApplicationUser)
-                .Include(t => t.PurchaseRequest)
+                .Include(t => t.ProductReturn)
                 .Include(a1 => a1.UserApprove)
-                .FirstOrDefault(p => p.ApprovalId == Id);
+                .FirstOrDefault(p => p.ApprovalProductReturnId == Id);
 
             if (Approval != null)
             {
-                var ApprovalDetail = new Approval()
+                var ApprovalDetail = new ApprovalProductReturn()
                 {
                     CreateDateTime = Approval.CreateDateTime,
                     CreateBy = Approval.CreateBy,
@@ -46,14 +45,11 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
                     UpdateBy = Approval.UpdateBy,
                     DeleteDateTime = Approval.DeleteDateTime,
                     DeleteBy = Approval.DeleteBy,
-                    ApprovalId = Approval.ApprovalId,
-                    PurchaseRequestId = Approval.PurchaseRequestId,
-                    PurchaseRequestNumber = Approval.PurchaseRequestNumber,
+                    ApprovalProductReturnId = Approval.ApprovalProductReturnId,
+                    ProductReturnId = Approval.ProductReturnId,
+                    ProductReturnNumber = Approval.ProductReturnNumber,
                     UserAccessId = Approval.UserAccessId,
-                    ApplicationUser = Approval.ApplicationUser,
-                    ExpiredDay = Approval.ExpiredDay,
-                    RemainingDay = Approval.RemainingDay,
-                    ExpiredDate = Approval.ExpiredDate,
+                    ApplicationUser = Approval.ApplicationUser,                    
                     UserApproveId = Approval.UserApproveId,
                     ApproveBy = Approval.ApproveBy,
                     ApprovalTime = Approval.ApprovalTime,
@@ -68,14 +64,14 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
             return Approval;
         }
 
-        public async Task<Approval> GetApprovalByIdNoTracking(Guid Id)
+        public async Task<ApprovalProductReturn> GetApprovalByIdNoTracking(Guid Id)
         {
-            return await _context.Approvals.AsNoTracking().FirstOrDefaultAsync(a => a.ApprovalId == Id);
+            return await _context.ApprovalProductReturns.AsNoTracking().FirstOrDefaultAsync(a => a.ApprovalProductReturnId == Id);
         }
 
-        public async Task<List<Approval>> GetApprovals()
+        public async Task<List<ApprovalProductReturn>> GetApprovalProductReturns()
         {
-            return await _context.Approvals./*OrderBy(p => p.CreateDateTime).*/Select(Approval => new Approval()
+            return await _context.ApprovalProductReturns./*OrderBy(p => p.CreateDateTime).*/Select(Approval => new ApprovalProductReturn()
             {
                 CreateDateTime = Approval.CreateDateTime,
                 CreateBy = Approval.CreateBy,
@@ -83,14 +79,11 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
                 UpdateBy = Approval.UpdateBy,
                 DeleteDateTime = Approval.DeleteDateTime,
                 DeleteBy = Approval.DeleteBy,
-                ApprovalId = Approval.ApprovalId,
-                PurchaseRequestId = Approval.PurchaseRequestId,
-                PurchaseRequestNumber = Approval.PurchaseRequestNumber,
+                ApprovalProductReturnId = Approval.ApprovalProductReturnId,
+                ProductReturnId = Approval.ProductReturnId,
+                ProductReturnNumber = Approval.ProductReturnNumber,
                 UserAccessId = Approval.UserAccessId,
                 ApplicationUser = Approval.ApplicationUser,
-                ExpiredDay = Approval.ExpiredDay,
-                RemainingDay = Approval.RemainingDay,
-                ExpiredDate = Approval.ExpiredDate,
                 UserApproveId = Approval.UserApproveId,
                 ApproveBy = Approval.ApproveBy,
                 ApprovalTime = Approval.ApprovalTime,
@@ -102,31 +95,31 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
             }).ToListAsync();
         }
 
-        public IEnumerable<Approval> GetAllApproval()
+        public IEnumerable<ApprovalProductReturn> GetAllApproval()
         {
-            return _context.Approvals.OrderByDescending(c => c.CreateDateTime)
+            return _context.ApprovalProductReturns.OrderByDescending(c => c.CreateDateTime)
                 .Include(u => u.ApplicationUser)
-                .Include(t => t.PurchaseRequest)
+                .Include(t => t.ProductReturn)
                 .Include(a1 => a1.UserApprove)
                 .ToList();
         }
 
-        public IEnumerable<Approval> GetAllApprovalById(Guid Id)
+        public IEnumerable<ApprovalProductReturn> GetAllApprovalById(Guid Id)
         {
-            return _context.Approvals
+            return _context.ApprovalProductReturns
                 .Where(i => i.UserApproveId == Id)
                 .OrderByDescending(c => c.CreateDateTime)
                 .Include(u => u.ApplicationUser)
-                .Include(t => t.PurchaseRequest)
+                .Include(t => t.ProductReturn)
                 .Include(a1 => a1.UserApprove)
                 .ToList();
         }
 
-        public async Task<(IEnumerable<Approval> approvals, int totalCountApprovals)> GetAllApprovalPageSize(string searchTerm, int page, int pageSize, DateTimeOffset? startDate, DateTimeOffset? endDate)
+        public async Task<(IEnumerable<ApprovalProductReturn> ApprovalProductReturns, int totalCountApprovalProductReturns)> GetAllApprovalPageSize(string searchTerm, int page, int pageSize, DateTimeOffset? startDate, DateTimeOffset? endDate)
         {
-            var query = _context.Approvals
+            var query = _context.ApprovalProductReturns
                 .Include(u => u.ApplicationUser)
-                .Include(t => t.PurchaseRequest)
+                .Include(t => t.ProductReturn)
                 .Include(a1 => a1.UserApprove)
                 .OrderByDescending(d => d.CreateDateTime)
                 .AsQueryable();
@@ -134,7 +127,7 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
             // Filter berdasarkan searchTerm jika ada
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                query = query.Where(p => p.PurchaseRequestNumber.Contains(searchTerm));
+                query = query.Where(p => p.ProductReturnNumber.Contains(searchTerm));
             }
 
             if (startDate.HasValue)
@@ -150,58 +143,58 @@ namespace PurchasingSystemDeveloper.Areas.Order.Repositories
             var totalCount = await query.CountAsync();
 
             // Ambil data paginated
-            var approvals = await query
+            var ApprovalProductReturns = await query
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
-            return (approvals, totalCount);
+            return (ApprovalProductReturns, totalCount);
         }
 
-        public IEnumerable<Approval> GetChartBeforeExpired(Guid Id)
+        public IEnumerable<ApprovalProductReturn> GetChartBeforeExpired(Guid Id)
         {
-            return _context.Approvals
-                .Where(i => i.UserApproveId == Id && i.RemainingDay > 0)
+            return _context.ApprovalProductReturns
+                .Where(i => i.UserApproveId == Id)
                 .Include(u => u.ApplicationUser)
-                .Include(t => t.PurchaseRequest)
+                .Include(t => t.ProductReturn)
                 .Include(a1 => a1.UserApprove)
                 .ToList();
         }
 
-        public IEnumerable<Approval> GetChartOnExpired(Guid Id)
+        public IEnumerable<ApprovalProductReturn> GetChartOnExpired(Guid Id)
         {
-            return _context.Approvals
-                .Where(i => i.UserApproveId == Id && i.RemainingDay == 0)
+            return _context.ApprovalProductReturns
+                .Where(i => i.UserApproveId == Id)
                 .Include(u => u.ApplicationUser)
-                .Include(t => t.PurchaseRequest)
+                .Include(t => t.ProductReturn)
                 .Include(a1 => a1.UserApprove)
                 .ToList();
         }
 
-        public IEnumerable<Approval> GetChartMoreThanExpired(Guid Id)
+        public IEnumerable<ApprovalProductReturn> GetChartMoreThanExpired(Guid Id)
         {
-            return _context.Approvals
-                .Where(i => i.UserApproveId == Id && i.RemainingDay < 0)
+            return _context.ApprovalProductReturns
+                .Where(i => i.UserApproveId == Id)
                 .Include(u => u.ApplicationUser)
-                .Include(t => t.PurchaseRequest)
+                .Include(t => t.ProductReturn)
                 .Include(a1 => a1.UserApprove)
                 .ToList();
         }
 
-        public async Task<Approval> Update(Approval update)
-        {          
-            var approval = _context.Approvals.Attach(update);
+        public async Task<ApprovalProductReturn> Update(ApprovalProductReturn update)
+        {
+            var approval = _context.ApprovalProductReturns.Attach(update);
             approval.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
             _context.SaveChanges();
             return update;
         }
 
-        public Approval Delete(Guid Id)
+        public ApprovalProductReturn Delete(Guid Id)
         {
-            var Approval = _context.Approvals.Find(Id);
+            var Approval = _context.ApprovalProductReturns.Find(Id);
             if (Approval != null)
             {
-                _context.Approvals.Remove(Approval);
+                _context.ApprovalProductReturns.Remove(Approval);
                 _context.SaveChanges();
             }
             return Approval;

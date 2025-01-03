@@ -5,8 +5,11 @@
 
 @using Microsoft.AspNetCore.Identity;
 @using PurchasingSystemDeveloper.Areas.MasterData.ViewModels;
+@{
+    var listRole = Context.Session.GetString("ListRole");
+    @inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
 
-@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+}
 @model DiscountViewModel
 
 <!-- Tempusdominus Bootstrap 4 -->
@@ -61,12 +64,28 @@
                             <div class="col-md-12">
                                 <div class="row">
                                     <button type="submit" class="btn btn-primary bg-indigo float-left fw-bold" id="btnsimpan"><div style="color:#ffffff">Save</div></button>
-                                    <a class="btn bg-indigo" id="btnubah">Change</a>
-                                    <a class="btn btn-default" id="btnbatalubah">Cancel Change</a>
-                                    @*<a class="btn btn-danger" asp-action="DeleteDiscount" asp-controller="Discount" asp-area="MasterData" asp-route-id="@Model.DiscountId" id="btnhapus">Delete</a>
-                                    <a class="btn btn-default" asp-action="Index" asp-controller="Discount" asp-area="MasterData" id="btnbatal">Cancel</a>*@
-                                    <div class="btn btn-danger" data-href="@Url.Action("RedirectToDelete", "Discount", new { id = Model.DiscountId })">Delete</div>
-                                    <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "Discount", new { area = "MasterData" })">Cancel</div>
+                                    @if (User.Identity.Name == "superadmin@admin.com")
+                                    {
+                                        <a class="btn bg-indigo" id="btnubah">Change</a>
+                                        <div class="btn btn-danger" data-href="@Url.Action("DeleteDiscount", "Discount", new { id = Model.DiscountId })">Delete</div>
+                                    }
+                                    else
+                                    {
+                                        @if (!string.IsNullOrEmpty(listRole))
+                                        {
+                                            var roles = listRole.Split(',');
+                                            if (roles.Contains("UpdateDiscount"))
+                                            {
+                                                <a class="btn bg-indigo" id="btnubah">Change</a>
+                                            }
+                                            <a class="btn btn-default" id="btnbatalubah">Cancel Change</a>
+                                            if (roles.Contains("DeleteDiscount"))
+                                            {
+                                                <div class="btn btn-danger" data-href="@Url.Action("DeleteDiscount", "Discount", new { id = Model.DiscountId })">Delete</div>
+                                            }
+                                        }
+                                    }                                                                        
+                                    <div class="btn btn-default" id="btnbatal" data-href="@Url.Action("Index", "Discount", new { area = "MasterData" })">Cancel</div>
                                 </div>
                             </div>
                             <div class="col-md-0"></div>

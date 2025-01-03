@@ -9,9 +9,6 @@
 @inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
 @model PurchasingSystemDeveloper.Areas.Warehouse.Models.ReceiveOrder
 
-<!-- Tempusdominus Bootstrap 4 -->
-<link rel="stylesheet" href="~/admin/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
-
 <!-- Main content -->
 <section class="content">
     <div class="row">
@@ -142,7 +139,7 @@
                 <!-- start button footer -->
                 <div class="card card-orange">
                     <div class="card-body">                        
-                        <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "ReceiveOrder", new { area = "Warehouse" })">Cancel</div>
+                        <div class="btn btn-default" data-href="@Url.Action("Index", "ReceiveOrder", new { area = "Warehouse" })">Cancel</div>
                     </div>
                 </div>
                 <!-- /.end button footer -->

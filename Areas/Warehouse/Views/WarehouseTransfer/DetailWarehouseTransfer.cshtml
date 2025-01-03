@@ -151,19 +151,23 @@
                 <!-- start button footer -->
                 <div class="card card-orange">
                     <div class="card-body">
-                        @if (Model.Status == "Process")
+                        @if (User.Identity.Name == "superadmin@admin.com")
                         {
                             <a class="btn btn-success" asp-action="TransferUnit" asp-controller="WarehouseTransfer" asp-area="Warehouse" asp-route-id="@Model.WarehouseTransferId">Process Transfer</a>
-                            @*<a class="btn bg-indigo" asp-action="PrintWarehouseTransfer" asp-controller="WarehouseTransfer" asp-area="Warehouse" asp-route-id="@Model.WarehouseTransferId"><i class="fas fa-print" style="color:white"></i></a>*@
-                            @*<a class="btn btn-default" asp-action="Index" asp-controller="WarehouseTransfer">Batal</a>*@
-                            <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "WarehouseTransfer", new { area = "Warehouse" })">Cancel</div>
+                            <div class="btn btn-default" data-href="@Url.Action("Index", "WarehouseTransfer", new { area = "Warehouse" })">Cancel</div>
                         }
                         else
                         {
-                            @*<a class="btn bg-indigo" asp-action="PrintWarehouseTransfer" asp-controller="WarehouseTransfer" asp-area="Warehouse" asp-route-id="@Model.WarehouseTransferId"><i class="fas fa-print" style="color:white"></i></a>*@
-                            @*<a class="btn btn-default" asp-action="Index" asp-controller="WarehouseTransfer">Batal</a>*@
-                            <div class="btn btn-default" data-href="@Url.Action("RedirectToIndex", "WarehouseTransfer", new { area = "Warehouse" })">Cancel</div>
-                        }
+                            @if (Model.Status == "Process")
+                            {
+                                <a class="btn btn-success" asp-action="TransferUnit" asp-controller="WarehouseTransfer" asp-area="Warehouse" asp-route-id="@Model.WarehouseTransferId">Process Transfer</a>
+                                <div class="btn btn-default" data-href="@Url.Action("Index", "WarehouseTransfer", new { area = "Warehouse" })">Cancel</div>
+                            }
+                            else
+                            {
+                                <div class="btn btn-default" data-href="@Url.Action("Index", "WarehouseTransfer", new { area = "Warehouse" })">Cancel</div>
+                            }
+                        }                        
                     </div>
                 </div>
                 <!-- /.end button footer -->

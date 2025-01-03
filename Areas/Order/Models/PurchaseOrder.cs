@@ -23,7 +23,6 @@ namespace PurchasingSystemDeveloper.Areas.Order.Models
         public string? ApproveStatusUser2 { get; set; }
         public string? ApproveStatusUser3 { get; set; }
         public Guid? TermOfPaymentId { get; set; }
-        //public Guid? DueDateId { get; set; }
         public string Status { get; set; }
         public int QtyTotal { get; set; }
         public decimal GrandTotal { get; set; }
@@ -43,8 +42,6 @@ namespace PurchasingSystemDeveloper.Areas.Order.Models
         public UserActive? UserApprove2 { get; set; }
         [ForeignKey("UserApprove3Id")]
         public UserActive? UserApprove3 { get; set; }
-        //[ForeignKey("DueDateId")]
-        //public DueDate? DueDate { get; set; }
     }
 
     [Table("OrdPurchaseOrderDetail", Schema = "dbo")]

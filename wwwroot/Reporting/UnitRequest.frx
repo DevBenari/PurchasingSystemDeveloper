@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Report ScriptLanguage="CSharp" ReportInfo.Created="08/02/2024 11:36:44" ReportInfo.Modified="11/07/2024 14:01:53" ReportInfo.CreatorVersion="2023.1.0.0">
+<Report ScriptLanguage="CSharp" ReportInfo.Created="08/02/2024 11:36:44" ReportInfo.Modified="12/19/2024 15:42:30" ReportInfo.CreatorVersion="2023.1.0.0">
   <Dictionary>
-    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqKcw4gEN1iEAof6/rMrGBKGrc5pMWrhuHdHGvSz2D7P1MSKpS1cyZ69+daxRWAWhKHY+4j0GjkPMvwD9cwlzB6ssrvIRiXwFojSVZ9REn/Cv+jUSNkGR6pWXeJJ6xyvnZIWiiRdilLm9G3WTcGObs36r9GsA4SyVvU5y60vcO1+kccC/NFlbzGtRYGnXjAfl3PzTFxnHlamNuuwWBg3s0D+SzRpMokjVMyNGXOBd16nY=">
-      <TableDataSource Name="TscUnitRequestDetail" DataType="System.Int32" Enabled="true" TableName="TscUnitRequestDetail">
+    <MsSqlDataConnection Name="Connection" ConnectionString="rijcmlqxo5ia/cYUqo97e0judmpyiT7Aj0I0+VDb9QsQCXno/E/4ctxwACwyLTYB+Azq/2TFSnX35Dsa36stce+hQSB1l4Krnwjiffy9aR+dPv1PGIwnY/FApI6/KpuGnaWw+3/okJKxmWYlHVoJRVKv6nOVZ5duVd1niKokSG9O0MOeZ5gqWtwJxwOR1+/z1xcey8DQgQ2ggw1GGN7LbLjpHHqQqyZH/RvGgfB7OLsQLdRuLvhiPB6Nw0U2j8suPi7dlN/">
+      <TableDataSource Name="TscUnitRequestDetail" DataType="System.Int32" Enabled="true" TableName="TscUnitRequestDetail" SelectCommand="exec GetUnitRequestDetailById @UnitRequestId">
         <Column Name="UnitRequestDetailId" DataType="System.Guid"/>
         <Column Name="UnitRequestId" DataType="System.Guid"/>
         <Column Name="ProductNumber" DataType="System.String"/>
@@ -19,6 +19,7 @@
         <Column Name="IsCancel" DataType="System.Boolean" BindableControl="CheckBox"/>
         <Column Name="IsDelete" DataType="System.Boolean" BindableControl="CheckBox"/>
         <Column Name="Checked" DataType="System.Boolean" BindableControl="CheckBox"/>
+        <CommandParameter Name="UnitRequestId" DataType="22"/>
       </TableDataSource>
     </MsSqlDataConnection>
     <Parameter Name="Conn" DataType="System.String" AsString=""/>

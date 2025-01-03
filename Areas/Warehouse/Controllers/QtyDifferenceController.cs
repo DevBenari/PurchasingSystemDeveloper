@@ -118,6 +118,7 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
             var user = _applicationDbContext.UserActives.Where(p => p.PositionId == Id).ToList();
             return Json(new SelectList(user, "UserActiveId", "FullName"));
         }
+
         public JsonResult LoadUser2(Guid Id)
         {
             var user = _applicationDbContext.UserActives.Where(p => p.PositionId == Id).ToList();
@@ -131,6 +132,7 @@ namespace PurchasingSystemDeveloper.Areas.Warehouse.Controllers
                 .Where(p => p.PurchaseOrderId == Id).FirstOrDefault();
             return new JsonResult(podetail);
         }
+
         public JsonResult LoadPurchaseOrderDetail(Guid Id)
         {
             var podetail = _applicationDbContext.PurchaseOrderDetails

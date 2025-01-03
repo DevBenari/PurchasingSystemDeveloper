@@ -16,6 +16,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Models
         public Guid? MeasurementId { get; set; }
         public Guid? DiscountId { get; set; }
         public Guid? WarehouseLocationId { get; set; }
+        public DateTimeOffset ExpiredDate { get; set; }
         public int? MinStock { get; set; }
         public int? MaxStock { get; set; }
         public int? BufferStock { get; set; }
@@ -25,6 +26,7 @@ namespace PurchasingSystemDeveloper.Areas.MasterData.Models
         public decimal RetailPrice { get; set; }
         public string? StorageLocation { get; set; }
         public string? RackNumber { get; set; }
+        public bool IsActive { get; set; }
         public string? Note { get; set; }
 
         //Relationship        

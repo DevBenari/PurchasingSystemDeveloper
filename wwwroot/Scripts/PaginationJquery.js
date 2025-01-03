@@ -1,8 +1,9 @@
 ﻿//Start Pengaturan Scroll Efek Pada Pagination Index
 $(document).ready(function () {
-    // Add a smooth scroll effect for better navigation
     $('.pagination-link, .pagination-link-block').on('click', function (e) {
         e.preventDefault();
+
+        // Gunakan attr('data-href') atau .data('href')
         const targetUrl = $(this).attr('href');
         $('html, body').animate({ scrollTop: 0 }, 500, function () {
             window.location.href = targetUrl;

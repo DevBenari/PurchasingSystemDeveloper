@@ -8,7 +8,11 @@
 @using PurchasingSystemDeveloper.Models;
 @using PurchasingSystemDeveloper.Repositories;
 
-@inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+@{
+    var listRole = Context.Session.GetString("ListRole");
+    @inject Microsoft.AspNetCore.Identity.SignInManager<ApplicationUser> signInManager
+
+}
 @model Pagination<Supplier>
 @{
     var searchTerm = ViewBag.SearchTerm as string;
@@ -31,12 +35,12 @@
                 <!-- /.card-header -->
                 <div class="card">
                     <div class="card-body">
-                        <form enctype="multipart/form-data" id="filterForm" asp-action="RedirectToNonActive" asp-controller="Supplier" asp-area="MasterData" method="post" class="form-horizontal">
+                        <form enctype="multipart/form-data" id="filterForm" asp-action="NonActive" asp-controller="Supplier" asp-area="MasterData" method="get" class="form-horizontal">
                             <div class="row">
                                 <div class="col-md-3 input-group">
-                                    <div class="btn btn-default bg-green" id="btn-search" data-href="@Url.Action("RedirectToCreate", "Supplier")">
+                                    @* <div class="btn btn-default bg-green" id="btn-search" data-href="@Url.Action("RedirectToCreate", "Supplier")">
                                         <i class="fas fa-plus"></i>
-                                    </div>
+                                    </div> *@
                                     <input type="date" name="startDate" id="startDate" class="date-input" value="@ViewBag.StartDate" placeholder="Select Start Date">
                                 </div>
                                 <div class="col-md-3 input-group">
@@ -57,7 +61,7 @@
                                 <div class="col-md-4 input-group" data-target-input="nearest">
                                     <input autocomplete="off" maxlength="50" type="text" class="form-control form-control-border border-width-2" id="searchIn" name="searchTerm" value="@searchTerm" placeholder="Search suppliers..." />
                                     <button type="submit" class="btn btn-default bg-indigo" id="btn-search"><i class="fa fa-search"></i></button>
-                                    <div class="btn btn-default bg-indigo" id="btn-search" data-href="@Url.Action("RedirectToNonActive", "Supplier")">
+                                    <div class="btn btn-default bg-indigo" id="btn-search" data-href="@Url.Action("NonActive", "Supplier")">
                                         <i class="fa-solid fa-arrows-rotate"></i>
                                     </div>
                                     <input type="hidden" name="page" value="1" />
@@ -85,7 +89,7 @@
                                 {
                                     @foreach (var Supplier in Model.Items)
                                     {
-                                        <tr data-href="@Url.Action("RedirectToDetail", "Supplier", new {id=Supplier.SupplierId})">
+                                        <tr data-href="@Url.Action("DetailSupplier", "Supplier", new {id=Supplier.SupplierId})">
                                             <th class="text-center">@itemNumber</th>
                                             <td class="text-left">@Supplier.CreateDateTime.ReadStringDate()</td>
                                             <td class="text-left">@Supplier.SupplierCode</td>
@@ -105,21 +109,23 @@
                                 }
                             </tbody>
                         </table>
+                    </div>
+                    <span class="error">* Double click in the table row to open data</span>
 
-                        @* Pagination *@
-                        <div>
-                            <p class="pagination-info">Page @Model.CurrentPage of @Model.TotalPages from @Model.TotalCount Rows</p>
-                            <div class="pagination-container">
-                                <ul class="pagination">
-                                    @{
-                                        int startPage = ((Model.CurrentPage - 1) / 10) * 10 + 1;
-                                        int endPage = Math.Min(startPage + 9, Model.TotalPages);
-                                    }
+                    @* Pagination *@
+                    <div>
+                        <p class="pagination-info">Page @Model.CurrentPage of @Model.TotalPages from @Model.TotalCount Rows</p>
+                        <div class="pagination-container">
+                            <ul class="pagination">
+                                @{
+                                    int startPage = ((Model.CurrentPage - 1) / 10) * 10 + 1;
+                                    int endPage = Math.Min(startPage + 9, Model.TotalPages);
+                                }
 
-                                    @if (startPage > 1)
-                                    {
-                                        <li>
-                                            <div class="pagination-link" data-href="@Url.Action("RedirectToNonActive", "Supplier", new
+                                @if (startPage > 1)
+                                {
+                                    <li>
+                                        <div class="pagination-link" href="@Url.Action("NonActive", "Supplier", new
                                                 {
                                                     filterOptions = filterOptions,
                                                     searchTerm = searchTerm,
@@ -128,15 +134,15 @@
                                                     page = startPage - 10,
                                                     pageSize = Model.PageSize
                                                 })">
-                                                Prev 10
-                                            </div>                                            
-                                        </li>
-                                    }
+                                            Prev 10
+                                        </div>
+                                    </li>
+                                }
 
-                                    @if (Model.CurrentPage > 1)
-                                    {
-                                        <li>
-                                            <div class="pagination-link" id="btn-previous" data-href="@Url.Action("RedirectToNonActive", "Supplier", new
+                                @if (Model.CurrentPage > 1)
+                                {
+                                    <li>
+                                        <div class="pagination-link" id="btn-previous" href="@Url.Action("NonActive", "Supplier", new
                                                 {
                                                     filterOptions = filterOptions,
                                                     searchTerm = searchTerm,
@@ -145,15 +151,15 @@
                                                     page = Model.CurrentPage - 1,
                                                     pageSize = Model.PageSize
                                                 })">
-                                                Prev
-                                            </div>                                            
-                                        </li>
-                                    }
+                                            Prev
+                                        </div>
+                                    </li>
+                                }
 
-                                    @for (int i = startPage; i <= endPage; i++)
-                                    {
-                                        <li class="@(i == Model.CurrentPage ? "active" : "")">
-                                            <div class="pagination-link" data-href="@Url.Action("RedirectToNonActive", "Supplier", new
+                                @for (int i = startPage; i <= endPage; i++)
+                                {
+                                    <li class="@(i == Model.CurrentPage ? "active" : "")">
+                                        <div class="pagination-link" href="@Url.Action("NonActive", "Supplier", new
                                                 {
                                                     filterOptions = filterOptions,
                                                     searchTerm = searchTerm,
@@ -162,15 +168,15 @@
                                                     page = i,
                                                     pageSize = Model.PageSize
                                                 })">
-                                                @i
-                                            </div>
-                                        </li>
-                                    }
+                                            @i
+                                        </div>
+                                    </li>
+                                }
 
-                                    @if (Model.CurrentPage < Model.TotalPages)
-                                    {
-                                        <li>
-                                            <div class="pagination-link" id="btn-next" data-href="@Url.Action("RedirectToNonActive", "Supplier", new
+                                @if (Model.CurrentPage < Model.TotalPages)
+                                {
+                                    <li>
+                                        <div class="pagination-link" id="btn-next" href="@Url.Action("NonActive", "Supplier", new
                                                 {
                                                     filterOptions = filterOptions,
                                                     searchTerm = searchTerm,
@@ -179,15 +185,15 @@
                                                     page = Model.CurrentPage + 1,
                                                     pageSize = Model.PageSize
                                                 })">
-                                                Next
-                                            </div>                                            
-                                        </li>
-                                    }
+                                            Next
+                                        </div>
+                                    </li>
+                                }
 
-                                    @if (endPage < Model.TotalPages)
-                                    {
-                                        <li>                                            
-                                            <div class="pagination-link" data-href="@Url.Action("RedirectToNonActive", "Supplier", new
+                                @if (endPage < Model.TotalPages)
+                                {
+                                    <li>
+                                        <div class="pagination-link" href="@Url.Action("NonActive", "Supplier", new
                                                 {
                                                     filterOptions = filterOptions,
                                                     searchTerm = searchTerm,
@@ -196,33 +202,29 @@
                                                     page = endPage + 1,
                                                     pageSize = Model.PageSize
                                                 })">
-                                                Next 10
-                                            </div>
-                                        </li>
-                                    }
-                                </ul>
-                            </div>
+                                            Next 10
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
                         </div>
-
                     </div>
-                    <span class="error">* Double click in the table row to open data</span>
-                </div>
-
-                <!-- /.card-body -->
-                @if (TempData["SuccessMessage"] != null)
-                {
-                    <script type="text/javascript">
-                        window.onload = function () {
-                            swal("Success", '@TempData["SuccessMessage"]', "success");
-                        };
-                    </script>
-                }
+                </div>                
             </div>
             <!-- /.card -->
         </div>
     </div>
     <!-- /.row -->
 </section>
+<!-- /.card-body -->
+@if (TempData["SuccessMessage"] != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            swal("Success", '@TempData["SuccessMessage"]', "success");
+        };
+    </script>
+}
 <!-- /.content -->
 @section Scripts{
     <link href="~/scripts/pagination.css" rel="stylesheet" />

@@ -27,6 +27,7 @@ namespace PurchasingSystemDeveloper.Controllers
         private readonly IUserActiveRepository _userActiveRepository;
         private readonly IRoleRepository _roleRepository;
         private readonly IGroupRoleRepository _groupRoleRepository;
+        private readonly ISessionService _sessionService;
 
         private readonly IDataProtector _protector;
         private readonly UrlMappingService _urlMappingService;
@@ -38,6 +39,7 @@ namespace PurchasingSystemDeveloper.Controllers
             IUserActiveRepository userActiveRepository,
             IRoleRepository roleRepository,
             IGroupRoleRepository groupRoleRepository,
+            ISessionService sessionService,
             ILogger<AccountController> logger,
 
             IDataProtectionProvider provider,
@@ -50,6 +52,7 @@ namespace PurchasingSystemDeveloper.Controllers
             _logger = logger;
             _roleRepository = roleRepository;
             _groupRoleRepository = groupRoleRepository;
+            _sessionService = sessionService;
 
             _protector = provider.CreateProtector("UrlProtector");
             _urlMappingService = urlMappingService;
@@ -59,49 +62,26 @@ namespace PurchasingSystemDeveloper.Controllers
         public IActionResult Index()
         {            
             return View();
-        }
-
-
-        [HttpPost]
-        [Route("accountController/ExtendSession")]
-        public IActionResult ExtendSession()
-        {
-            // Memperpanjang session dengan memperbarui waktu aktivitas terakhir
-            HttpContext.Session.SetString("LastActivity", DateTime.Now.ToString());
-
-            return Ok();
-        }
-
-        [HttpPost]
-        [Route("accountController/EndSession")]
-        public async Task<IActionResult> EndSession()
-        {
-            //HttpContext.Session.Clear();
-
-            //// Hapus authentication cookies jika ada
-            //Response.Cookies.Delete(".AspNetCore.Identity.Application");
-
-            var getUser = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
-            var user = await _signInManager.UserManager.FindByNameAsync(getUser.Email);
-
-            if (user != null)
-            {
-                user.IsOnline = false;
-                await _userManager.UpdateAsync(user);
-            }
-
-            await _signInManager.SignOutAsync();
-
-            return Ok();
         }        
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult Login()
+      
+        [AllowAnonymous]        
+        public async Task<IActionResult> Login()
         {
             if (User.Identity.IsAuthenticated)
             {
-                return RedirectToAction("RedirectToIndex", "Home");
+                var userId = HttpContext.Session.GetString("UserId");
+
+                if (!string.IsNullOrEmpty(userId) && _sessionService.IsSessionActive(userId))
+                {
+                    // Jika session aktif, arahkan ke dashboard
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    await HttpContext.SignOutAsync("CookieAuth");
+                    HttpContext.Session.Clear();
+                }
+                return View();
             }
             else
             {
@@ -111,20 +91,30 @@ namespace PurchasingSystemDeveloper.Controllers
         }
 
         [HttpPost]
-        [AllowAnonymous]
-        public async Task<IActionResult> Login(LoginViewModel model/*, string returnUrl = null*/)
-        {
-            //returnUrl ??= Url.Content("~/");
-
+        [AllowAnonymous]        
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {            
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
             if (ModelState.IsValid)
             {
                 if (User.Identity.IsAuthenticated)
                 {
-                    return RedirectToAction("RedirectToIndex", "Home");
+                    var userId = HttpContext.Session.GetString("UserId");
+
+                    if (!string.IsNullOrEmpty(userId) && _sessionService.IsSessionActive(userId))
+                    {
+                        // Jika session aktif, arahkan ke dashboard
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        await HttpContext.SignOutAsync("CookieAuth");
+                        HttpContext.Session.Clear();
+                    }
                 }
-                else {
+                else
+                {
                     var user = await _signInManager.UserManager.FindByNameAsync(model.Email);
                     if (user == null)
                     {
@@ -132,80 +122,55 @@ namespace PurchasingSystemDeveloper.Controllers
                         TempData["WarningMessage"] = "Sorry, Username And Password Not Registered !";
                         return View(model);
                     }
-                    else if (user.IsActive == true && user.IsOnline == false)
+                    else if (user.IsActive == true && !_sessionService.IsSessionActive(user.Id))
                     {
                         var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, true);
                         if (result.Succeeded)
-                        {
-                            //Membuat sesi pengguna
-                            HttpContext.Session.SetString("username", user.Email);
+                        {                                                      
+                            // Create claims
+                            var claims = new List<Claim>
+                            {
+                                //new Claim(ClaimTypes.NameIdentifier, user.Id),
+                                new Claim(ClaimTypes.Name, user.Email)
+                            };                          
 
-                            // Set cookie autentikasi
-                            var claims = new[] { new Claim(ClaimTypes.Name, user.Email) };
-                            var identity = new ClaimsIdentity(claims, "CookieAuth");
-                            var principal = new ClaimsPrincipal(identity);
-
-                            await HttpContext.SignInAsync("CookieAuth", principal);
-
+                            //Session akan di pertahankan jika browser di tutup tanpa di signout,
+                            //maka ketika masuk ke browser akan langsung di arahkan ke dashboard
                             var authProperties = new AuthenticationProperties
                             {
-                                IsPersistent = false, // Set ke true jika ingin session bertahan setelah browser ditutup
+                                IsPersistent = true, // Cookie akan bertahan setelah browser ditutup
+                                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30) // Masa berlaku cookie
                             };
 
-                            //var roles = await _signInManager.UserManager.GetRolesAsync(user);
+                            //await HttpContext.SignInAsync("CookieAuth", principal, authProperties);
+                            await _signInManager.SignInWithClaimsAsync(user, authProperties, claims);
 
-                            //if (roles.Any())
-                            //{
-                            //    var roleClaim = string.Join(",", roles);
-                            //    claims.Add(new Claim("Roles", roleClaim));
-                            //}
-
-                            await _signInManager.SignInWithClaimsAsync(user, model.RememberMe, claims);
-
-                            // Role
-                            List<string> roleNames; // Deklarasikan di luar
-
-                            if (model.Email == "superadmin@admin.com")
-                            {
-                                roleNames = _roleRepository.GetRoles().Select(role => role.Name).ToList();
-                            }
-                            else
-                            {
-                                var userId = _userActiveRepository.GetAllUserLogin()
-                                    .FirstOrDefault(u => u.UserName == model.Email)?.Id;
-
-                                if (userId != null) // Pastikan userId tidak null
-                                {
-                                    roleNames = (from role in _roleRepository.GetRoles()
-                                                 join userRole in _groupRoleRepository.GetAllGroupRole()
-                                                 on role.Id equals userRole.RoleId
-                                                 where userRole.DepartemenId == userId 
-                                                 select role.Name).ToList();
-                                    // ambil juga judul modul
-                                    roleNames = (from role in _roleRepository.GetRoles()
-                                                 join userRole in _groupRoleRepository.GetAllGroupRole()
-                                                 on role.Id equals userRole.RoleId
-                                                 where userRole.DepartemenId == userId
-                                                 select role.ConcurrencyStamp)
-                                                 .Distinct().ToList();
-
-
-                                }
-                                else
-                                {
-                                    roleNames = new List<string>(); // Jika userId tidak ditemukan, set roleNames ke list kosong
-                                }
-                            }
-
-                            // Menyimpan daftar roleNames ke dalam session
-                            HttpContext.Session.SetString("ListRole", string.Join(",", roleNames));
-
+                            // Tandai pengguna sebagai online
                             user.IsOnline = true;
-
+                            user.LastActivityTime = DateTime.UtcNow;
                             await _userManager.UpdateAsync(user);
 
-                            _logger.LogInformation("User logged in.");
-                            return RedirectToAction("RedirectToIndex", "Home");
+                            //_logger.LogInformation("User logged in.");
+                            // Buat session baru
+                            var sessionId = Guid.NewGuid().ToString();
+                            HttpContext.Session.SetString("UserId", user.Id.ToString());
+                            HttpContext.Session.SetString("SessionId", sessionId);
+                            var userId = _userActiveRepository.GetAllUserLogin()
+                                    .FirstOrDefault(u => u.UserName == model.Email)?.Id;
+
+                            // Ambil role dari database                            
+                            List<string> roleNames = (from role in _roleRepository.GetRoles()
+                                                      join userRole in _groupRoleRepository.GetAllGroupRole()
+                                                      on role.Id equals userRole.RoleId
+                                                      where userRole.DepartemenId == user.Id
+                                                      select role.Name).Distinct().ToList();
+
+                            HttpContext.Session.SetString("ListRole", string.Join(",", roleNames));
+
+                            // Simpan session dan role di server-side cache
+                            _sessionService.CreateSession(user.Id, sessionId, DateTime.UtcNow.AddMinutes(30), roleNames);
+
+                            return RedirectToAction("Index", "Home");
                         }
 
                         //if (result.RequiresTwoFactor)
@@ -221,7 +186,7 @@ namespace PurchasingSystemDeveloper.Controllers
 
                             // Hitung waktu yang tersisa
                             var lockTime = await _userManager.GetLockoutEndDateAsync(user);
-                            var timeRemaining = lockTime.Value - DateTimeOffset.UtcNow;
+                            var timeRemaining = lockTime.Value - DateTimeOffset.Now;
 
                             TempData["UserLockOut"] = "Sorry, your account is locked in " + timeRemaining.Minutes + " minutes " + timeRemaining.Seconds + " seconds";
                             return View(model);
@@ -231,12 +196,9 @@ namespace PurchasingSystemDeveloper.Controllers
                         TempData["WarningMessage"] = "Sorry, Wrong Password !";
                         //return View(model);
                     }
-                    else if (user.IsActive == true && user.IsOnline == true)
+                    else if (user.IsActive == true && _sessionService.IsSessionActive(user.Id))
                     {
-                        TempData["UserOnlineMessage"] = "Sorry, your account is online, has been logged out, please sign back in !";
-
-                        user.IsOnline = false;
-                        await _userManager.UpdateAsync(user);
+                        TempData["UserOnlineMessage"] = "Sorry, your account is online, please wait until the session expires!";                       
 
                         return View(model);
                     }
@@ -245,28 +207,53 @@ namespace PurchasingSystemDeveloper.Controllers
                         TempData["UserActiveMessage"] = "Sorry, your account is not active !";
                         return View(model);
                     }
-                }                            
+                }
+            }
+            else
+            {
+                TempData["UserActiveMessage"] = "Error";
+                return View(model);
             }
             return View();
         }
-                
-        public async Task<IActionResult> Logout()
-        {
-            var getUser = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
-            var user = await _signInManager.UserManager.FindByNameAsync(getUser.Email);          
 
-            if (user != null)
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {           
+            // Hapus session dari server-side storage
+            var userId = HttpContext.Session.GetString("UserId");
+
+            if (!string.IsNullOrEmpty(userId))
             {
-                user.IsOnline = false;
-                await _userManager.UpdateAsync(user);
+                // Tandai pengguna sebagai offline
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user != null)
+                {
+                    user.IsOnline = false;
+                    user.LastActivityTime = DateTime.UtcNow;
+                    await _userManager.UpdateAsync(user);
+                }
+
+                // Hapus session dari server-side storage
+                _sessionService.DeleteSession(userId);
+                _sessionService.InvalidateAllSessions(userId);
+
+                // Clear session lokal
+                HttpContext.Session.Clear();
             }
 
-            // Hapus session dan sign out cookie
-            HttpContext.Session.Remove("username");
+            // Hapus semua cookies
+            foreach (var cookie in HttpContext.Request.Cookies.Keys)
+            {
+                HttpContext.Response.Cookies.Delete(cookie);
+                Console.WriteLine($"Deleted cookie: {cookie}");
+            }
+
+            // Sign out autentikasi
             await HttpContext.SignOutAsync("CookieAuth");
 
-            await _signInManager.SignOutAsync();
-            return RedirectToAction("RedirectToIndex", "Home");
+            // Redirect ke halaman login
+            return RedirectToAction("Login", "Account");
         }
     }
 }

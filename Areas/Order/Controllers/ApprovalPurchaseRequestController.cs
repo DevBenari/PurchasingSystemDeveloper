@@ -24,13 +24,13 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
 {
     [Area("Order")]
     [Route("Order/[Controller]/[Action]")]
-    public class ApprovalController : Controller
+    public class ApprovalPurchaseRequestController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly IUserActiveRepository _userActiveRepository;
-        private readonly IApprovalRepository _approvalRepository;
+        private readonly IApprovalPurchaseRequestRepository _approvalRepository;
         private readonly IProductRepository _productRepository;
         private readonly IPurchaseRequestRepository _purchaseRequestRepository;
         private readonly ITermOfPaymentRepository _termOfPaymentRepository;
@@ -41,11 +41,11 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
         private readonly UrlMappingService _urlMappingService;
         private readonly IHostingEnvironment _hostingEnvironment;
 
-        public ApprovalController(
+        public ApprovalPurchaseRequestController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ApplicationDbContext applicationDbContext,
-            IApprovalRepository ApprovalRepository,
+            IApprovalPurchaseRequestRepository ApprovalRepository,
             IUserActiveRepository userActiveRepository,
             IProductRepository productRepository,
             IPurchaseRequestRepository purchaseRequestRepository,
@@ -83,7 +83,7 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
                 string endDateString = endDate.HasValue ? endDate.Value.ToString("yyyy-MM-dd") : "";
 
                 // Bangun originalPath dengan format tanggal ISO 8601
-                string originalPath = $"Page:Order/Approval/Index?filterOptions={filterOptions}&searchTerm={searchTerm}&startDate={startDateString}&endDate={endDateString}&page={page}&pageSize={pageSize}";
+                string originalPath = $"Page:Order/ApprovalPurchaseRequest/Index?filterOptions={filterOptions}&searchTerm={searchTerm}&startDate={startDateString}&endDate={endDateString}&page={page}&pageSize={pageSize}";
                 string encryptedPath = _protector.Protect(originalPath);
 
                 // Hash GUID-like code (SHA256 truncated to 36 characters)
@@ -107,7 +107,7 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(string filterOptions = "", string searchTerm = "", DateTimeOffset? startDate = null, DateTimeOffset? endDate = null, int page = 1, int pageSize = 10)
         {
-            ViewBag.Active = "Approval";
+            ViewBag.Active = "ApprovalPurchaseRequest";
             ViewBag.SearchTerm = searchTerm;
             ViewBag.SelectedFilter = filterOptions;
 
@@ -161,7 +161,7 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
                     }                        
                 }
 
-                var model = new Pagination<Approval>
+                var model = new Pagination<ApprovalPurchaseRequest>
                 {
                     Items = data.approvals,
                     TotalCount = data.totalCountApprovals,
@@ -188,7 +188,7 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
                 var getUser2Approve = _approvalRepository.GetAllApproval().Where(a => a.ApprovalStatusUser == "User2" && a.UserApproveId == getUserActive.UserActiveId && a.Status == "Approve").ToList();
                 var getUser3Approve = _approvalRepository.GetAllApproval().Where(a => a.ApprovalStatusUser == "User3" && a.UserApproveId == getUserActive.UserActiveId && a.Status == "Approve").ToList();
 
-                var itemList = new List<Approval>();
+                var itemList = new List<ApprovalPurchaseRequest>();
 
                 if (getUser1 != null && getUser2 != null && getUser3 != null)
                 {
@@ -228,7 +228,7 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
                         }                        
                     }
 
-                    var model = new Pagination<Approval>
+                    var model = new Pagination<ApprovalPurchaseRequest>
                     {
                         Items = itemList,
                         TotalCount = itemList.Count,
@@ -278,7 +278,7 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
                         }                            
                     }
 
-                    var model = new Pagination<Approval>
+                    var model = new Pagination<ApprovalPurchaseRequest>
                     {
                         Items = itemList,
                         TotalCount = itemList.Count,
@@ -326,7 +326,7 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
                         }                            
                     }
 
-                    var model = new Pagination<Approval>
+                    var model = new Pagination<ApprovalPurchaseRequest>
                     {
                         Items = itemList,
                         TotalCount = itemList.Count,
@@ -351,7 +351,7 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
             try
             {
                 // Enkripsi path URL untuk "Index"
-                string originalPath = $"Detail:Order/Approval/DetailApproval/{Id}";
+                string originalPath = $"Detail:Order/ApprovalPurchaseRequest/DetailApprovalPurchaseRequest/{Id}";
                 string encryptedPath = _protector.Protect(originalPath);
 
                 // Hash GUID-like code (SHA256 truncated to 36 characters)
@@ -373,9 +373,9 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
         }
 
         [HttpGet]
-        public async Task<ViewResult> DetailApproval(Guid Id)
+        public async Task<ViewResult> DetailApprovalPurchaseRequest(Guid Id)
         {
-            ViewBag.Active = "Approval";
+            ViewBag.Active = "ApprovalPurchaseRequest";
 
             ViewBag.User = new SelectList(_userManager.Users, nameof(ApplicationUser.Id), nameof(ApplicationUser.NamaUser), SortOrder.Ascending);
             ViewBag.Product = new SelectList(await _productRepository.GetProducts(), "ProductId", "ProductName", SortOrder.Ascending);
@@ -391,7 +391,7 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
                 return View("ApprovalNotFound", Id);
             }
 
-            ApprovalViewModel viewModel = new ApprovalViewModel()
+            ApprovalPurchaseRequestViewModel viewModel = new ApprovalPurchaseRequestViewModel()
             {
                 ApprovalId = Approval.ApprovalId,
                 PurchaseRequestId = Approval.PurchaseRequestId,
@@ -438,9 +438,9 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> DetailApproval(ApprovalViewModel viewModel)
+        public async Task<IActionResult> DetailApprovalPurchaseRequest(ApprovalPurchaseRequestViewModel viewModel)
         {
-            ViewBag.Active = "Approval";
+            ViewBag.Active = "ApprovalPurchaseRequest";
 
             if (ModelState.IsValid)
             {
@@ -555,25 +555,6 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
                         _applicationDbContext.SaveChanges();
                     }
 
-                    //Signal R
-
-                    //var getUserId = _userActiveRepository.GetAllUserLogin().Where(u => u.UserName == User.Identity.Name).FirstOrDefault();
-                    //if (getUserId.Email != "superadmin@admin.com")
-                    //{
-                    //    var getUserActiveId = _userActiveRepository.GetAllUser().Where(u => u.UserActiveCode == getUserId.KodeUser).FirstOrDefault().UserActiveId;
-                    //    var data2 = _purchaseRequestRepository.GetAllPurchaseRequest()
-                    //                    .Where(p => (p.UserApprove1Id == getUserActiveId && p.ApproveStatusUser1 == null)
-                    //                    || (p.UserApprove2Id == getUserActiveId && p.ApproveStatusUser1 == "Approve" && p.ApproveStatusUser2 == null)
-                    //                    || (p.UserApprove3Id == getUserActiveId && p.ApproveStatusUser1 == "Approve" && p.ApproveStatusUser2 == "Approve" && p.ApproveStatusUser3 == null))
-                    //                    .ToList();
-
-                    //    int totalKaryawan = data2.Count();
-                    //    ViewBag.TotalKaryawan = totalKaryawan;
-                    //    await _hubContext.Clients.All.SendAsync("UpdateDataCount", totalKaryawan);
-                    //}                    
-
-                    //End Signal R
-
                     //Jika semua sudah Approve langsung Generate Purchase Order
                     if (checkPR.ApproveStatusUser1 == "Approve" && checkPR.ApproveStatusUser2 == "Approve" && checkPR.ApproveStatusUser3 == "Approve")
                     {
@@ -664,12 +645,12 @@ namespace PurchasingSystemDeveloper.Areas.Order.Controllers
                         _applicationDbContext.SaveChanges();
 
                         TempData["SuccessMessage"] = "Approve And Success Create Purchase Order";
-                        return RedirectToAction("Index", "Approval");
+                        return RedirectToAction("Index", "ApprovalPurchaseRequest");
                     }
                     else
                     {
                         TempData["SuccessMessage"] = "Update Success";
-                        return RedirectToAction("Index", "Approval");
+                        return RedirectToAction("Index", "ApprovalPurchaseRequest");
                     }
                 }                
             }
